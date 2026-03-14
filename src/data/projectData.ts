@@ -1,7 +1,7 @@
 // =============================================================================
 // IBEF Project Control - Project Data
-// Instituto Brasileiro pela Educacao do Futuro
-// Encomenda Tecnologica (ETEC) - Santa Catarina
+// Instituto Brasileiro pela Educação do Futuro
+// Encomenda Tecnológica (ETEC) - Santa Catarina
 // =============================================================================
 
 import type {
@@ -25,9 +25,9 @@ export const phases: Phase[] = [
   {
     id: 'phase-0',
     number: 0,
-    title: 'Alinhamento e Imersao',
+    title: 'Alinhamento e Imersão',
     description:
-      'Fase preparatoria de alinhamento institucional, formalizacao juridica do IBEF, imersao no contexto educacional de Santa Catarina e preparacao da estrutura organizacional para a Encomenda Tecnologica.',
+      'Fase preparatória de alinhamento institucional, formalização jurídica do IBEF, imersão no contexto educacional de Santa Catarina e preparação da estrutura organizacional para a Encomenda Tecnológica.',
     status: 'em_andamento',
     startDate: '2026-04-01',
     endDate: '2026-05-31',
@@ -35,10 +35,10 @@ export const phases: Phase[] = [
     deliverables: [
       'Registro do Estatuto do IBEF',
       'CNPJ atualizado e regular',
-      'Primeira Assembleia de fundacao realizada',
+      'Primeira Assembleia de fundação realizada',
       'Mapeamento de stakeholders SED/SC',
-      'Diagnostico inicial da infraestrutura educacional SC',
-      'Contrato de parceria com provedores tecnologicos',
+      'Diagnóstico inicial da infraestrutura educacional SC',
+      'Contrato de parceria com provedores tecnológicos',
       'Plano de trabalho detalhado para PoC',
     ],
     budgetBRL: 150000,
@@ -48,17 +48,17 @@ export const phases: Phase[] = [
     number: 1,
     title: 'Prova de Conceito - PoC',
     description:
-      'Desenvolvimento e validacao da prova de conceito da plataforma educacional, incluindo integracao com sistemas legados de SC, modelos de IA para personalizacao e primeiros testes com escolas selecionadas.',
+      'Desenvolvimento e validação da prova de conceito da plataforma educacional, incluindo integração com sistemas legados de SC, modelos de IA para personalização e primeiros testes com escolas selecionadas.',
     status: 'planejada',
     startDate: '2026-05-01',
     endDate: '2026-09-30',
     progress: 0,
     deliverables: [
       'Arquitetura da plataforma definida e documentada',
-      'APIs de integracao com sistemas SED/SC mapeadas',
-      'Prototipo funcional da plataforma',
+      'APIs de integração com sistemas SED/SC mapeadas',
+      'Protótipo funcional da plataforma',
       'Modelo de IA treinado com dados curriculares BNCC',
-      'Relatorio de validacao da PoC com metricas',
+      'Relatório de validação da PoC com métricas',
       'Feedback de professores e gestores piloto',
     ],
     budgetBRL: 800000,
@@ -68,16 +68,16 @@ export const phases: Phase[] = [
     number: 2,
     title: 'Piloto Controlado',
     description:
-      'Implantacao piloto em escolas selecionadas de Santa Catarina com monitoramento rigoroso de resultados, ajustes iterativos e preparacao para escalabilidade.',
+      'Implantação piloto em escolas selecionadas de Santa Catarina com monitoramento rigoroso de resultados, ajustes iterativos e preparação para escalabilidade.',
     status: 'planejada',
     startDate: '2026-10-01',
     endDate: '2027-06-30',
     progress: 0,
     deliverables: [
       'Plataforma implantada em escolas piloto',
-      'Programa de capacitacao de professores executado',
+      'Programa de capacitação de professores executado',
       'Dados de aprendizagem coletados e analisados',
-      'Relatorio de impacto pedagogico',
+      'Relatório de impacto pedagógico',
       'Ajustes na plataforma baseados em feedback',
       'Plano de escalabilidade validado',
     ],
@@ -86,20 +86,20 @@ export const phases: Phase[] = [
   {
     id: 'phase-3',
     number: 3,
-    title: 'Validacao e Transferencia',
+    title: 'Validação e Transferência',
     description:
-      'Validacao final dos resultados, documentacao completa da solucao, transferencia de tecnologia para SED/SC e preparacao para expansao estadual.',
+      'Validação final dos resultados, documentação completa da solução, transferência de tecnologia para SED/SC e preparação para expansão estadual.',
     status: 'planejada',
     startDate: '2027-07-01',
     endDate: '2028-03-31',
     progress: 0,
     deliverables: [
-      'Relatorio final de validacao com evidencias',
-      'Documentacao tecnica completa da plataforma',
-      'Transferencia de tecnologia para SED/SC',
-      'Manual de operacao e manutencao',
-      'Plano de expansao estadual aprovado',
-      'Relatorio de prestacao de contas ao TCU',
+      'Relatório final de validação com evidências',
+      'Documentação técnica completa da plataforma',
+      'Transferência de tecnologia para SED/SC',
+      'Manual de operação e manutenção',
+      'Plano de expansão estadual aprovado',
+      'Relatório de prestação de contas ao TCU',
     ],
     budgetBRL: 1200000,
   },
@@ -114,12 +114,12 @@ export const people: Person[] = [
   {
     id: 'pessoa-raphael',
     name: 'Raphael Ruiz',
-    role: 'fundador',
-    title: 'Project Leader / Diretor Executivo Presidente',
+    role: 'lider',
+    title: 'Líder do Projeto',
     departmentIds: ['tecnologia', 'administrativo_financeiro'],
     email: null,
     notes:
-      'Lider geral do projeto ETEC. Responsavel pela visao estrategica, relacao com SED/SC e coordenacao entre todas as areas.',
+      'Líder geral do projeto ETEC. Responsável pela visão estratégica, relação com SED/SC e coordenação entre todas as áreas.',
     avatarUrl: null,
     assembleiaConfirmed: true,
   },
@@ -127,11 +127,11 @@ export const people: Person[] = [
     id: 'pessoa-bruno-almeida',
     name: 'Bruno Almeida',
     role: 'fundador',
-    title: 'Gerencia de Tecnologia',
+    title: 'Gerência de Tecnologia',
     departmentIds: ['tecnologia'],
     email: null,
     notes:
-      'Lider tecnico responsavel pela arquitetura da plataforma, integracoes e equipe de desenvolvimento.',
+      'Líder técnico responsável pela arquitetura da plataforma, integrações e equipe de desenvolvimento.',
     avatarUrl: null,
     assembleiaConfirmed: true,
   },
@@ -139,11 +139,11 @@ export const people: Person[] = [
     id: 'pessoa-bruno-quick',
     name: 'Bruno Quick',
     role: 'fundador',
-    title: 'Relacoes Publicas e Parcerias Governamentais',
+    title: 'Relações Públicas e Parcerias Governamentais',
     departmentIds: ['relacoes_publicas'],
     email: null,
     notes:
-      'Responsavel pelas relacoes com governo de SC, articulacao politica e comunicacao institucional.',
+      'Responsável pelas relações com governo de SC, articulação política e comunicação institucional.',
     avatarUrl: null,
     assembleiaConfirmed: true,
   },
@@ -151,11 +151,11 @@ export const people: Person[] = [
     id: 'pessoa-mercia',
     name: 'Mercia',
     role: 'fundador',
-    title: 'Assessoria Juridica (co-lider)',
+    title: 'Assessoria Jurídica (co-líder)',
     departmentIds: ['juridico'],
     email: null,
     notes:
-      'Co-lider juridica. Responsavel pelo registro do estatuto, conformidade legal e contratos de parceria.',
+      'Co-líder jurídica. Responsável pelo registro do estatuto, conformidade legal e contratos de parceria.',
     avatarUrl: null,
     assembleiaConfirmed: true,
   },
@@ -163,11 +163,11 @@ export const people: Person[] = [
     id: 'pessoa-emerson',
     name: 'Emerson',
     role: 'fundador',
-    title: 'Assessoria Juridica (co-lider)',
+    title: 'Assessoria Jurídica (co-líder)',
     departmentIds: ['juridico'],
     email: null,
     notes:
-      'Co-lider juridico. Atua junto com Mercia na estruturacao juridica do IBEF e conformidade regulatoria.',
+      'Co-líder jurídico. Atua junto com Mercia na estruturação jurídica do IBEF e conformidade regulatória.',
     avatarUrl: null,
     assembleiaConfirmed: true,
   },
@@ -175,11 +175,11 @@ export const people: Person[] = [
     id: 'pessoa-gustavo',
     name: 'Gustavo',
     role: 'fundador',
-    title: 'Operacoes e Provedores Locais',
+    title: 'Operações e Provedores Locais',
     departmentIds: ['operacoes_locais'],
     email: null,
     notes:
-      'Responsavel pela operacao em Santa Catarina, rede de provedores locais e logistica de campo.',
+      'Responsável pela operação em Santa Catarina, rede de provedores locais e logística de campo.',
     avatarUrl: null,
     assembleiaConfirmed: true,
   },
@@ -191,7 +191,7 @@ export const people: Person[] = [
     departmentIds: ['administrativo_financeiro'],
     email: null,
     notes:
-      'Co-lider da area administrativa e financeira. Planejamento orcamentario e compliance.',
+      'Co-líder da área administrativa e financeira. Planejamento orçamentário e compliance.',
     avatarUrl: null,
     assembleiaConfirmed: true,
   },
@@ -201,11 +201,11 @@ export const people: Person[] = [
     id: 'pessoa-daniel-aguado',
     name: 'Daniel Aguado',
     role: 'convidado',
-    title: 'Marketing Director - FDC (Fundacao Dom Cabral)',
+    title: 'Marketing Director - FDC (Fundação Dom Cabral)',
     departmentIds: [],
     email: null,
     notes:
-      'Diretor de Marketing na FDC. Potencial membro do conselho consultivo para estrategia de posicionamento e relacionamento institucional.',
+      'Diretor de Marketing na FDC. Potencial membro do conselho consultivo para estratégia de posicionamento e relacionamento institucional.',
     avatarUrl: null,
     assembleiaConfirmed: false,
   },
@@ -217,7 +217,7 @@ export const people: Person[] = [
     departmentIds: [],
     email: null,
     notes:
-      'Diretor Geral da FAAP. Potencial conselheiro com experiencia em gestao de instituicoes de ensino superior.',
+      'Diretor Geral da FAAP. Potencial conselheiro com experiência em gestão de instituições de ensino superior.',
     avatarUrl: null,
     assembleiaConfirmed: false,
   },
@@ -229,7 +229,7 @@ export const people: Person[] = [
     departmentIds: [],
     email: null,
     notes:
-      'Empreendedor no segmento de educacao basica (K12). Experiencia pratica com escolas e mercado educacional.',
+      'Empreendedor no segmento de educação básica (K12). Experiência prática com escolas e mercado educacional.',
     avatarUrl: null,
     assembleiaConfirmed: false,
   },
@@ -241,7 +241,7 @@ export const people: Person[] = [
     departmentIds: [],
     email: null,
     notes:
-      'Experiencia no Ministerio da Educacao e no FUNDEB. Conhecimento profundo de politicas publicas educacionais e financiamento.',
+      'Experiência no Ministério da Educação e no FUNDEB. Conhecimento profundo de políticas públicas educacionais e financiamento.',
     avatarUrl: null,
     assembleiaConfirmed: false,
   },
@@ -254,9 +254,9 @@ export const people: Person[] = [
 export const departments: Department[] = [
   {
     id: 'juridico',
-    name: 'Juridico',
+    name: 'Jurídico',
     description:
-      'Assessoria juridica responsavel pela formalizacao do IBEF, contratos, conformidade regulatoria e LGPD.',
+      'Assessoria jurídica responsável pela formalização do IBEF, contratos, conformidade regulatória e LGPD.',
     leadIds: ['pessoa-mercia', 'pessoa-emerson'],
     color: '#6366F1',
     icon: 'Scale',
@@ -272,7 +272,7 @@ export const departments: Department[] = [
     id: 'tecnologia',
     name: 'Tecnologia',
     description:
-      'Desenvolvimento da plataforma educacional, integracoes com sistemas legados, IA e infraestrutura tecnica.',
+      'Desenvolvimento da plataforma educacional, integrações com sistemas legados, IA e infraestrutura técnica.',
     leadIds: ['pessoa-bruno-almeida'],
     color: '#10B981',
     icon: 'Code',
@@ -287,9 +287,9 @@ export const departments: Department[] = [
   },
   {
     id: 'relacoes_publicas',
-    name: 'Relacoes Publicas e Parcerias',
+    name: 'Relações Públicas e Parcerias',
     description:
-      'Relacoes governamentais, comunicacao institucional, parcerias estrategicas e articulacao politica com SC.',
+      'Relações governamentais, comunicação institucional, parcerias estratégicas e articulação política com SC.',
     leadIds: ['pessoa-bruno-quick'],
     color: '#F59E0B',
     icon: 'Handshake',
@@ -302,9 +302,9 @@ export const departments: Department[] = [
   },
   {
     id: 'operacoes_locais',
-    name: 'Operacoes Locais',
+    name: 'Operações Locais',
     description:
-      'Operacao em campo em Santa Catarina, rede de provedores, escritorio local e coordenacao de equipes.',
+      'Operação em campo em Santa Catarina, rede de provedores, escritório local e coordenação de equipes.',
     leadIds: ['pessoa-gustavo'],
     color: '#EF4444',
     icon: 'MapPin',
@@ -319,7 +319,7 @@ export const departments: Department[] = [
     id: 'santa_catarina',
     name: 'Santa Catarina (SED/SC)',
     description:
-      'Acompanhamento das acoes que a Secretaria de Educacao de SC (SED/SC) precisa executar para viabilizar a ETEC. Segue diretrizes do TCU e Guia InovaGovSC.',
+      'Acompanhamento das ações que a Secretaria de Educação de SC (SED/SC) precisa executar para viabilizar a ETEC. Segue diretrizes do TCU e Guia InovaGovSC.',
     leadIds: [],
     color: '#8B5CF6',
     icon: 'Building2',
@@ -335,9 +335,9 @@ export const departments: Department[] = [
   },
   {
     id: 'pedagogico',
-    name: 'Pedagogico',
+    name: 'Pedagógico',
     description:
-      'Alinhamento curricular BNCC, design do programa de formacao de professores, criterios de selecao de escolas piloto.',
+      'Alinhamento curricular BNCC, design do programa de formação de professores, critérios de seleção de escolas piloto.',
     leadIds: [],
     color: '#EC4899',
     icon: 'GraduationCap',
@@ -352,7 +352,7 @@ export const departments: Department[] = [
     id: 'administrativo_financeiro',
     name: 'Administrativo e Financeiro',
     description:
-      'Planejamento financeiro, alocacao orcamentaria por fase, compliance e prestacao de contas.',
+      'Planejamento financeiro, alocação orçamentária por fase, compliance e prestação de contas.',
     leadIds: ['pessoa-enio'],
     color: '#14B8A6',
     icon: 'Wallet',
@@ -377,7 +377,7 @@ export const tasks: Task[] = [
     id: 'task-jur-01',
     title: 'Registrar Estatuto do IBEF',
     description:
-      'Finalizar e protocolar o estatuto social do IBEF no cartorio competente. Prazo critico: quarta-feira 18/03/2026. Necessario para existencia juridica da organizacao.',
+      'Finalizar e protocolar o estatuto social do IBEF no cartório competente. Prazo crítico: quarta-feira 18/03/2026. Necessário para existência jurídica da organização.',
     status: 'em_andamento',
     priority: 'critica',
     departmentId: 'juridico',
@@ -388,7 +388,7 @@ export const tasks: Task[] = [
     phaseId: 'phase-0',
     dependencies: [],
     notes:
-      'URGENTE - Prazo iminente. Sem o registro do estatuto, o IBEF nao existe juridicamente e nenhuma outra acao formal pode prosseguir. Bloqueia CNPJ, assembleia e contratos.',
+      'URGENTE - Prazo iminente. Sem o registro do estatuto, o IBEF não existe juridicamente e nenhuma outra ação formal pode prosseguir. Bloqueia CNPJ, assembleia e contratos.',
     progress: 60,
     tags: ['urgente', 'bloqueante', 'fundacao'],
     subtasks: [],
@@ -397,7 +397,7 @@ export const tasks: Task[] = [
     id: 'task-jur-02',
     title: 'Registrar IBEF em Santa Catarina',
     description:
-      'Efetuar o registro do IBEF junto aos orgaos competentes do estado de Santa Catarina para operacao local.',
+      'Efetuar o registro do IBEF junto aos órgãos competentes do estado de Santa Catarina para operação local.',
     status: 'nao_iniciada',
     priority: 'alta',
     departmentId: 'juridico',
@@ -408,7 +408,7 @@ export const tasks: Task[] = [
     phaseId: 'phase-0',
     dependencies: ['task-jur-01'],
     notes:
-      'Depende do registro do estatuto. Necessario para operar formalmente em SC e firmar contratos com o governo estadual.',
+      'Depende do registro do estatuto. Necessário para operar formalmente em SC e firmar contratos com o governo estadual.',
     progress: 0,
     tags: ['fundacao', 'sc'],
     subtasks: [],
@@ -417,7 +417,7 @@ export const tasks: Task[] = [
     id: 'task-jur-03',
     title: 'Atualizar CNPJ',
     description:
-      'Obter ou atualizar o CNPJ do IBEF junto a Receita Federal com as informacoes do novo estatuto.',
+      'Obter ou atualizar o CNPJ do IBEF junto à Receita Federal com as informações do novo estatuto.',
     status: 'nao_iniciada',
     priority: 'alta',
     departmentId: 'juridico',
@@ -428,7 +428,7 @@ export const tasks: Task[] = [
     phaseId: 'phase-0',
     dependencies: ['task-jur-01'],
     notes:
-      'Depende do registro do estatuto. CNPJ necessario para abertura de conta bancaria, contratos e notas fiscais.',
+      'Depende do registro do estatuto. CNPJ necessário para abertura de conta bancária, contratos e notas fiscais.',
     progress: 0,
     tags: ['fundacao', 'bloqueante'],
     subtasks: [],
@@ -437,7 +437,7 @@ export const tasks: Task[] = [
     id: 'task-jur-04',
     title: 'Elaborar contratos de parceria',
     description:
-      'Preparar minutas de contratos de parceria com empresas associadas (Jinso, Sprix, MadeinWEB, Gestorial) e eventuais termos de cooperacao com SED/SC.',
+      'Preparar minutas de contratos de parceria com empresas associadas (Jinso, Sprix, MadeinWEB, Gestorial) e eventuais termos de cooperação com SED/SC.',
     status: 'nao_iniciada',
     priority: 'media',
     departmentId: 'juridico',
@@ -448,16 +448,16 @@ export const tasks: Task[] = [
     phaseId: 'phase-0',
     dependencies: ['task-jur-01', 'task-jur-03'],
     notes:
-      'Contratos devem prever termos de propriedade intelectual, confidencialidade e escopo de atuacao de cada parceiro.',
+      'Contratos devem prever termos de propriedade intelectual, confidencialidade e escopo de atuação de cada parceiro.',
     progress: 0,
     tags: ['contratos', 'parcerias'],
     subtasks: [],
   },
   {
     id: 'task-jur-05',
-    title: 'Preparacao de conformidade LGPD',
+    title: 'Preparação de conformidade LGPD',
     description:
-      'Desenvolver politica de privacidade, termos de uso e procedimentos de tratamento de dados pessoais conforme a LGPD, especialmente para dados de alunos menores.',
+      'Desenvolver política de privacidade, termos de uso e procedimentos de tratamento de dados pessoais conforme a LGPD, especialmente para dados de alunos menores.',
     status: 'nao_iniciada',
     priority: 'media',
     departmentId: 'juridico',
@@ -468,7 +468,7 @@ export const tasks: Task[] = [
     phaseId: 'phase-1',
     dependencies: ['task-jur-01'],
     notes:
-      'Critico para a plataforma educacional que lidara com dados de menores de idade. Deve estar pronto antes do inicio da PoC com escolas.',
+      'Crítico para a plataforma educacional que lidará com dados de menores de idade. Deve estar pronto antes do início da PoC com escolas.',
     progress: 0,
     tags: ['lgpd', 'compliance', 'dados'],
     subtasks: [],
@@ -479,9 +479,9 @@ export const tasks: Task[] = [
   // =========================================================================
   {
     id: 'task-tech-01',
-    title: 'Definir arquitetura de integracao da plataforma',
+    title: 'Definir arquitetura de integração da plataforma',
     description:
-      'Projetar a arquitetura tecnica da plataforma educacional, incluindo microsservicos, banco de dados, APIs e pontos de integracao com sistemas existentes da SED/SC.',
+      'Projetar a arquitetura técnica da plataforma educacional, incluindo microsserviços, banco de dados, APIs e pontos de integração com sistemas existentes da SED/SC.',
     status: 'em_andamento',
     priority: 'alta',
     departmentId: 'tecnologia',
@@ -492,7 +492,7 @@ export const tasks: Task[] = [
     phaseId: 'phase-0',
     dependencies: [],
     notes:
-      'Deve considerar sistemas legados de SC (SISGESC, Professor Online, etc). Arquitetura precisa ser escalavel para expansao estadual.',
+      'Deve considerar sistemas legados de SC (SISGESC, Professor Online, etc). Arquitetura precisa ser escalável para expansão estadual.',
     progress: 25,
     tags: ['arquitetura', 'integracao', 'plataforma'],
     subtasks: [],
@@ -501,7 +501,7 @@ export const tasks: Task[] = [
     id: 'task-tech-02',
     title: 'Mapeamento de APIs de sistemas legados SC',
     description:
-      'Identificar e documentar todas as APIs disponiveis dos sistemas educacionais de Santa Catarina (SISGESC, SIGEF, Professor Online, entre outros).',
+      'Identificar e documentar todas as APIs disponíveis dos sistemas educacionais de Santa Catarina (SISGESC, SIGEF, Professor Online, entre outros).',
     status: 'em_andamento',
     priority: 'alta',
     departmentId: 'tecnologia',
@@ -512,7 +512,7 @@ export const tasks: Task[] = [
     phaseId: 'phase-0',
     dependencies: [],
     notes:
-      'Depende de acesso concedido pela SED/SC. Bruno Quick esta articulando junto ao governo.',
+      'Depende de acesso concedido pela SED/SC. Bruno Quick está articulando junto ao governo.',
     progress: 10,
     tags: ['apis', 'legado', 'sc', 'integracao'],
     subtasks: [],
@@ -521,7 +521,7 @@ export const tasks: Task[] = [
     id: 'task-tech-03',
     title: 'Desenvolvimento da PoC',
     description:
-      'Construir a prova de conceito da plataforma educacional com funcionalidades core: gestao de conteudo alinhado a BNCC, dashboard do professor e modulo de aprendizagem adaptativa.',
+      'Construir a prova de conceito da plataforma educacional com funcionalidades core: gestão de conteúdo alinhado à BNCC, dashboard do professor e módulo de aprendizagem adaptativa.',
     status: 'nao_iniciada',
     priority: 'alta',
     departmentId: 'tecnologia',
@@ -532,7 +532,7 @@ export const tasks: Task[] = [
     phaseId: 'phase-1',
     dependencies: ['task-tech-01', 'task-tech-02'],
     notes:
-      'PoC deve demonstrar valor suficiente para justificar o investimento completo no piloto. Meta: 3 escolas testando ate setembro/2026.',
+      'PoC deve demonstrar valor suficiente para justificar o investimento completo no piloto. Meta: 3 escolas testando até setembro/2026.',
     progress: 0,
     tags: ['poc', 'desenvolvimento', 'plataforma'],
     subtasks: [],
@@ -541,7 +541,7 @@ export const tasks: Task[] = [
     id: 'task-tech-04',
     title: 'Treinamento de modelos de IA',
     description:
-      'Desenvolver e treinar modelos de inteligencia artificial para personalizacao de aprendizagem, identificacao de gaps de conhecimento e recomendacao de conteudo baseado na BNCC.',
+      'Desenvolver e treinar modelos de inteligência artificial para personalização de aprendizagem, identificação de gaps de conhecimento e recomendação de conteúdo baseado na BNCC.',
     status: 'nao_iniciada',
     priority: 'media',
     departmentId: 'tecnologia',
@@ -552,7 +552,7 @@ export const tasks: Task[] = [
     phaseId: 'phase-1',
     dependencies: ['task-tech-01', 'task-ped-01'],
     notes:
-      'Depende do alinhamento curricular BNCC do time pedagogico. Modelos iniciais podem usar dados sinteticos ate dados reais estarem disponiveis.',
+      'Depende do alinhamento curricular BNCC do time pedagógico. Modelos iniciais podem usar dados sintéticos até dados reais estarem disponíveis.',
     progress: 0,
     tags: ['ia', 'machine-learning', 'bncc', 'personalizacao'],
     subtasks: [],
@@ -561,7 +561,7 @@ export const tasks: Task[] = [
     id: 'task-tech-05',
     title: 'Setup de infraestrutura cloud e CI/CD',
     description:
-      'Configurar ambiente de nuvem (AWS/GCP), pipelines de CI/CD, monitoramento, logs e ambientes de desenvolvimento, staging e producao.',
+      'Configurar ambiente de nuvem (AWS/GCP), pipelines de CI/CD, monitoramento, logs e ambientes de desenvolvimento, staging e produção.',
     status: 'nao_iniciada',
     priority: 'media',
     departmentId: 'tecnologia',
@@ -572,16 +572,16 @@ export const tasks: Task[] = [
     phaseId: 'phase-0',
     dependencies: [],
     notes:
-      'Deve considerar requisitos de soberania de dados (dados educacionais brasileiros). Verificar se ha exigencia de datacenter nacional.',
+      'Deve considerar requisitos de soberania de dados (dados educacionais brasileiros). Verificar se há exigência de datacenter nacional.',
     progress: 0,
     tags: ['infraestrutura', 'devops', 'cloud'],
     subtasks: [],
   },
   {
     id: 'task-tech-06',
-    title: 'Definir stack tecnologico e padroes',
+    title: 'Definir stack tecnológico e padrões',
     description:
-      'Documentar decisoes de stack (linguagens, frameworks, banco de dados), padroes de codigo, guidelines de contribuicao e ferramentas de desenvolvimento.',
+      'Documentar decisões de stack (linguagens, frameworks, banco de dados), padrões de código, guidelines de contribuição e ferramentas de desenvolvimento.',
     status: 'em_andamento',
     priority: 'alta',
     departmentId: 'tecnologia',
@@ -592,20 +592,20 @@ export const tasks: Task[] = [
     phaseId: 'phase-0',
     dependencies: [],
     notes:
-      'Alinhamento com parceiros tecnologicos (Jinso, Sprix, MadeinWEB) sobre capacidades e preferencias tecnicas.',
+      'Alinhamento com parceiros tecnológicos (Jinso, Sprix, MadeinWEB) sobre capacidades e preferências técnicas.',
     progress: 30,
     tags: ['stack', 'padroes', 'documentacao'],
     subtasks: [],
   },
 
   // =========================================================================
-  // RELACOES PUBLICAS E PARCERIAS
+  // RELAÇÕES PÚBLICAS E PARCERIAS
   // =========================================================================
   {
     id: 'task-rp-01',
-    title: 'Articulacao com governo de SC',
+    title: 'Articulação com governo de SC',
     description:
-      'Manter e aprofundar o relacionamento com a SED/SC, Gabinete do Governador e demais orgaos relevantes para viabilizar a ETEC.',
+      'Manter e aprofundar o relacionamento com a SED/SC, Gabinete do Governador e demais órgãos relevantes para viabilizar a ETEC.',
     status: 'em_andamento',
     priority: 'alta',
     departmentId: 'relacoes_publicas',
@@ -616,16 +616,16 @@ export const tasks: Task[] = [
     phaseId: 'phase-0',
     dependencies: [],
     notes:
-      'Atividade continua. Fundamental para o sucesso do projeto. Inclui reunioes periodicas, alinhamento de expectativas e suporte politico.',
+      'Atividade contínua. Fundamental para o sucesso do projeto. Inclui reuniões periódicas, alinhamento de expectativas e suporte político.',
     progress: 30,
     tags: ['governo', 'sc', 'relacionamento'],
     subtasks: [],
   },
   {
     id: 'task-rp-02',
-    title: 'Comunicacao com stakeholders',
+    title: 'Comunicação com stakeholders',
     description:
-      'Desenvolver estrategia de comunicacao institucional e manter stakeholders informados sobre progresso do projeto ETEC.',
+      'Desenvolver estratégia de comunicação institucional e manter stakeholders informados sobre progresso do projeto ETEC.',
     status: 'nao_iniciada',
     priority: 'media',
     departmentId: 'relacoes_publicas',
@@ -636,16 +636,16 @@ export const tasks: Task[] = [
     phaseId: 'phase-0',
     dependencies: [],
     notes:
-      'Inclui newsletter mensal, relatorios de progresso para investidores e comunicacao com comunidade educacional.',
+      'Inclui newsletter mensal, relatórios de progresso para investidores e comunicação com comunidade educacional.',
     progress: 0,
     tags: ['comunicacao', 'stakeholders'],
     subtasks: [],
   },
   {
     id: 'task-rp-03',
-    title: 'Acordos de parceria publica',
+    title: 'Acordos de parceria pública',
     description:
-      'Negociar e formalizar acordos de parceria publica com orgaos governamentais de SC, incluindo termos de cooperacao tecnica.',
+      'Negociar e formalizar acordos de parceria pública com órgãos governamentais de SC, incluindo termos de cooperação técnica.',
     status: 'nao_iniciada',
     priority: 'alta',
     departmentId: 'relacoes_publicas',
@@ -656,7 +656,7 @@ export const tasks: Task[] = [
     phaseId: 'phase-0',
     dependencies: ['task-jur-01', 'task-jur-02'],
     notes:
-      'Depende da existencia juridica do IBEF (estatuto registrado e IBEF registrado em SC).',
+      'Depende da existência jurídica do IBEF (estatuto registrado e IBEF registrado em SC).',
     progress: 0,
     tags: ['parcerias', 'governo', 'acordos'],
     subtasks: [],
@@ -676,20 +676,20 @@ export const tasks: Task[] = [
     phaseId: 'phase-0',
     dependencies: ['task-jur-01'],
     notes:
-      'Convites devem ser formalizados apos registro do estatuto. Preparar material institucional e proposta de valor para cada convidado.',
+      'Convites devem ser formalizados após registro do estatuto. Preparar material institucional e proposta de valor para cada convidado.',
     progress: 0,
     tags: ['conselho', 'advisory', 'convites'],
     subtasks: [],
   },
 
   // =========================================================================
-  // OPERACOES LOCAIS
+  // OPERAÇÕES LOCAIS
   // =========================================================================
   {
     id: 'task-ops-01',
     title: 'Estruturar rede de provedores locais',
     description:
-      'Mapear, avaliar e contratar provedores de servicos locais em SC (internet, hardware, suporte tecnico) para suportar a implantacao nas escolas.',
+      'Mapear, avaliar e contratar provedores de serviços locais em SC (internet, hardware, suporte técnico) para suportar a implantação nas escolas.',
     status: 'nao_iniciada',
     priority: 'media',
     departmentId: 'operacoes_locais',
@@ -700,16 +700,16 @@ export const tasks: Task[] = [
     phaseId: 'phase-1',
     dependencies: [],
     notes:
-      'Considerar cobertura geografica de SC, diversidade de regioes (litoral, serra, oeste) e diferentes necessidades de infraestrutura.',
+      'Considerar cobertura geográfica de SC, diversidade de regiões (litoral, serra, oeste) e diferentes necessidades de infraestrutura.',
     progress: 0,
     tags: ['provedores', 'infraestrutura', 'sc'],
     subtasks: [],
   },
   {
     id: 'task-ops-02',
-    title: 'Montar escritorio em SC',
+    title: 'Montar escritório em SC',
     description:
-      'Identificar local, negociar aluguel e montar escritorio operacional em Florianopolis para a equipe de campo do IBEF.',
+      'Identificar local, negociar aluguel e montar escritório operacional em Florianópolis para a equipe de campo do IBEF.',
     status: 'nao_iniciada',
     priority: 'media',
     departmentId: 'operacoes_locais',
@@ -720,16 +720,16 @@ export const tasks: Task[] = [
     phaseId: 'phase-0',
     dependencies: ['task-jur-03'],
     notes:
-      'Depende do CNPJ para contrato de aluguel. Considerar coworking como opcao temporaria.',
+      'Depende do CNPJ para contrato de aluguel. Considerar coworking como opção temporária.',
     progress: 0,
     tags: ['escritorio', 'florianopolis', 'infraestrutura'],
     subtasks: [],
   },
   {
     id: 'task-ops-03',
-    title: 'Coordenacao de equipe de campo',
+    title: 'Coordenação de equipe de campo',
     description:
-      'Definir processos de coordenacao para equipe de campo que atuara nas escolas piloto, incluindo logistica, comunicacao e relatorios.',
+      'Definir processos de coordenação para equipe de campo que atuará nas escolas piloto, incluindo logística, comunicação e relatórios.',
     status: 'nao_iniciada',
     priority: 'baixa',
     departmentId: 'operacoes_locais',
@@ -740,7 +740,7 @@ export const tasks: Task[] = [
     phaseId: 'phase-1',
     dependencies: ['task-ops-02'],
     notes:
-      'Processos devem estar prontos antes do inicio do piloto controlado em outubro/2026.',
+      'Processos devem estar prontos antes do início do piloto controlado em outubro/2026.',
     progress: 0,
     tags: ['equipe', 'campo', 'processos'],
     subtasks: [],
@@ -749,7 +749,7 @@ export const tasks: Task[] = [
     id: 'task-ops-04',
     title: 'Levantamento de infraestrutura escolar',
     description:
-      'Realizar diagnostico da infraestrutura tecnologica (internet, equipamentos, rede eletrica) das escolas candidatas ao piloto em SC.',
+      'Realizar diagnóstico da infraestrutura tecnológica (internet, equipamentos, rede elétrica) das escolas candidatas ao piloto em SC.',
     status: 'nao_iniciada',
     priority: 'alta',
     departmentId: 'operacoes_locais',
@@ -760,20 +760,20 @@ export const tasks: Task[] = [
     phaseId: 'phase-1',
     dependencies: [],
     notes:
-      'Trabalho conjunto com SED/SC para acesso as escolas. Resultado alimenta criterios de selecao do time pedagogico.',
+      'Trabalho conjunto com SED/SC para acesso às escolas. Resultado alimenta critérios de seleção do time pedagógico.',
     progress: 0,
     tags: ['diagnostico', 'escolas', 'infraestrutura'],
     subtasks: [],
   },
 
   // =========================================================================
-  // SANTA CATARINA (SED/SC) - Acoes que o governo deve executar
+  // SANTA CATARINA (SED/SC) - Ações que o governo deve executar
   // =========================================================================
   {
     id: 'task-sc-01',
-    title: 'Concluir documento de Planejamento e Diagnostico',
+    title: 'Concluir documento de Planejamento e Diagnóstico',
     description:
-      'SED/SC deve elaborar o documento de Planejamento e Diagnostico que justifica a necessidade da ETEC, conforme diretrizes do TCU e Guia InovaGovSC.',
+      'SED/SC deve elaborar o documento de Planejamento e Diagnóstico que justifica a necessidade da ETEC, conforme diretrizes do TCU e Guia InovaGovSC.',
     status: 'em_andamento',
     priority: 'critica',
     departmentId: 'santa_catarina',
@@ -784,16 +784,16 @@ export const tasks: Task[] = [
     phaseId: 'phase-0',
     dependencies: [],
     notes:
-      'Documento fundamental conforme TCU. Deve conter analise do problema, justificativa da ETEC vs. outras modalidades de contratacao, e diagnostico da situacao atual.',
+      'Documento fundamental conforme TCU. Deve conter análise do problema, justificativa da ETEC vs. outras modalidades de contratação, e diagnóstico da situação atual.',
     progress: 40,
     tags: ['sed', 'tcu', 'inovagovsc', 'documento'],
     subtasks: [],
   },
   {
     id: 'task-sc-02',
-    title: 'Concluir ETP (Estudo Tecnico Preliminar)',
+    title: 'Concluir ETP (Estudo Técnico Preliminar)',
     description:
-      'SED/SC deve elaborar o Estudo Tecnico Preliminar detalhando viabilidade tecnica e economica da ETEC.',
+      'SED/SC deve elaborar o Estudo Técnico Preliminar detalhando viabilidade técnica e econômica da ETEC.',
     status: 'nao_iniciada',
     priority: 'alta',
     departmentId: 'santa_catarina',
@@ -804,16 +804,16 @@ export const tasks: Task[] = [
     phaseId: 'phase-0',
     dependencies: ['task-sc-01'],
     notes:
-      'Conforme Guia InovaGovSC. Deve incluir analise de risco tecnologico, estimativa de custos e cronograma preliminar.',
+      'Conforme Guia InovaGovSC. Deve incluir análise de risco tecnológico, estimativa de custos e cronograma preliminar.',
     progress: 0,
     tags: ['sed', 'etp', 'inovagovsc'],
     subtasks: [],
   },
   {
     id: 'task-sc-03',
-    title: 'Publicar Portaria criando comissao ETEC',
+    title: 'Publicar Portaria criando comissão ETEC',
     description:
-      'Governo de SC deve publicar Portaria oficial criando a comissao responsavel pela conducao do processo de ETEC.',
+      'Governo de SC deve publicar Portaria oficial criando a comissão responsável pela condução do processo de ETEC.',
     status: 'nao_iniciada',
     priority: 'alta',
     departmentId: 'santa_catarina',
@@ -824,16 +824,16 @@ export const tasks: Task[] = [
     phaseId: 'phase-0',
     dependencies: ['task-sc-01'],
     notes:
-      'Portaria deve designar membros da comissao com representantes da SED, CIASC e areas tecnicas do governo.',
+      'Portaria deve designar membros da comissão com representantes da SED, CIASC e áreas técnicas do governo.',
     progress: 0,
     tags: ['sed', 'portaria', 'comissao'],
     subtasks: [],
   },
   {
     id: 'task-sc-04',
-    title: 'Elaborar Termo de Referencia',
+    title: 'Elaborar Termo de Referência',
     description:
-      'Comissao ETEC deve elaborar o Termo de Referencia com especificacoes tecnicas, criterios de selecao da ICT e metricas de avaliacao.',
+      'Comissão ETEC deve elaborar o Termo de Referência com especificações técnicas, critérios de seleção da ICT e métricas de avaliação.',
     status: 'nao_iniciada',
     priority: 'alta',
     departmentId: 'santa_catarina',
@@ -844,16 +844,16 @@ export const tasks: Task[] = [
     phaseId: 'phase-0',
     dependencies: ['task-sc-02', 'task-sc-03'],
     notes:
-      'Deve definir claramente: problema a ser resolvido, requisitos tecnicos, marcos contratuais, propriedade intelectual e metricas de sucesso.',
+      'Deve definir claramente: problema a ser resolvido, requisitos técnicos, marcos contratuais, propriedade intelectual e métricas de sucesso.',
     progress: 0,
     tags: ['sed', 'termo-referencia', 'especificacoes'],
     subtasks: [],
   },
   {
     id: 'task-sc-05',
-    title: 'Submeter a PGE/SC para parecer juridico',
+    title: 'Submeter à PGE/SC para parecer jurídico',
     description:
-      'Encaminhar toda a documentacao para a Procuradoria Geral do Estado de SC para parecer juridico sobre a legalidade e conformidade do processo.',
+      'Encaminhar toda a documentação para a Procuradoria Geral do Estado de SC para parecer jurídico sobre a legalidade e conformidade do processo.',
     status: 'nao_iniciada',
     priority: 'alta',
     departmentId: 'santa_catarina',
@@ -864,16 +864,16 @@ export const tasks: Task[] = [
     phaseId: 'phase-0',
     dependencies: ['task-sc-04'],
     notes:
-      'PGE deve atestar legalidade do processo. Tempo medio de parecer: 15-30 dias. Pode haver pedidos de esclarecimento.',
+      'PGE deve atestar legalidade do processo. Tempo médio de parecer: 15-30 dias. Pode haver pedidos de esclarecimento.',
     progress: 0,
     tags: ['sed', 'pge', 'parecer-juridico'],
     subtasks: [],
   },
   {
     id: 'task-sc-06',
-    title: 'Publicar Chamamento / Selecao de ICT',
+    title: 'Publicar Chamamento / Seleção de ICT',
     description:
-      'Publicar edital de chamamento publico ou processo de selecao para escolha da Instituicao Cientifica e Tecnologica (ICT) que executara a ETEC.',
+      'Publicar edital de chamamento público ou processo de seleção para escolha da Instituição Científica e Tecnológica (ICT) que executará a ETEC.',
     status: 'nao_iniciada',
     priority: 'alta',
     departmentId: 'santa_catarina',
@@ -884,7 +884,7 @@ export const tasks: Task[] = [
     phaseId: 'phase-0',
     dependencies: ['task-sc-05'],
     notes:
-      'Conforme Lei de Inovacao e regulamentacao estadual. IBEF deve estar preparado para apresentar proposta tecnica e financeira.',
+      'Conforme Lei de Inovação e regulamentação estadual. IBEF deve estar preparado para apresentar proposta técnica e financeira.',
     progress: 0,
     tags: ['sed', 'chamamento', 'ict', 'selecao'],
     subtasks: [],
@@ -893,7 +893,7 @@ export const tasks: Task[] = [
     id: 'task-sc-07',
     title: 'Assinar contrato ETEC',
     description:
-      'Assinatura formal do contrato de Encomenda Tecnologica entre o Estado de Santa Catarina e a ICT selecionada.',
+      'Assinatura formal do contrato de Encomenda Tecnológica entre o Estado de Santa Catarina e a ICT selecionada.',
     status: 'nao_iniciada',
     priority: 'critica',
     departmentId: 'santa_catarina',
@@ -904,20 +904,20 @@ export const tasks: Task[] = [
     phaseId: 'phase-1',
     dependencies: ['task-sc-06'],
     notes:
-      'Marco fundamental do projeto. Apos assinatura, inicia-se oficialmente a execucao da ETEC com recursos do estado.',
+      'Marco fundamental do projeto. Após assinatura, inicia-se oficialmente a execução da ETEC com recursos do estado.',
     progress: 0,
     tags: ['sed', 'contrato', 'etec', 'marco'],
     subtasks: [],
   },
 
   // =========================================================================
-  // PEDAGOGICO
+  // PEDAGÓGICO
   // =========================================================================
   {
     id: 'task-ped-01',
     title: 'Alinhamento curricular BNCC',
     description:
-      'Mapear competencias e habilidades da BNCC relevantes para a plataforma, organizando a estrutura curricular que sera base para o conteudo e a IA.',
+      'Mapear competências e habilidades da BNCC relevantes para a plataforma, organizando a estrutura curricular que será base para o conteúdo e a IA.',
     status: 'nao_iniciada',
     priority: 'alta',
     departmentId: 'pedagogico',
@@ -928,16 +928,16 @@ export const tasks: Task[] = [
     phaseId: 'phase-1',
     dependencies: [],
     notes:
-      'Priorizar Ensino Fundamental II e Ensino Medio para a PoC. Considerar curriculo de SC (Curriculo Base do Territorio Catarinense).',
+      'Priorizar Ensino Fundamental II e Ensino Médio para a PoC. Considerar currículo de SC (Currículo Base do Território Catarinense).',
     progress: 0,
     tags: ['bncc', 'curriculo', 'conteudo'],
     subtasks: [],
   },
   {
     id: 'task-ped-02',
-    title: 'Design do programa de formacao de professores',
+    title: 'Design do programa de formação de professores',
     description:
-      'Projetar programa de capacitacao para professores que utilizarao a plataforma, incluindo modulos online e presenciais.',
+      'Projetar programa de capacitação para professores que utilizarão a plataforma, incluindo módulos online e presenciais.',
     status: 'nao_iniciada',
     priority: 'media',
     departmentId: 'pedagogico',
@@ -948,16 +948,16 @@ export const tasks: Task[] = [
     phaseId: 'phase-1',
     dependencies: ['task-ped-01'],
     notes:
-      'Formacao deve cobrir: uso da plataforma, metodologias ativas, interpretacao de dados de aprendizagem e personalicao do ensino.',
+      'Formação deve cobrir: uso da plataforma, metodologias ativas, interpretação de dados de aprendizagem e personalização do ensino.',
     progress: 0,
     tags: ['formacao', 'professores', 'capacitacao'],
     subtasks: [],
   },
   {
     id: 'task-ped-03',
-    title: 'Definir criterios de selecao de escolas piloto',
+    title: 'Definir critérios de seleção de escolas piloto',
     description:
-      'Estabelecer criterios objetivos para selecao das escolas que participarao do piloto controlado, considerando diversidade e representatividade.',
+      'Estabelecer critérios objetivos para seleção das escolas que participarão do piloto controlado, considerando diversidade e representatividade.',
     status: 'nao_iniciada',
     priority: 'media',
     departmentId: 'pedagogico',
@@ -968,16 +968,16 @@ export const tasks: Task[] = [
     phaseId: 'phase-1',
     dependencies: ['task-ops-04'],
     notes:
-      'Criterios: infraestrutura minima, engajamento da gestao escolar, diversidade regional (litoral/serra/oeste), diferentes portes de escola.',
+      'Critérios: infraestrutura mínima, engajamento da gestão escolar, diversidade regional (litoral/serra/oeste), diferentes portes de escola.',
     progress: 0,
     tags: ['escolas', 'piloto', 'selecao', 'criterios'],
     subtasks: [],
   },
   {
     id: 'task-ped-04',
-    title: 'Elaborar framework de avaliacao de impacto',
+    title: 'Elaborar framework de avaliação de impacto',
     description:
-      'Definir metricas, indicadores e metodologia para medir o impacto pedagogico da plataforma nos resultados de aprendizagem.',
+      'Definir métricas, indicadores e metodologia para medir o impacto pedagógico da plataforma nos resultados de aprendizagem.',
     status: 'nao_iniciada',
     priority: 'media',
     departmentId: 'pedagogico',
@@ -988,7 +988,7 @@ export const tasks: Task[] = [
     phaseId: 'phase-1',
     dependencies: ['task-ped-01'],
     notes:
-      'Deve incluir: metricas quantitativas (notas, frequencia, engajamento), qualitativas (percepcao de professores/alunos) e grupo de controle.',
+      'Deve incluir: métricas quantitativas (notas, frequência, engajamento), qualitativas (percepção de professores/alunos) e grupo de controle.',
     progress: 0,
     tags: ['avaliacao', 'impacto', 'metricas'],
     subtasks: [],
@@ -1001,7 +1001,7 @@ export const tasks: Task[] = [
     id: 'task-adm-01',
     title: 'Planejamento financeiro geral',
     description:
-      'Elaborar planejamento financeiro completo do projeto ETEC incluindo projecoes de receita, custos operacionais e fluxo de caixa para 24 meses.',
+      'Elaborar planejamento financeiro completo do projeto ETEC incluindo projeções de receita, custos operacionais e fluxo de caixa para 24 meses.',
     status: 'nao_iniciada',
     priority: 'alta',
     departmentId: 'administrativo_financeiro',
@@ -1012,16 +1012,16 @@ export const tasks: Task[] = [
     phaseId: 'phase-0',
     dependencies: ['task-jur-03'],
     notes:
-      'Depende do CNPJ para abertura de conta bancaria. Orcamento total estimado: R$ 4.65M ao longo de 24 meses.',
+      'Depende do CNPJ para abertura de conta bancária. Orçamento total estimado: R$ 4.65M ao longo de 24 meses.',
     progress: 0,
     tags: ['financeiro', 'planejamento', 'orcamento'],
     subtasks: [],
   },
   {
     id: 'task-adm-02',
-    title: 'Alocacao orcamentaria por fase',
+    title: 'Alocação orçamentária por fase',
     description:
-      'Detalhar a alocacao orcamentaria para cada fase do projeto, com rubricas especificas e reserva de contingencia.',
+      'Detalhar a alocação orçamentária para cada fase do projeto, com rubricas específicas e reserva de contingência.',
     status: 'nao_iniciada',
     priority: 'media',
     departmentId: 'administrativo_financeiro',
@@ -1032,16 +1032,16 @@ export const tasks: Task[] = [
     phaseId: 'phase-0',
     dependencies: ['task-adm-01'],
     notes:
-      'Fase 0: R$150k | Fase 1: R$800k | Fase 2: R$2.5M | Fase 3: R$1.2M. Incluir 10% de contingencia em cada fase.',
+      'Fase 0: R$150k | Fase 1: R$800k | Fase 2: R$2.5M | Fase 3: R$1.2M. Incluir 10% de contingência em cada fase.',
     progress: 0,
     tags: ['orcamento', 'fases', 'alocacao'],
     subtasks: [],
   },
   {
     id: 'task-adm-03',
-    title: 'Setup de compliance e prestacao de contas',
+    title: 'Setup de compliance e prestação de contas',
     description:
-      'Implementar processos e sistemas para compliance com regras de licitacao publica, prestacao de contas ao TCU e transparencia.',
+      'Implementar processos e sistemas para compliance com regras de licitação pública, prestação de contas ao TCU e transparência.',
     status: 'nao_iniciada',
     priority: 'alta',
     departmentId: 'administrativo_financeiro',
@@ -1052,16 +1052,16 @@ export const tasks: Task[] = [
     phaseId: 'phase-0',
     dependencies: ['task-jur-03'],
     notes:
-      'Essencial para contrato com governo. Deve atender requisitos de transparencia, auditabilidade e prestacao de contas periodica.',
+      'Essencial para contrato com governo. Deve atender requisitos de transparência, auditabilidade e prestação de contas periódica.',
     progress: 0,
     tags: ['compliance', 'tcu', 'transparencia', 'prestacao-contas'],
     subtasks: [],
   },
   {
     id: 'task-adm-04',
-    title: 'Abertura de conta bancaria institucional',
+    title: 'Abertura de conta bancária institucional',
     description:
-      'Abrir conta bancaria em nome do IBEF para movimentacao de recursos do projeto.',
+      'Abrir conta bancária em nome do IBEF para movimentação de recursos do projeto.',
     status: 'nao_iniciada',
     priority: 'alta',
     departmentId: 'administrativo_financeiro',
@@ -1072,7 +1072,7 @@ export const tasks: Task[] = [
     phaseId: 'phase-0',
     dependencies: ['task-jur-03'],
     notes:
-      'Depende do CNPJ atualizado. Priorizar banco com experiencia em contas de organizacoes do terceiro setor.',
+      'Depende do CNPJ atualizado. Priorizar banco com experiência em contas de organizações do terceiro setor.',
     progress: 0,
     tags: ['banco', 'conta', 'financeiro'],
     subtasks: [],
@@ -1089,7 +1089,7 @@ export const companies: AssociateCompany[] = [
     name: 'Jinso',
     type: 'tech',
     description:
-      'Parceiro tecnologico para desenvolvimento de plataformas digitais e solucoes de engenharia de software.',
+      'Parceiro tecnológico para desenvolvimento de plataformas digitais e soluções de engenharia de software.',
     contactPerson: null,
     website: null,
     departmentIds: ['tecnologia'],
@@ -1099,7 +1099,7 @@ export const companies: AssociateCompany[] = [
     name: 'Sprix',
     type: 'tech',
     description:
-      'Parceiro tecnologico com expertise em solucoes educacionais e tecnologias de aprendizagem.',
+      'Parceiro tecnológico com expertise em soluções educacionais e tecnologias de aprendizagem.',
     contactPerson: null,
     website: null,
     departmentIds: ['tecnologia'],
@@ -1109,7 +1109,7 @@ export const companies: AssociateCompany[] = [
     name: 'MadeinWEB',
     type: 'tech',
     description:
-      'Parceiro tecnologico especializado em desenvolvimento web, aplicativos e solucoes digitais.',
+      'Parceiro tecnológico especializado em desenvolvimento web, aplicativos e soluções digitais.',
     contactPerson: null,
     website: null,
     departmentIds: ['tecnologia'],
@@ -1119,7 +1119,7 @@ export const companies: AssociateCompany[] = [
     name: 'Gestorial',
     type: 'administrative',
     description:
-      'Parceiro de servicos administrativos e contabeis. Responsavel pelo suporte contabil e fiscal do IBEF.',
+      'Parceiro de serviços administrativos e contábeis. Responsável pelo suporte contábil e fiscal do IBEF.',
     contactPerson: null,
     website: null,
     departmentIds: ['administrativo_financeiro'],
@@ -1135,7 +1135,7 @@ export const milestones: Milestone[] = [
     id: 'marco-01',
     title: 'Registro do Estatuto do IBEF',
     description:
-      'Registro formal do estatuto social do IBEF em cartorio. Prazo critico e inegociavel - sem este registro, a organizacao nao existe juridicamente.',
+      'Registro formal do estatuto social do IBEF em cartório. Prazo crítico e inegociável - sem este registro, a organização não existe juridicamente.',
     targetDate: '2026-03-18',
     status: 'em_andamento',
     phaseId: 'phase-0',
@@ -1144,9 +1144,9 @@ export const milestones: Milestone[] = [
   },
   {
     id: 'marco-02',
-    title: 'Primeira Assembleia de Fundacao',
+    title: 'Primeira Assembleia de Fundação',
     description:
-      'Assembleia geral de fundacao do IBEF com todos os fundadores. Formaliza a criacao da organizacao, elege a diretoria e aprova o plano de trabalho.',
+      'Assembleia geral de fundação do IBEF com todos os fundadores. Formaliza a criação da organização, elege a diretoria e aprova o plano de trabalho.',
     targetDate: '2026-04-05',
     status: 'pendente',
     phaseId: 'phase-0',
@@ -1157,7 +1157,7 @@ export const milestones: Milestone[] = [
     id: 'marco-03',
     title: 'CNPJ Ativo e Regular',
     description:
-      'CNPJ do IBEF atualizado e regular na Receita Federal, habilitando a organizacao para operacoes financeiras e contratos.',
+      'CNPJ do IBEF atualizado e regular na Receita Federal, habilitando a organização para operações financeiras e contratos.',
     targetDate: '2026-04-10',
     status: 'pendente',
     phaseId: 'phase-0',
@@ -1168,7 +1168,7 @@ export const milestones: Milestone[] = [
     id: 'marco-04',
     title: 'Assinatura do Contrato ETEC',
     description:
-      'Assinatura formal do contrato de Encomenda Tecnologica entre o Estado de Santa Catarina e o IBEF / consorcio ICT.',
+      'Assinatura formal do contrato de Encomenda Tecnológica entre o Estado de Santa Catarina e o IBEF / consórcio ICT.',
     targetDate: '2026-07-15',
     status: 'pendente',
     phaseId: 'phase-0',
@@ -1177,9 +1177,9 @@ export const milestones: Milestone[] = [
   },
   {
     id: 'marco-05',
-    title: 'Inicio da PoC',
+    title: 'Início da PoC',
     description:
-      'Inicio oficial do desenvolvimento da Prova de Conceito com primeiros sprints de desenvolvimento e equipe completa.',
+      'Início oficial do desenvolvimento da Prova de Conceito com primeiros sprints de desenvolvimento e equipe completa.',
     targetDate: '2026-06-01',
     status: 'pendente',
     phaseId: 'phase-1',
@@ -1190,7 +1190,7 @@ export const milestones: Milestone[] = [
     id: 'marco-06',
     title: 'PoC Entregue e Validada',
     description:
-      'Prova de Conceito concluida, testada com escolas selecionadas e validada pelos stakeholders (SED/SC, professores, gestores).',
+      'Prova de Conceito concluída, testada com escolas selecionadas e validada pelos stakeholders (SED/SC, professores, gestores).',
     targetDate: '2026-09-30',
     status: 'pendente',
     phaseId: 'phase-1',
@@ -1199,9 +1199,9 @@ export const milestones: Milestone[] = [
   },
   {
     id: 'marco-07',
-    title: 'Inicio do Piloto Controlado',
+    title: 'Início do Piloto Controlado',
     description:
-      'Lancamento do piloto controlado em escolas selecionadas de SC com plataforma funcional e equipe de campo operante.',
+      'Lançamento do piloto controlado em escolas selecionadas de SC com plataforma funcional e equipe de campo operante.',
     targetDate: '2026-10-01',
     status: 'pendente',
     phaseId: 'phase-2',
@@ -1210,9 +1210,9 @@ export const milestones: Milestone[] = [
   },
   {
     id: 'marco-08',
-    title: 'Relatorio de Impacto do Piloto',
+    title: 'Relatório de Impacto do Piloto',
     description:
-      'Publicacao do relatorio de impacto pedagogico do piloto controlado com dados quantitativos e qualitativos.',
+      'Publicação do relatório de impacto pedagógico do piloto controlado com dados quantitativos e qualitativos.',
     targetDate: '2027-05-31',
     status: 'pendente',
     phaseId: 'phase-2',
@@ -1221,9 +1221,9 @@ export const milestones: Milestone[] = [
   },
   {
     id: 'marco-09',
-    title: 'Transferencia de Tecnologia Concluida',
+    title: 'Transferência de Tecnologia Concluída',
     description:
-      'Conclusao da transferencia de tecnologia para SED/SC com documentacao completa e equipe do estado capacitada.',
+      'Conclusão da transferência de tecnologia para SED/SC com documentação completa e equipe do estado capacitada.',
     targetDate: '2028-03-31',
     status: 'pendente',
     phaseId: 'phase-3',
@@ -1239,27 +1239,29 @@ export const milestones: Milestone[] = [
 export const hiring: HiringPosition[] = [
   {
     id: 'vaga-01',
-    title: 'Gerente Pedagogico',
+    title: 'Gerente Pedagógico',
     departmentId: 'pedagogico',
     description:
-      'Lider da area pedagogica responsavel pelo alinhamento curricular BNCC, design instrucional, formacao de professores e avaliacao de impacto. Experiencia em educacao publica e tecnologia educacional.',
+      'Líder da área pedagógica responsável pelo alinhamento curricular BNCC, design instrucional, formação de professores e avaliação de impacto. Experiência em educação pública e tecnologia educacional.',
     status: 'aberta',
     priority: 'critica',
     openedAt: '2026-03-10',
     filledAt: null,
     filledBy: null,
+    deadlineDate: '2026-04-30',
   },
   {
     id: 'vaga-02',
-    title: 'Desenvolvedor(a) Full-Stack Senior',
+    title: 'Desenvolvedor(a) Full-Stack Sênior',
     departmentId: 'tecnologia',
     description:
-      'Desenvolvedor(a) senior para a plataforma educacional. Stack: TypeScript, React/Next.js, Node.js, PostgreSQL. Experiencia com microsservicos e APIs RESTful.',
+      'Desenvolvedor(a) sênior para a plataforma educacional. Stack: TypeScript, React/Next.js, Node.js, PostgreSQL. Experiência com microsserviços e APIs RESTful.',
     status: 'aberta',
     priority: 'alta',
     openedAt: '2026-03-10',
     filledAt: null,
     filledBy: null,
+    deadlineDate: '2026-05-15',
   },
   {
     id: 'vaga-03',
@@ -1272,42 +1274,46 @@ export const hiring: HiringPosition[] = [
     openedAt: '2026-03-10',
     filledAt: null,
     filledBy: null,
+    deadlineDate: '2026-05-31',
   },
   {
     id: 'vaga-04',
     title: 'Cientista de Dados / ML Engineer',
     departmentId: 'tecnologia',
     description:
-      'Profissional para desenvolver modelos de IA para personalizacao de aprendizagem. Experiencia com Python, TensorFlow/PyTorch, NLP e dados educacionais.',
+      'Profissional para desenvolver modelos de IA para personalização de aprendizagem. Experiência com Python, TensorFlow/PyTorch, NLP e dados educacionais.',
     status: 'aberta',
     priority: 'media',
     openedAt: '2026-03-10',
     filledAt: null,
     filledBy: null,
+    deadlineDate: '2026-06-30',
   },
   {
     id: 'vaga-05',
     title: 'Coordenador(a) de Campo - SC',
     departmentId: 'operacoes_locais',
     description:
-      'Coordenador(a) baseado(a) em Florianopolis para gestao da equipe de campo, relacao com escolas e logistica de implantacao.',
+      'Coordenador(a) baseado(a) em Florianópolis para gestão da equipe de campo, relação com escolas e logística de implantação.',
     status: 'aberta',
     priority: 'media',
     openedAt: '2026-03-10',
     filledAt: null,
     filledBy: null,
+    deadlineDate: '2026-06-15',
   },
   {
     id: 'vaga-06',
     title: 'Analista de Dados Educacionais',
     departmentId: 'tecnologia',
     description:
-      'Analista para processar e interpretar dados educacionais, criar dashboards e relatorios de acompanhamento para gestores e professores.',
+      'Analista para processar e interpretar dados educacionais, criar dashboards e relatórios de acompanhamento para gestores e professores.',
     status: 'aberta',
     priority: 'media',
     openedAt: '2026-03-10',
     filledAt: null,
     filledBy: null,
+    deadlineDate: '2026-07-15',
   },
 ];
 
@@ -1322,7 +1328,7 @@ export const countdowns: CountdownTarget[] = [
     targetDate: '2026-03-18',
     isCritical: true,
     context:
-      'Prazo CRITICO - Quarta-feira. Sem registro, IBEF nao existe juridicamente. Bloqueia todas as demais acoes.',
+      'Prazo CRÍTICO - Quarta-feira. Sem registro, IBEF não existe juridicamente. Bloqueia todas as demais ações.',
   },
   {
     id: 'countdown-assembleia',
@@ -1330,7 +1336,7 @@ export const countdowns: CountdownTarget[] = [
     targetDate: '2026-04-05',
     isCritical: true,
     context:
-      'Assembleia de fundacao com todos os 7 fundadores. Depende do registro do estatuto.',
+      'Assembleia de fundação com todos os 7 fundadores. Depende do registro do estatuto.',
   },
   {
     id: 'countdown-cnpj',
@@ -1338,7 +1344,7 @@ export const countdowns: CountdownTarget[] = [
     targetDate: '2026-04-10',
     isCritical: true,
     context:
-      'CNPJ atualizado para operacoes financeiras, contratos e conta bancaria.',
+      'CNPJ atualizado para operações financeiras, contratos e conta bancária.',
   },
   {
     id: 'countdown-contrato-etec',
@@ -1346,15 +1352,15 @@ export const countdowns: CountdownTarget[] = [
     targetDate: '2026-07-15',
     isCritical: true,
     context:
-      'Assinatura do contrato de Encomenda Tecnologica com o Estado de SC. Marco formal do projeto.',
+      'Assinatura do contrato de Encomenda Tecnológica com o Estado de SC. Marco formal do projeto.',
   },
   {
     id: 'countdown-poc-inicio',
-    label: 'Inicio da PoC',
+    label: 'Início da PoC',
     targetDate: '2026-06-01',
     isCritical: false,
     context:
-      'Inicio do desenvolvimento da Prova de Conceito com equipe tecnica completa.',
+      'Início do desenvolvimento da Prova de Conceito com equipe técnica completa.',
   },
   {
     id: 'countdown-poc-entrega',
@@ -1362,15 +1368,15 @@ export const countdowns: CountdownTarget[] = [
     targetDate: '2026-09-30',
     isCritical: true,
     context:
-      'PoC concluida e validada. Decisao go/no-go para o piloto controlado.',
+      'PoC concluída e validada. Decisão go/no-go para o piloto controlado.',
   },
   {
     id: 'countdown-piloto',
-    label: 'Inicio do Piloto Controlado',
+    label: 'Início do Piloto Controlado',
     targetDate: '2026-10-01',
     isCritical: true,
     context:
-      'Lancamento do piloto em escolas selecionadas de SC.',
+      'Lançamento do piloto em escolas selecionadas de SC.',
   },
 ];
 

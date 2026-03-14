@@ -10,8 +10,12 @@ import {
   ArrowUpCircle,
   ArrowRightCircle,
   ArrowDownCircle,
+  Clock,
+  CheckCircle2,
+  Users,
+  Timer,
 } from 'lucide-react';
-import { hiring, companies, departments } from '../../data/projectData';
+import { hiring, companies, departments, daysUntil } from '../../data/projectData';
 import type { HiringStatus, TaskPriority, DepartmentId } from '../../data/types';
 
 // ---------------------------------------------------------------------------
@@ -123,6 +127,64 @@ function formatDate(dateStr: string): string {
   });
 }
 
+/**
+ * Retorna as classes de cor de urgência baseadas nos dias restantes.
+ * Vermelho se < 7 dias, âmbar se < 14 dias, verde caso contrário.
+ */
+function getUrgencyClasses(days: number): { text: string; bg: string; dot: string } {
+  if (days < 7) {
+    return { text: 'text-red-400', bg: 'bg-red-500/15', dot: 'bg-red-400' };
+  }
+  if (days < 14) {
+    return { text: 'text-amber-400', bg: 'bg-amber-500/15', dot: 'bg-amber-400' };
+  }
+  return { text: 'text-emerald-400', bg: 'bg-emerald-500/15', dot: 'bg-emerald-400' };
+}
+
+// ---------------------------------------------------------------------------
+// Estatísticas resumidas
+// ---------------------------------------------------------------------------
+
+const totalVagas = hiring.length;
+const vagasAbertas = hiring.filter((p) => p.status === 'aberta').length;
+const vagasPreenchidas = hiring.filter((p) => p.status === 'contratado').length;
+const vagasUrgentes = hiring.filter((p) => {
+  if (!p.deadlineDate) return false;
+  const days = daysUntil(p.deadlineDate);
+  return days >= 0 && days < 30;
+}).length;
+
+const summaryCards = [
+  {
+    label: 'Total de Vagas',
+    value: totalVagas,
+    icon: Users,
+    color: 'text-[#00B4D8]',
+    bg: 'bg-[#00B4D8]/15',
+  },
+  {
+    label: 'Vagas Abertas',
+    value: vagasAbertas,
+    icon: Briefcase,
+    color: 'text-emerald-400',
+    bg: 'bg-emerald-500/15',
+  },
+  {
+    label: 'Vagas Urgentes',
+    value: vagasUrgentes,
+    icon: Timer,
+    color: 'text-amber-400',
+    bg: 'bg-amber-500/15',
+  },
+  {
+    label: 'Vagas Preenchidas',
+    value: vagasPreenchidas,
+    icon: CheckCircle2,
+    color: 'text-teal-400',
+    bg: 'bg-teal-500/15',
+  },
+];
+
 // ---------------------------------------------------------------------------
 // Variantes de animação
 // ---------------------------------------------------------------------------
@@ -168,14 +230,55 @@ export default function ContratacoesPage() {
               Contratações e Associados
             </h1>
             <p className="text-sm text-white/50">
-              Vagas abertas e empresas parceiras do IBEF
+              Vagas abertas, prazos de contratação e empresas parceiras do IBEF
             </p>
           </div>
         </div>
       </motion.div>
 
       {/* =================================================================
-          SEÇÃO 1: Vagas Abertas
+          SEÇÃO 0: Resumo Estatístico
+          ================================================================= */}
+      <motion.section
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <motion.div
+          variants={containerVariants}
+          className="grid grid-cols-2 md:grid-cols-4 gap-4"
+        >
+          {summaryCards.map((card) => {
+            const Icon = card.icon;
+            return (
+              <motion.div
+                key={card.label}
+                variants={itemVariants}
+                className="rounded-xl bg-[#0A2463]/60 border border-white/5 p-4 sm:p-5"
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`w-9 h-9 rounded-lg ${card.bg} flex items-center justify-center`}
+                  >
+                    <Icon size={18} className={card.color} />
+                  </div>
+                  <div>
+                    <p className="text-[11px] text-white/40 font-medium">
+                      {card.label}
+                    </p>
+                    <p className={`text-xl font-bold ${card.color}`}>
+                      {card.value}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </motion.div>
+      </motion.section>
+
+      {/* =================================================================
+          SEÇÃO 1: Vagas e Prazos de Contratação
           ================================================================= */}
       <motion.section
         variants={containerVariants}
@@ -186,7 +289,7 @@ export default function ContratacoesPage() {
           <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
             <Briefcase size={16} className="text-[#00E5A0]" />
           </div>
-          <h2 className="text-lg font-bold text-white">Vagas Abertas</h2>
+          <h2 className="text-lg font-bold text-white">Vagas e Prazos de Contratação</h2>
           <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-white/40">
             {hiring.length}
           </span>
@@ -203,6 +306,10 @@ export default function ContratacoesPage() {
             const deptColor = getDepartmentColor(position.departmentId);
             const deptName = getDepartmentName(position.departmentId);
 
+            const hasDeadline = !!position.deadlineDate;
+            const deadlineDays = hasDeadline ? daysUntil(position.deadlineDate!) : null;
+            const urgency = deadlineDays !== null ? getUrgencyClasses(deadlineDays) : null;
+
             return (
               <motion.div
                 key={position.id}
@@ -210,7 +317,7 @@ export default function ContratacoesPage() {
                 whileHover={{ y: -3, transition: { duration: 0.2 } }}
                 className="relative rounded-xl overflow-hidden bg-[#0A2463]/60 border border-white/5 hover:border-white/10 hover:shadow-lg transition-all duration-200"
               >
-                {/* Barra de acento superior */}
+                {/* Barra de acento superior com cor do departamento */}
                 <div className="h-1" style={{ backgroundColor: deptColor }} />
 
                 <div className="p-4 sm:p-5 space-y-3">
@@ -250,12 +357,46 @@ export default function ContratacoesPage() {
                     {position.description}
                   </p>
 
-                  {/* Data de abertura */}
-                  <div className="flex items-center gap-1.5 pt-2 border-t border-white/5">
-                    <CalendarDays size={12} className="text-white/25" />
-                    <span className="text-[10px] text-white/35">
-                      Aberta em {formatDate(position.openedAt)}
-                    </span>
+                  {/* Prazo para Contratar e Contagem Regressiva */}
+                  <div className="pt-2 border-t border-white/5 space-y-2">
+                    {/* Data de abertura */}
+                    <div className="flex items-center gap-1.5">
+                      <CalendarDays size={12} className="text-white/25" />
+                      <span className="text-[10px] text-white/35">
+                        Aberta em {formatDate(position.openedAt)}
+                      </span>
+                    </div>
+
+                    {/* Prazo para contratar */}
+                    <div className="flex items-center gap-1.5">
+                      <Clock size={12} className={hasDeadline && urgency ? urgency.text : 'text-white/25'} />
+                      {hasDeadline ? (
+                        <span className="text-[10px] text-white/50">
+                          Prazo para Contratar:{' '}
+                          <span className="font-semibold text-white/70">
+                            {formatDate(position.deadlineDate!)}
+                          </span>
+                        </span>
+                      ) : (
+                        <span className="text-[10px] text-white/30 italic">
+                          Sem prazo definido
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Contagem regressiva com indicador de urgência */}
+                    {hasDeadline && deadlineDays !== null && urgency && (
+                      <div
+                        className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-lg text-[10px] font-semibold ${urgency.bg} ${urgency.text}`}
+                      >
+                        <span className={`w-1.5 h-1.5 rounded-full ${urgency.dot}`} />
+                        {deadlineDays > 0
+                          ? `${deadlineDays} dia${deadlineDays !== 1 ? 's' : ''} restante${deadlineDays !== 1 ? 's' : ''}`
+                          : deadlineDays === 0
+                            ? 'Prazo vence hoje!'
+                            : `Atrasado por ${Math.abs(deadlineDays)} dia${Math.abs(deadlineDays) !== 1 ? 's' : ''}`}
+                      </div>
+                    )}
                   </div>
                 </div>
               </motion.div>

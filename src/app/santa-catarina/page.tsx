@@ -30,7 +30,7 @@ import CountdownCard from '../../components/CountdownCard';
 const etecSteps = [
   {
     number: 1,
-    title: 'Planejamento e Diagnóstico',
+    title: 'Planejamento e Diagn\u00f3stico',
     description:
       'Documento que justifica a necessidade da ETEC conforme diretrizes do TCU e Guia InovaGovSC.',
     icon: FileText,
@@ -38,25 +38,25 @@ const etecSteps = [
   },
   {
     number: 2,
-    title: 'ETP (Estudo Técnico Preliminar)',
+    title: 'ETP (Estudo T\u00e9cnico Preliminar)',
     description:
-      'Detalhamento da viabilidade técnica e econômica da Encomenda Tecnológica.',
+      'Detalhamento da viabilidade t\u00e9cnica e econ\u00f4mica da Encomenda Tecnol\u00f3gica.',
     icon: Search,
     taskId: 'task-sc-02',
   },
   {
     number: 3,
-    title: 'Portaria da Comissão ETEC',
+    title: 'Portaria da Comiss\u00e3o ETEC',
     description:
-      'Publicação de Portaria oficial criando a comissão responsável pela condução do processo.',
+      'Publica\u00e7\u00e3o de Portaria oficial criando a comiss\u00e3o respons\u00e1vel pela condu\u00e7\u00e3o do processo.',
     icon: Gavel,
     taskId: 'task-sc-03',
   },
   {
     number: 4,
-    title: 'Termo de Referência',
+    title: 'Termo de Refer\u00eancia',
     description:
-      'Especificações técnicas, critérios de seleção da ICT e métricas de avaliação.',
+      'Especifica\u00e7\u00f5es t\u00e9cnicas, crit\u00e9rios de sele\u00e7\u00e3o da ICT e m\u00e9tricas de avalia\u00e7\u00e3o.',
     icon: PenTool,
     taskId: 'task-sc-04',
   },
@@ -64,15 +64,15 @@ const etecSteps = [
     number: 5,
     title: 'Parecer PGE/SC',
     description:
-      'Submissão à Procuradoria Geral do Estado para parecer jurídico de conformidade.',
+      'Submiss\u00e3o \u00e0 Procuradoria Geral do Estado para parecer jur\u00eddico de conformidade.',
     icon: Scale,
     taskId: 'task-sc-05',
   },
   {
     number: 6,
-    title: 'Chamamento/Seleção ICT',
+    title: 'Chamamento/Sele\u00e7\u00e3o ICT',
     description:
-      'Publicação do edital de chamamento público para seleção da Instituição Científica e Tecnológica.',
+      'Publica\u00e7\u00e3o do edital de chamamento p\u00fablico para sele\u00e7\u00e3o da Institui\u00e7\u00e3o Cient\u00edfica e Tecnol\u00f3gica.',
     icon: Handshake,
     taskId: 'task-sc-06',
   },
@@ -112,9 +112,9 @@ function statusLabel(status: string): string {
     case 'em_andamento':
       return 'Em Andamento';
     case 'concluida':
-      return 'Concluída';
+      return 'Conclu\u00edda';
     case 'nao_iniciada':
-      return 'Não Iniciada';
+      return 'N\u00e3o Iniciada';
     default:
       return status;
   }
@@ -208,8 +208,8 @@ export default function SantaCatarinaPage() {
               Santa Catarina (SED/SC)
             </h1>
             <p className="text-sm text-white/50 mt-0.5">
-              Acompanhamento das ações da Secretaria de Educação de SC para
-              viabilizar a Encomenda Tecnológica
+              Acompanhamento das a\u00e7\u00f5es da Secretaria de Educa\u00e7\u00e3o de SC para
+              viabilizar a Encomenda Tecnol\u00f3gica
             </p>
           </div>
         </div>
@@ -223,7 +223,7 @@ export default function SantaCatarinaPage() {
         className="rounded-2xl bg-gradient-to-br from-[#0A2463] to-[#8B5CF6]/20 border border-white/5 p-5 sm:p-6"
       >
         <h2 className="text-sm font-semibold text-white/70 uppercase tracking-wider mb-4">
-          Visão Geral do Progresso
+          Vis\u00e3o Geral do Progresso
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {/* Total */}
@@ -236,7 +236,7 @@ export default function SantaCatarinaPage() {
             <p className="text-2xl font-bold text-[#00E5A0]">
               {stats.completed}
             </p>
-            <p className="text-[11px] text-white/40 mt-1">Concluídas</p>
+            <p className="text-[11px] text-white/40 mt-1">Conclu\u00eddas</p>
           </div>
           {/* In Progress */}
           <div className="bg-[#00B4D8]/10 rounded-xl p-4 text-center">
@@ -250,7 +250,7 @@ export default function SantaCatarinaPage() {
             <p className="text-2xl font-bold text-[#8B5CF6]">
               {stats.percentage}%
             </p>
-            <p className="text-[11px] text-white/40 mt-1">Progresso Médio</p>
+            <p className="text-[11px] text-white/40 mt-1">Progresso M\u00e9dio</p>
           </div>
         </div>
 
@@ -464,6 +464,7 @@ export default function SantaCatarinaPage() {
               <TaskCard
                 task={task}
                 people={peopleMap}
+                onEdit={(taskId) => setEditingTaskId(taskId)}
               />
             </motion.div>
           ))}

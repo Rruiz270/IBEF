@@ -1,7 +1,7 @@
 // =============================================================================
 // IBEF Project Control - Type Definitions
-// Instituto Brasileiro pela Educacao do Futuro
-// Encomenda Tecnologica (ETEC) - Santa Catarina
+// Instituto Brasileiro pela Educação do Futuro
+// Encomenda Tecnológica (ETEC) - Santa Catarina
 // =============================================================================
 
 // ---------------------------------------------------------------------------
@@ -32,7 +32,8 @@ export type PersonRole =
   | 'fundador'       // Founding member (will attend first assembleia)
   | 'convidado'      // Invited to advisory/executive board
   | 'contratacao'    // Hiring target
-  | 'parceiro';      // Associate / partner company representative
+  | 'parceiro'       // Associate / partner company representative
+  | 'lider';         // Project leader
 
 export type DepartmentId =
   | 'juridico'
@@ -195,6 +196,8 @@ export interface HiringPosition {
   filledAt: string | null;
   /** Candidate name if filled */
   filledBy: string | null;
+  /** ISO date string - deadline for filling this position */
+  deadlineDate?: string;
 }
 
 // ---------------------------------------------------------------------------

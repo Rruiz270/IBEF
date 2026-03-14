@@ -25,13 +25,13 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { label: 'Dashboard', href: '/', icon: LayoutDashboard },
+  { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { label: 'Cronograma Master', href: '/timeline', icon: GitMerge },
   { label: 'Atividades', href: '/workstreams', icon: ListChecks },
   { label: 'Organograma', href: '/organograma', icon: Network },
-  { label: 'Contratações & Hiring', href: '/contratacoes', icon: UserPlus },
+  { label: 'Contrata\u00e7\u00f5es & Hiring', href: '/contratacoes', icon: UserPlus },
   { label: 'Santa Catarina', href: '/santa-catarina', icon: MapPin },
-  { label: 'Jurídico', href: '/juridico', icon: Scale },
+  { label: 'Jur\u00eddico', href: '/juridico', icon: Scale },
   { label: 'Associados', href: '/associados', icon: Users },
 ];
 
@@ -96,7 +96,7 @@ export default function Sidebar() {
   const closeMobile = useCallback(() => setMobileOpen(false), []);
 
   const isActive = (href: string) => {
-    if (href === '/') return pathname === '/';
+    if (href === '/dashboard') return pathname === '/dashboard';
     return pathname.startsWith(href);
   };
 
@@ -236,7 +236,7 @@ export default function Sidebar() {
           >
             <p className="text-[10px] text-white/30 leading-relaxed">
               IBEF &mdash; Instituto Brasileiro<br />
-              pela Educação do Futuro
+              pela Educa\u00e7\u00e3o do Futuro
             </p>
           </motion.div>
         )}

@@ -15,6 +15,12 @@ const roleConfig: Record<
   PersonRole,
   { label: string; color: string; bg: string; border: string }
 > = {
+  lider: {
+    label: 'Lider',
+    color: 'text-amber-400',
+    bg: 'bg-amber-500/15',
+    border: 'border-amber-500/30',
+  },
   fundador: {
     label: 'Fundador',
     color: 'text-[#00B4D8]',
@@ -28,10 +34,10 @@ const roleConfig: Record<
     border: 'border-purple-500/30',
   },
   contratacao: {
-    label: 'Contratação',
-    color: 'text-amber-400',
-    bg: 'bg-amber-500/15',
-    border: 'border-amber-500/30',
+    label: 'Contratacao',
+    color: 'text-cyan-400',
+    bg: 'bg-cyan-500/15',
+    border: 'border-cyan-500/30',
   },
   parceiro: {
     label: 'Parceiro',
@@ -52,12 +58,12 @@ const departmentColorMap: Record<DepartmentId, string> = {
 };
 
 const departmentLabelMap: Record<DepartmentId, string> = {
-  juridico: 'Jurídico',
+  juridico: 'Juridico',
   tecnologia: 'Tecnologia',
-  relacoes_publicas: 'Relações Públicas',
-  operacoes_locais: 'Operações',
+  relacoes_publicas: 'Relacoes Publicas',
+  operacoes_locais: 'Operacoes',
   santa_catarina: 'Santa Catarina',
-  pedagogico: 'Pedagógico',
+  pedagogico: 'Pedagogico',
   administrativo_financeiro: 'Admin/Financeiro',
 };
 
@@ -84,10 +90,12 @@ function getInitials(name: string): string {
 /** Determine visual status from the PersonRole */
 function getStatusDot(role: PersonRole): string {
   switch (role) {
+    case 'lider':
+      return 'bg-amber-400'; // leader gold
     case 'fundador':
       return 'bg-[#00E5A0]'; // active green
     case 'convidado':
-      return 'bg-amber-400'; // pending invite
+      return 'bg-purple-400'; // pending invite
     case 'contratacao':
       return 'bg-[#00B4D8]'; // hiring blue
     case 'parceiro':
@@ -99,6 +107,8 @@ function getStatusDot(role: PersonRole): string {
 
 function getStatusLabel(role: PersonRole): string {
   switch (role) {
+    case 'lider':
+      return 'Ativo';
     case 'fundador':
       return 'Ativo';
     case 'convidado':
@@ -202,9 +212,9 @@ export default function PersonCard({
             <div
               className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-[#0A2463] ${statusDot}`}
             >
-              {person.role === 'fundador' && (
+              {(person.role === 'fundador' || person.role === 'lider') && (
                 <motion.div
-                  className="absolute inset-0 rounded-full bg-[#00E5A0]"
+                  className={`absolute inset-0 rounded-full ${person.role === 'lider' ? 'bg-amber-400' : 'bg-[#00E5A0]'}`}
                   animate={{ opacity: [1, 0.4, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 />

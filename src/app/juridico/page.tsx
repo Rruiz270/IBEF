@@ -85,10 +85,10 @@ export default function JuridicoPage() {
           </div>
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-white">
-              Jurídico
+              Jur\u00eddico
             </h1>
             <p className="text-sm text-white/50 mt-0.5">
-              Assessoria jurídica, contratos e conformidade regulatória
+              Assessoria jur\u00eddica, contratos e conformidade regulat\u00f3ria
             </p>
           </div>
         </div>
@@ -111,13 +111,13 @@ export default function JuridicoPage() {
             <div className="flex items-center gap-2 mb-3">
               <FileWarning size={16} className="text-red-400" />
               <h2 className="text-sm font-bold text-red-400 uppercase tracking-wider">
-                Prazo Crítico Iminente
+                Prazo Cr\u00edtico Iminente
               </h2>
             </div>
             <CountdownCard
               targetDate="2026-03-18"
               title="Registro do Estatuto do IBEF"
-              subtitle="Prazo CRÍTICO - Quarta-feira 18/03/2026. Sem registro, o IBEF não existe juridicamente. Bloqueia todas as demais ações."
+              subtitle="Prazo CR\u00cdTICO - Quarta-feira 18/03/2026. Sem registro, o IBEF n\u00e3o existe juridicamente. Bloqueia todas as demais a\u00e7\u00f5es."
               urgency="critical"
               totalDays={18}
             />
@@ -132,7 +132,7 @@ export default function JuridicoPage() {
         transition={{ delay: 0.2, duration: 0.5 }}
       >
         <h2 className="text-sm font-semibold text-white/70 uppercase tracking-wider mb-4">
-          Liderança do Departamento
+          Lideran\u00e7a do Departamento
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {leads.map((lead, idx) => (
@@ -194,7 +194,7 @@ export default function JuridicoPage() {
                       t.assigneeIds.includes(lead.id),
                     ).length
                   }{' '}
-                  tarefa(s) atribuída(s)
+                  tarefa(s) atribu\u00edda(s)
                 </span>
               </div>
             </motion.div>
@@ -210,7 +210,7 @@ export default function JuridicoPage() {
           transition={{ delay: 0.3, duration: 0.5 }}
         >
           <h2 className="text-sm font-semibold text-white/70 uppercase tracking-wider mb-4">
-            Marcos Jurídicos
+            Marcos Jur\u00eddicos
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {juridicoMilestones.map((milestone) => (
@@ -240,7 +240,7 @@ export default function JuridicoPage() {
       >
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-sm font-semibold text-white/70 uppercase tracking-wider">
-            Todas as Tarefas do Jurídico
+            Todas as Tarefas do Jur\u00eddico
           </h2>
           <span className="text-xs text-white/30">
             {juridicoTasks.length} tarefa(s)
@@ -257,6 +257,7 @@ export default function JuridicoPage() {
               <TaskCard
                 task={task}
                 people={peopleMap}
+                onEdit={(taskId) => setEditingTaskId(taskId)}
               />
             </motion.div>
           ))}

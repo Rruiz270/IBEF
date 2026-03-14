@@ -14,6 +14,7 @@ import {
   Flame,
   XCircle,
   PlayCircle,
+  Pencil,
 } from 'lucide-react';
 import { format, parseISO, isPast, differenceInDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -24,6 +25,8 @@ interface TaskCardProps {
   /** Optional map of person IDs to Person objects for displaying assignee names */
   people?: Record<string, Person>;
   onStatusChange?: (taskId: string, status: TaskStatus) => void;
+  /** Called when the user wants to edit this task (opens modal) */
+  onEdit?: (taskId: string) => void;
 }
 
 const statusConfig: Record<
@@ -114,6 +117,7 @@ export default function TaskCard({
   task,
   people,
   onStatusChange,
+  onEdit,
 }: TaskCardProps) {
   const [expanded, setExpanded] = useState(false);
   const status = statusConfig[task.status];
@@ -186,13 +190,34 @@ export default function TaskCard({
               >
                 {task.title}
               </h4>
-              <motion.div
-                animate={{ rotate: expanded ? 180 : 0 }}
-                transition={{ duration: 0.2 }}
-                className="shrink-0 mt-0.5"
-              >
-                <ChevronDown size={14} className="text-white/30" />
-              </motion.div>
+              <div className="flex items-center gap-1 shrink-0 mt-0.5">
+                {onEdit && (
+                  <span
+                    role="button"
+                    tabIndex={0}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEdit(task.id);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.stopPropagation();
+                        onEdit(task.id);
+                      }
+                    }}
+                    className="p-1 rounded-md hover:bg-white/10 transition-colors cursor-pointer"
+                    title="Editar tarefa"
+                  >
+                    <Pencil size={12} className="text-white/40 hover:text-white/70" />
+                  </span>
+                )}
+                <motion.div
+                  animate={{ rotate: expanded ? 180 : 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <ChevronDown size={14} className="text-white/30" />
+                </motion.div>
+              </div>
             </div>
 
             {/* Meta row */}
@@ -348,6 +373,22 @@ export default function TaskCard({
                       </span>
                     ))}
                   </div>
+                </div>
+              )}
+
+              {/* Edit button */}
+              {onEdit && (
+                <div className="mb-3">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEdit(task.id);
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-[#00B4D8]/15 text-[#00B4D8] border border-[#00B4D8]/30 hover:bg-[#00B4D8]/25 transition-colors"
+                  >
+                    <Pencil size={12} />
+                    Editar Tarefa
+                  </button>
                 </div>
               )}
 
