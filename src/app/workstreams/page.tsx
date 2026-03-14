@@ -212,21 +212,19 @@ function WorkstreamTaskCard({ task, allTasks, onEdit }: { task: Task; allTasks: 
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
-      className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 hover:bg-white/[0.05] transition-colors"
+      onClick={() => onEdit?.(task.id)}
+      className={`bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 hover:bg-white/[0.05] transition-colors ${onEdit ? 'cursor-pointer' : ''}`}
     >
       {/* Row 1: Title + Status + Priority */}
       <div className="flex flex-wrap items-start justify-between gap-2 mb-3">
         <h4 className="text-sm font-semibold text-white flex-1 min-w-0">{task.title}</h4>
         <div className="flex items-center gap-2 shrink-0">
-          {/* Edit button */}
+          {/* Edit badge */}
           {onEdit && (
-            <button
-              onClick={() => onEdit(task.id)}
-              className="p-1 rounded-md hover:bg-white/10 transition-colors"
-              title="Editar tarefa"
-            >
-              <Pencil size={12} className="text-white/40 hover:text-white/70" />
-            </button>
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#00B4D8]/10 text-[#00B4D8] text-[10px] font-medium">
+              <Pencil size={10} />
+              Editar
+            </span>
           )}
           {/* Priority dots */}
           <div className="flex items-center gap-0.5" title={`Prioridade: ${priority.label}`}>

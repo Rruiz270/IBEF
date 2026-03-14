@@ -172,8 +172,14 @@ export default function TaskCard({
 
       {/* Main clickable area */}
       <button
-        onClick={() => setExpanded(!expanded)}
-        className="w-full text-left p-4 pl-5"
+        onClick={() => {
+          if (onEdit) {
+            onEdit(task.id);
+          } else {
+            setExpanded(!expanded);
+          }
+        }}
+        className={`w-full text-left p-4 pl-5 ${onEdit ? 'cursor-pointer' : ''}`}
       >
         <div className="flex items-start gap-3">
           <div className="flex-1 min-w-0">
@@ -190,33 +196,21 @@ export default function TaskCard({
               >
                 {task.title}
               </h4>
-              <div className="flex items-center gap-1 shrink-0 mt-0.5">
+              <div className="flex items-center gap-1.5 shrink-0 mt-0.5">
                 {onEdit && (
-                  <span
-                    role="button"
-                    tabIndex={0}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onEdit(task.id);
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.stopPropagation();
-                        onEdit(task.id);
-                      }
-                    }}
-                    className="p-1 rounded-md hover:bg-white/10 transition-colors cursor-pointer"
-                    title="Editar tarefa"
-                  >
-                    <Pencil size={12} className="text-white/40 hover:text-white/70" />
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#00B4D8]/10 text-[#00B4D8] text-[10px] font-medium">
+                    <Pencil size={10} />
+                    Editar
                   </span>
                 )}
-                <motion.div
-                  animate={{ rotate: expanded ? 180 : 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <ChevronDown size={14} className="text-white/30" />
-                </motion.div>
+                {!onEdit && (
+                  <motion.div
+                    animate={{ rotate: expanded ? 180 : 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <ChevronDown size={14} className="text-white/30" />
+                  </motion.div>
+                )}
               </div>
             </div>
 
