@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import Sidebar from "@/components/Sidebar";
+import LayoutShell from "@/components/LayoutShell";
 import "./globals.css";
 
 const inter = Inter({
@@ -24,15 +24,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} font-sans antialiased bg-[#030B1A] min-h-screen text-text-primary`}
       >
-        <div className="flex min-h-screen">
-          {/* Barra lateral de navegacao */}
-          <Sidebar />
-
-          {/* Conteudo principal com rolagem independente */}
-          <main className="flex-1 overflow-y-auto h-screen">
-            {children}
-          </main>
-        </div>
+        <LayoutShell>{children}</LayoutShell>
       </body>
     </html>
   );

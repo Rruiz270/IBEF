@@ -6,11 +6,13 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard,
+  ListChecks,
   Network,
   UserPlus,
   MapPin,
   Scale,
   Users,
+  GitMerge,
   Menu,
   X,
   ChevronLeft,
@@ -24,6 +26,8 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { label: 'Dashboard', href: '/', icon: LayoutDashboard },
+  { label: 'Cronograma Master', href: '/timeline', icon: GitMerge },
+  { label: 'Atividades', href: '/workstreams', icon: ListChecks },
   { label: 'Organograma', href: '/organograma', icon: Network },
   { label: 'Contratações & Hiring', href: '/contratacoes', icon: UserPlus },
   { label: 'Santa Catarina', href: '/santa-catarina', icon: MapPin },
