@@ -367,7 +367,7 @@ export default function OrgChart({ onPersonClick }: OrgChartProps) {
       {/* Title & Legend */}
       <div className="flex items-center justify-between mb-2">
         <h2 className="text-lg sm:text-xl font-bold text-white">
-          Organograma IBEF
+          Organograma i10
         </h2>
         <div className="flex items-center gap-3 text-[10px] text-white/30">
           <span className="flex items-center gap-1">

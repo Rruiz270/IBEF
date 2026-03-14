@@ -43,7 +43,7 @@ export default function OrganogramaPage() {
               Organograma
             </h1>
             <p className="text-sm text-white/50">
-              Estrutura organizacional do IBEF
+              Estrutura organizacional do Instituto i10
             </p>
           </div>
         </div>

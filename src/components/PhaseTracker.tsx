@@ -25,7 +25,7 @@ const defaultPhases: Phase[] = [
     number: 0,
     title: 'Alinhamento e Imersao',
     description:
-      'Definicao do escopo, alinhamento estrategico, levantamento de requisitos e imersao no contexto institucional do IBEF.',
+      'Definicao do escopo, alinhamento estrategico, levantamento de requisitos e imersao no contexto institucional do Instituto i10.',
     status: 'em_andamento',
     startDate: '2025-01-15',
     endDate: '2025-06-30',
@@ -79,7 +79,7 @@ const defaultPhases: Phase[] = [
     number: 3,
     title: 'Validacao e Transferencia',
     description:
-      'Validacao final, documentacao completa, treinamento e transferencia operacional para a equipe IBEF.',
+      'Validacao final, documentacao completa, treinamento e transferencia operacional para a equipe i10.',
     status: 'planejada',
     startDate: '2026-07-01',
     endDate: '2026-12-31',

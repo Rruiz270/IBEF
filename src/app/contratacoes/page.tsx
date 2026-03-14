@@ -230,7 +230,7 @@ export default function ContratacoesPage() {
               Contratações e Associados
             </h1>
             <p className="text-sm text-white/50">
-              Vagas abertas, prazos de contratação e empresas parceiras do IBEF
+              Vagas abertas, prazos de contratação e empresas parceiras do Instituto i10
             </p>
           </div>
         </div>

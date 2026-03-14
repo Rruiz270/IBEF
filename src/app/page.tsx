@@ -35,16 +35,24 @@ import {
 
 const valores = [
   {
-    title: 'Humanismo Tecnológico',
-    description: 'IA ética e sem vieses, colocando o ser humano no centro de cada solução.',
+    letter: 'E',
+    title: 'Excelência Científica',
+    description: 'Cada projeto, publicação e solução busca o padrão de excelência que transcende o ordinário. O impacto real do conhecimento.',
   },
   {
-    title: 'Maturidade Cívica',
-    description: 'Formação para autonomia e pensamento crítico dos estudantes e educadores.',
+    letter: 'M',
+    title: 'Impacto Mensurável',
+    description: 'Compromisso com resultados documentados, metodologias validadas e transparência algorítmica. Dados representam alunos.',
   },
   {
-    title: 'Transparência',
-    description: 'Decisões fundamentadas em dados abertos e auditáveis.',
+    letter: 'I',
+    title: 'Inovação com Propósito',
+    description: 'Tecnologia a serviço da educação pública. Cada decisão técnica serve a um objetivo pedagógico. IA é ferramenta, não fim.',
+  },
+  {
+    letter: 'C',
+    title: 'Colaboração Institucional',
+    description: 'Articulação entre setor público, acadêmico e privado, orquestrando competências complementares para transformação em escala.',
   },
 ];
 
@@ -282,14 +290,32 @@ export default function LandingPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.7 }}
           >
-            IBEF
+            i10
           </motion.h1>
+
+          <motion.p
+            className="mt-3 text-xl sm:text-2xl md:text-3xl text-[#0A2463]/80 font-semibold tracking-wide"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.45, duration: 0.6 }}
+          >
+            Instituto i10
+          </motion.p>
+
+          <motion.p
+            className="mt-2 text-base sm:text-lg md:text-xl text-[#00B4D8] font-medium tracking-widest"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5, duration: 0.6 }}
+          >
+            Educação · Tecnologia · Inovação
+          </motion.p>
 
           <motion.p
             className="mt-4 text-lg sm:text-xl md:text-2xl text-[#0A2463]/70 font-light tracking-wide"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.5, duration: 0.6 }}
+            transition={{ delay: 0.55, duration: 0.6 }}
           >
             Orquestrando o Futuro da Educação Pública
           </motion.p>
@@ -344,16 +370,18 @@ export default function LandingPage() {
               Quem Somos
             </h2>
             <p className="mt-8 text-[#64748B] text-base sm:text-lg leading-relaxed max-w-3xl mx-auto">
-              O IBEF é uma Instituição Científica, Tecnológica e de Inovação (ICT)
-              que atua na intersecção entre a pesquisa metodológica, o desenvolvimento
-              tecnológico e a efetividade das políticas públicas educacionais.
-              Nascemos da urgência em conectar o rigor da ciência, a agilidade da
-              inovação e o compromisso do setor público.
+              O Instituto i10 é uma Instituição Científica, Tecnológica e de Inovação (ICT)
+              Orquestradora, que atua na intersecção entre a pesquisa metodológica, o
+              desenvolvimento tecnológico e a efetividade das políticas públicas educacionais.
+              Como ICT Coordenadora e Orquestradora, articulamos competências do setor público,
+              acadêmico e privado para gerar transformação em escala.
             </p>
             <p className="mt-6 text-[#64748B] text-base sm:text-lg leading-relaxed max-w-3xl mx-auto">
-              Operamos projetos de risco tecnológico (Encomendas Tecnológicas) para
-              gerar soluções em escala que o mercado tradicional não consegue absorver.
-              Transformamos a complexidade dos dados em impacto humano mensurável e duradouro.
+              Transformar a educação pública brasileira através de pesquisa, desenvolvimento
+              e inovação em Inteligência Artificial, gerando impacto mensurável na qualidade
+              de ensino e na equidade de oportunidades. Operamos projetos de risco tecnológico
+              (Encomendas Tecnológicas) através do programa Educação do Futuro, nossa face
+              pública junto ao governo e à sociedade.
             </p>
           </motion.div>
         </div>
@@ -381,9 +409,9 @@ export default function LandingPage() {
               </div>
               <h3 className="text-xl font-bold text-[#0F172A] mb-3">Missão</h3>
               <p className="text-sm sm:text-base text-[#64748B] leading-relaxed">
-                Gerar impacto mensurável na qualidade da educação pública,
-                desenvolvendo pesquisa aplicada e soluções tecnológicas com foco
-                em aprendizagem, fluxo escolar e equidade.
+                Transformar a educação pública brasileira através de pesquisa,
+                desenvolvimento e inovação em Inteligência Artificial, gerando
+                impacto mensurável na qualidade de ensino e na equidade de oportunidades.
               </p>
             </motion.div>
 
@@ -409,11 +437,15 @@ export default function LandingPage() {
               <div className="w-12 h-12 rounded-xl bg-[#00E5A0]/10 flex items-center justify-center mb-5">
                 <Heart size={24} className="text-[#00E5A0]" />
               </div>
-              <h3 className="text-xl font-bold text-[#0F172A] mb-3">Valores</h3>
+              <h3 className="text-xl font-bold text-[#0F172A] mb-1">Valores</h3>
+              <p className="text-xs font-semibold text-[#00E5A0] tracking-wider mb-3">E · M · I · C</p>
               <ul className="space-y-3">
                 {valores.map((valor) => (
                   <li key={valor.title}>
-                    <span className="text-sm font-semibold text-[#0F172A]">{valor.title}</span>
+                    <span className="text-sm font-semibold text-[#0F172A]">
+                      <span className="text-[#00E5A0] font-bold mr-1">{valor.letter}</span>
+                      {valor.title}
+                    </span>
                     <p className="text-sm text-[#64748B] mt-0.5">{valor.description}</p>
                   </li>
                 ))}
@@ -661,7 +693,7 @@ export default function LandingPage() {
               Nossos Clientes
             </h2>
             <p className="mt-4 text-[#64748B] text-base sm:text-lg max-w-2xl mx-auto">
-              Governos e instituições que confiam no IBEF para transformar a educação.
+              Governos e instituições que confiam no Instituto i10 para transformar a educação.
             </p>
           </motion.div>
 
@@ -762,7 +794,7 @@ export default function LandingPage() {
               O Nosso Verdadeiro Legado
             </h2>
             <p className="text-[#64748B] text-base sm:text-lg leading-relaxed max-w-3xl mx-auto">
-              O IBEF não entrega apenas um artefato tecnológico — nós transferimos
+              O Instituto i10 não entrega apenas um artefato tecnológico — nós transferimos
               capacidade institucional permanente. Ao final de nossos ciclos de
               Encomenda Tecnológica, as redes de ensino alcançam autonomia plena para
               operar, analisar e evoluir seus sistemas.
@@ -788,7 +820,7 @@ export default function LandingPage() {
               </div>
             </div>
             <p className="mt-12 text-xl sm:text-2xl font-bold text-[#0A2463]">
-              IBEF — A Inteligência a Serviço do Humano.
+              Instituto i10 — A Inteligência a Serviço do Humano.
             </p>
           </motion.div>
         </div>
@@ -802,8 +834,8 @@ export default function LandingPage() {
               <GraduationCap size={22} className="text-white" />
             </div>
             <div className="text-left">
-              <p className="text-sm font-bold text-white">IBEF</p>
-              <p className="text-xs text-white/60">Orquestrando o Futuro da Educação Pública</p>
+              <p className="text-sm font-bold text-white">Instituto i10</p>
+              <p className="text-xs text-white/60">Educação · Tecnologia · Inovação</p>
             </div>
           </div>
 
@@ -815,9 +847,11 @@ export default function LandingPage() {
             <ArrowRight size={16} />
           </Link>
 
-          <p className="text-xs text-white/40 mt-4">
-            &copy; 2026 IBEF. Todos os direitos reservados.
-          </p>
+          <div className="text-xs text-white/40 mt-4 space-y-1">
+            <p>Sede: Florianópolis, SC — Brasil</p>
+            <p>CNPJ: 05.124.602/0001-74</p>
+            <p>&copy; 2026 Instituto i10. Todos os direitos reservados.</p>
+          </div>
         </div>
       </footer>
     </div>

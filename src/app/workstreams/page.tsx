@@ -27,11 +27,12 @@ import {
   ArrowUpDown,
   ListChecks,
   Pencil,
+  Plus,
 } from 'lucide-react';
 import { departments, people, milestones } from '../../data/projectData';
 import { useProject } from '../../contexts/ProjectContext';
 import TaskEditModal from '../../components/TaskEditModal';
-import type { Task, Department, Person } from '../../data/types';
+import type { Task, Department, DepartmentId, Person } from '../../data/types';
 
 // ---------------------------------------------------------------------------
 // Constants & Helpers
@@ -350,6 +351,7 @@ function WorkstreamItem({
   statusFilter,
   sortMode,
   onEditTask,
+  onAddTask,
 }: {
   dept: Department;
   deptTasks: Task[];
@@ -359,6 +361,7 @@ function WorkstreamItem({
   statusFilter: StatusFilter;
   sortMode: SortMode;
   onEditTask?: (taskId: string) => void;
+  onAddTask?: () => void;
 }) {
   const DeptIcon = ICON_MAP[dept.icon] || ListChecks;
 
@@ -531,6 +534,17 @@ function WorkstreamItem({
                   Nenhuma tarefa encontrada com os filtros selecionados.
                 </p>
               )}
+
+              {/* Add new task button */}
+              {onAddTask && (
+                <button
+                  onClick={onAddTask}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-dashed border-white/[0.12] text-white/40 text-sm font-medium hover:border-white/[0.25] hover:text-white/60 hover:bg-white/[0.03] transition-colors"
+                >
+                  <Plus size={16} />
+                  Nova Atividade
+                </button>
+              )}
             </div>
           </motion.div>
         )}
@@ -594,7 +608,7 @@ function SummaryBar({ tasks }: { tasks: Task[] }) {
 // ---------------------------------------------------------------------------
 
 export default function WorkstreamsPage() {
-  const { tasks } = useProject();
+  const { tasks, addTask } = useProject();
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [openDepts, setOpenDepts] = useState<Set<string>>(new Set());
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('todas');
@@ -712,6 +726,15 @@ export default function WorkstreamsPage() {
               statusFilter={statusFilter}
               sortMode={sortMode}
               onEditTask={(id) => setEditingTaskId(id)}
+              onAddTask={() => {
+                const newId = addTask({
+                  title: 'Nova Atividade',
+                  departmentId: dept.id as DepartmentId,
+                  status: 'nao_iniciada',
+                  priority: 'media',
+                });
+                setEditingTaskId(newId);
+              }}
             />
           </motion.div>
         ))}

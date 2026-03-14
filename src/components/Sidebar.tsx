@@ -35,7 +35,7 @@ const navItems: NavItem[] = [
   { label: 'Associados', href: '/associados', icon: Users },
 ];
 
-function IBEFLogo({ collapsed }: { collapsed: boolean }) {
+function I10Logo({ collapsed }: { collapsed: boolean }) {
   return (
     <svg
       viewBox="0 0 48 48"
@@ -108,7 +108,7 @@ export default function Sidebar() {
           whileHover={{ rotate: [0, -5, 5, 0] }}
           transition={{ duration: 0.5 }}
         >
-          <IBEFLogo collapsed={collapsed} />
+          <I10Logo collapsed={collapsed} />
         </motion.div>
         <AnimatePresence>
           {!collapsed && (
@@ -120,7 +120,7 @@ export default function Sidebar() {
               className="overflow-hidden whitespace-nowrap"
             >
               <h1 className="text-sm font-bold text-white leading-tight">
-                IBEF
+                i10
               </h1>
               <p className="text-xs text-[#90E0EF] leading-tight">
                 Project Control
@@ -235,8 +235,8 @@ export default function Sidebar() {
             className="px-4 py-3 border-t border-white/10"
           >
             <p className="text-[10px] text-white/30 leading-relaxed">
-              IBEF &mdash; Instituto Brasileiro<br />
-              pela Educa\u00e7\u00e3o do Futuro
+              Instituto i10 &mdash; Educação<br />
+              · Tecnologia · Inovação
             </p>
           </motion.div>
         )}

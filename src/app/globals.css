@@ -1,18 +1,18 @@
 @import "tailwindcss";
 
 /* ============================================
-   IBEF Project Control - Estilos Globais
-   Instituto Brasileiro pela Educacao do Futuro
+   i10 Project Control - Estilos Globais
+   Instituto i10 — Educação · Tecnologia · Inovação
    ============================================ */
 
 :root {
-  /* Cores da marca IBEF */
-  --ibef-primary-navy: #0A2463;
-  --ibef-dark-navy: #061742;
-  --ibef-cyan: #00B4D8;
-  --ibef-light-cyan: #90E0EF;
-  --ibef-green-accent: #00E5A0;
-  --ibef-light-blue: #CAF0F8;
+  /* Cores da marca i10 */
+  --i10-primary-navy: #0A2463;
+  --i10-dark-navy: #061742;
+  --i10-cyan: #00B4D8;
+  --i10-light-cyan: #90E0EF;
+  --i10-green-accent: #00E5A0;
+  --i10-light-blue: #CAF0F8;
 
   /* Cores de superficie */
   --background: #030B1A;
@@ -45,13 +45,13 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-inter);
 
-  /* Paleta IBEF para uso com classes Tailwind */
-  --color-ibef-navy: #0A2463;
-  --color-ibef-dark-navy: #061742;
-  --color-ibef-cyan: #00B4D8;
-  --color-ibef-light-cyan: #90E0EF;
-  --color-ibef-green: #00E5A0;
-  --color-ibef-light-blue: #CAF0F8;
+  /* Paleta i10 para uso com classes Tailwind */
+  --color-i10-navy: #0A2463;
+  --color-i10-dark-navy: #061742;
+  --color-i10-cyan: #00B4D8;
+  --color-i10-light-cyan: #90E0EF;
+  --color-i10-green: #00E5A0;
+  --color-i10-light-blue: #CAF0F8;
 
   /* Superficies */
   --color-surface-primary: #030B1A;
@@ -171,13 +171,13 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--ibef-dark-navy);
+  background: var(--i10-dark-navy);
   border-radius: 9999px;
   transition: background 0.2s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--ibef-primary-navy);
+  background: var(--i10-primary-navy);
 }
 
 ::-webkit-scrollbar-corner {
@@ -187,27 +187,27 @@ body {
 /* Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--ibef-dark-navy) transparent;
+  scrollbar-color: var(--i10-dark-navy) transparent;
 }
 
 /* ============================================
    Utilitarios e estilos globais
    ============================================ */
 
-/* Selecao de texto com cores IBEF */
+/* Selecao de texto com cores i10 */
 ::selection {
   background: rgba(0, 180, 216, 0.3);
-  color: var(--ibef-light-blue);
+  color: var(--i10-light-blue);
 }
 
 ::-moz-selection {
   background: rgba(0, 180, 216, 0.3);
-  color: var(--ibef-light-blue);
+  color: var(--i10-light-blue);
 }
 
 /* Foco acessivel com cor da marca */
 :focus-visible {
-  outline: 2px solid var(--ibef-cyan);
+  outline: 2px solid var(--i10-cyan);
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -245,18 +245,18 @@ button {
 }
 
 /* Gradiente de fundo para secoes destacadas */
-.ibef-gradient-bg {
+.i10-gradient-bg {
   background: linear-gradient(
     135deg,
-    var(--ibef-dark-navy) 0%,
-    var(--ibef-primary-navy) 50%,
+    var(--i10-dark-navy) 0%,
+    var(--i10-primary-navy) 50%,
     rgba(0, 180, 216, 0.1) 100%
   );
 }
 
-/* Gradiente de texto estilo IBEF */
-.ibef-gradient-text {
-  background: linear-gradient(135deg, var(--ibef-cyan), var(--ibef-green-accent));
+/* Gradiente de texto estilo i10 */
+.i10-gradient-text {
+  background: linear-gradient(135deg, var(--i10-cyan), var(--i10-green-accent));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

@@ -2,11 +2,12 @@
 
 import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
 import { tasks as initialTasks } from '../data/projectData';
-import type { Task, Subtask, TaskStatus, TaskPriority } from '../data/types';
+import type { Task, Subtask, TaskStatus, TaskPriority, DepartmentId } from '../data/types';
 
 interface ProjectContextType {
   tasks: Task[];
   updateTask: (taskId: string, updates: Partial<Task>) => void;
+  addTask: (partial: { title: string; departmentId: DepartmentId; priority: TaskPriority; status: TaskStatus }) => string;
   addSubtask: (taskId: string, title: string) => void;
   removeSubtask: (taskId: string, subtaskId: string) => void;
   toggleSubtask: (taskId: string, subtaskId: string) => void;
@@ -28,7 +29,7 @@ function ensureSubtasks(taskList: Task[]): Task[] {
 export function ProjectProvider({ children }: { children: ReactNode }) {
   const [tasks, setTasks] = useState<Task[]>(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('ibef-tasks');
+      const saved = localStorage.getItem('i10-tasks');
       if (saved) {
         try {
           return ensureSubtasks(JSON.parse(saved));
@@ -41,7 +42,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
   });
 
   useEffect(() => {
-    localStorage.setItem('ibef-tasks', JSON.stringify(tasks));
+    localStorage.setItem('i10-tasks', JSON.stringify(tasks));
   }, [tasks]);
 
   const updateTask = useCallback((taskId: string, updates: Partial<Task>) => {
@@ -49,6 +50,33 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       prev.map((t) => (t.id === taskId ? { ...t, ...updates } : t))
     );
   }, []);
+
+  const addTask = useCallback(
+    (partial: { title: string; departmentId: DepartmentId; priority: TaskPriority; status: TaskStatus }): string => {
+      const id = `task-${Date.now()}`;
+      const newTask: Task = {
+        id,
+        title: partial.title,
+        description: '',
+        status: partial.status,
+        priority: partial.priority,
+        departmentId: partial.departmentId,
+        assigneeIds: [],
+        dueDate: null,
+        createdAt: new Date().toISOString().slice(0, 10),
+        completedAt: null,
+        phaseId: null,
+        dependencies: [],
+        notes: '',
+        progress: 0,
+        tags: [],
+        subtasks: [],
+      };
+      setTasks((prev) => [...prev, newTask]);
+      return id;
+    },
+    []
+  );
 
   const addSubtask = useCallback((taskId: string, title: string) => {
     setTasks((prev) =>
@@ -99,7 +127,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 
   return (
     <ProjectContext.Provider
-      value={{ tasks, updateTask, addSubtask, removeSubtask, toggleSubtask, getTask }}
+      value={{ tasks, updateTask, addTask, addSubtask, removeSubtask, toggleSubtask, getTask }}
     >
       {children}
     </ProjectContext.Provider>

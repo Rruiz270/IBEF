@@ -1,6 +1,6 @@
 // =============================================================================
-// IBEF Project Control - Type Definitions
-// Instituto Brasileiro pela Educação do Futuro
+// i10 Project Control - Type Definitions
+// Instituto i10 — Educação · Tecnologia · Inovação
 // Encomenda Tecnológica (ETEC) - Santa Catarina
 // =============================================================================
 
@@ -141,7 +141,7 @@ export interface Person {
   id: string;
   name: string;
   role: PersonRole;
-  /** Their title / position within IBEF or externally */
+  /** Their title / position within i10 or externally */
   title: string;
   /** Which departments they belong to (by DepartmentId) */
   departmentIds: DepartmentId[];

@@ -116,8 +116,8 @@ export default function JuridicoPage() {
             </div>
             <CountdownCard
               targetDate="2026-03-18"
-              title="Registro do Estatuto do IBEF"
-              subtitle="Prazo CR\u00cdTICO - Quarta-feira 18/03/2026. Sem registro, o IBEF n\u00e3o existe juridicamente. Bloqueia todas as demais a\u00e7\u00f5es."
+              title="Registro do Estatuto do Instituto i10"
+              subtitle="Prazo CRÍTICO - Quarta-feira 18/03/2026. Sem registro, o Instituto i10 não existe juridicamente. Bloqueia todas as demais ações."
               urgency="critical"
               totalDays={18}
             />

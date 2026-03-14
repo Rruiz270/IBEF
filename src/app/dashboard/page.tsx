@@ -182,7 +182,7 @@ export default function DashboardPage() {
               transition={{ delay: 0.2, duration: 0.5 }}
               className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white"
             >
-              IBEF Project Control
+              i10 Project Control
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, x: -20 }}
@@ -190,7 +190,7 @@ export default function DashboardPage() {
               transition={{ delay: 0.35, duration: 0.5 }}
               className="text-sm sm:text-base text-white/50 mt-1"
             >
-              Instituto Brasileiro pela Educa\u00e7\u00e3o do Futuro \u2014 Encomenda Tecnol\u00f3gica SC
+              Instituto i10 — Educação do Futuro — Encomenda Tecnológica SC
             </motion.p>
           </div>
 

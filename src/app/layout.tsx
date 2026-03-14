@@ -10,9 +10,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "IBEF Project Control",
+  title: "i10 Project Control",
   description:
-    "Sistema de controle de projetos do Instituto Brasileiro pela Educacao do Futuro - Encomenda Tecnologica Santa Catarina",
+    "Sistema de controle de projetos do Instituto i10 — Educação do Futuro - Encomenda Tecnológica Santa Catarina",
 };
 
 export default function RootLayout({

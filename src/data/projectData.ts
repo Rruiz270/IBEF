@@ -1,6 +1,6 @@
 // =============================================================================
-// IBEF Project Control - Project Data
-// Instituto Brasileiro pela Educação do Futuro
+// i10 Project Control - Project Data
+// Instituto i10 — Educação · Tecnologia · Inovação
 // Encomenda Tecnológica (ETEC) - Santa Catarina
 // =============================================================================
 
@@ -27,13 +27,13 @@ export const phases: Phase[] = [
     number: 0,
     title: 'Alinhamento e Imersão',
     description:
-      'Fase preparatória de alinhamento institucional, formalização jurídica do IBEF, imersão no contexto educacional de Santa Catarina e preparação da estrutura organizacional para a Encomenda Tecnológica.',
+      'Fase preparatória de alinhamento institucional, formalização jurídica do Instituto i10, imersão no contexto educacional de Santa Catarina e preparação da estrutura organizacional para a Encomenda Tecnológica.',
     status: 'em_andamento',
     startDate: '2026-04-01',
     endDate: '2026-05-31',
     progress: 15,
     deliverables: [
-      'Registro do Estatuto do IBEF',
+      'Registro do Estatuto do Instituto i10',
       'CNPJ atualizado e regular',
       'Primeira Assembleia de fundação realizada',
       'Mapeamento de stakeholders SED/SC',
@@ -167,7 +167,7 @@ export const people: Person[] = [
     departmentIds: ['juridico'],
     email: null,
     notes:
-      'Co-líder jurídico. Atua junto com Mercia na estruturação jurídica do IBEF e conformidade regulatória.',
+      'Co-líder jurídico. Atua junto com Mercia na estruturação jurídica do Instituto i10 e conformidade regulatória.',
     avatarUrl: null,
     assembleiaConfirmed: true,
   },
@@ -256,7 +256,7 @@ export const departments: Department[] = [
     id: 'juridico',
     name: 'Jurídico',
     description:
-      'Assessoria jurídica responsável pela formalização do IBEF, contratos, conformidade regulatória e LGPD.',
+      'Assessoria jurídica responsável pela formalização do Instituto i10, contratos, conformidade regulatória e LGPD.',
     leadIds: ['pessoa-mercia', 'pessoa-emerson'],
     color: '#6366F1',
     icon: 'Scale',
@@ -375,9 +375,9 @@ export const tasks: Task[] = [
   // =========================================================================
   {
     id: 'task-jur-01',
-    title: 'Registrar Estatuto do IBEF',
+    title: 'Registrar Estatuto do Instituto i10',
     description:
-      'Finalizar e protocolar o estatuto social do IBEF no cartório competente. Prazo crítico: quarta-feira 18/03/2026. Necessário para existência jurídica da organização.',
+      'Finalizar e protocolar o estatuto social do Instituto i10 no cartório competente. Prazo crítico: quarta-feira 18/03/2026. Necessário para existência jurídica da organização.',
     status: 'em_andamento',
     priority: 'critica',
     departmentId: 'juridico',
@@ -388,16 +388,16 @@ export const tasks: Task[] = [
     phaseId: 'phase-0',
     dependencies: [],
     notes:
-      'URGENTE - Prazo iminente. Sem o registro do estatuto, o IBEF não existe juridicamente e nenhuma outra ação formal pode prosseguir. Bloqueia CNPJ, assembleia e contratos.',
+      'URGENTE - Prazo iminente. Sem o registro do estatuto, o Instituto i10 não existe juridicamente e nenhuma outra ação formal pode prosseguir. Bloqueia CNPJ, assembleia e contratos.',
     progress: 60,
     tags: ['urgente', 'bloqueante', 'fundacao'],
     subtasks: [],
   },
   {
     id: 'task-jur-02',
-    title: 'Registrar IBEF em Santa Catarina',
+    title: 'Registrar Instituto i10 em Santa Catarina',
     description:
-      'Efetuar o registro do IBEF junto aos órgãos competentes do estado de Santa Catarina para operação local.',
+      'Efetuar o registro do Instituto i10 junto aos órgãos competentes do estado de Santa Catarina para operação local.',
     status: 'nao_iniciada',
     priority: 'alta',
     departmentId: 'juridico',
@@ -417,7 +417,7 @@ export const tasks: Task[] = [
     id: 'task-jur-03',
     title: 'Atualizar CNPJ',
     description:
-      'Obter ou atualizar o CNPJ do IBEF junto à Receita Federal com as informações do novo estatuto.',
+      'Obter ou atualizar o CNPJ do Instituto i10 junto à Receita Federal com as informações do novo estatuto.',
     status: 'nao_iniciada',
     priority: 'alta',
     departmentId: 'juridico',
@@ -656,7 +656,7 @@ export const tasks: Task[] = [
     phaseId: 'phase-0',
     dependencies: ['task-jur-01', 'task-jur-02'],
     notes:
-      'Depende da existência jurídica do IBEF (estatuto registrado e IBEF registrado em SC).',
+      'Depende da existência jurídica do Instituto i10 (estatuto registrado e Instituto i10 registrado em SC).',
     progress: 0,
     tags: ['parcerias', 'governo', 'acordos'],
     subtasks: [],
@@ -665,7 +665,7 @@ export const tasks: Task[] = [
     id: 'task-rp-04',
     title: 'Convite e engajamento do conselho consultivo',
     description:
-      'Formalizar convites para Daniel Aguado (FDC), Franco (FAAP), Daniel Mendes e Mariza (ex-MEC) para o conselho consultivo do IBEF.',
+      'Formalizar convites para Daniel Aguado (FDC), Franco (FAAP), Daniel Mendes e Mariza (ex-MEC) para o conselho consultivo do Instituto i10.',
     status: 'nao_iniciada',
     priority: 'media',
     departmentId: 'relacoes_publicas',
@@ -709,7 +709,7 @@ export const tasks: Task[] = [
     id: 'task-ops-02',
     title: 'Montar escritório em SC',
     description:
-      'Identificar local, negociar aluguel e montar escritório operacional em Florianópolis para a equipe de campo do IBEF.',
+      'Identificar local, negociar aluguel e montar escritório operacional em Florianópolis para a equipe de campo do i10.',
     status: 'nao_iniciada',
     priority: 'media',
     departmentId: 'operacoes_locais',
@@ -884,7 +884,7 @@ export const tasks: Task[] = [
     phaseId: 'phase-0',
     dependencies: ['task-sc-05'],
     notes:
-      'Conforme Lei de Inovação e regulamentação estadual. IBEF deve estar preparado para apresentar proposta técnica e financeira.',
+      'Conforme Lei de Inovação e regulamentação estadual. Instituto i10 deve estar preparado para apresentar proposta técnica e financeira.',
     progress: 0,
     tags: ['sed', 'chamamento', 'ict', 'selecao'],
     subtasks: [],
@@ -1061,7 +1061,7 @@ export const tasks: Task[] = [
     id: 'task-adm-04',
     title: 'Abertura de conta bancária institucional',
     description:
-      'Abrir conta bancária em nome do IBEF para movimentação de recursos do projeto.',
+      'Abrir conta bancária em nome do Instituto i10 para movimentação de recursos do projeto.',
     status: 'nao_iniciada',
     priority: 'alta',
     departmentId: 'administrativo_financeiro',
@@ -1119,7 +1119,7 @@ export const companies: AssociateCompany[] = [
     name: 'Gestorial',
     type: 'administrative',
     description:
-      'Parceiro de serviços administrativos e contábeis. Responsável pelo suporte contábil e fiscal do IBEF.',
+      'Parceiro de serviços administrativos e contábeis. Responsável pelo suporte contábil e fiscal do Instituto i10.',
     contactPerson: null,
     website: null,
     departmentIds: ['administrativo_financeiro'],
@@ -1133,9 +1133,9 @@ export const companies: AssociateCompany[] = [
 export const milestones: Milestone[] = [
   {
     id: 'marco-01',
-    title: 'Registro do Estatuto do IBEF',
+    title: 'Registro do Estatuto do Instituto i10',
     description:
-      'Registro formal do estatuto social do IBEF em cartório. Prazo crítico e inegociável - sem este registro, a organização não existe juridicamente.',
+      'Registro formal do estatuto social do Instituto i10 em cartório. Prazo crítico e inegociável - sem este registro, a organização não existe juridicamente.',
     targetDate: '2026-03-18',
     status: 'em_andamento',
     phaseId: 'phase-0',
@@ -1146,7 +1146,7 @@ export const milestones: Milestone[] = [
     id: 'marco-02',
     title: 'Primeira Assembleia de Fundação',
     description:
-      'Assembleia geral de fundação do IBEF com todos os fundadores. Formaliza a criação da organização, elege a diretoria e aprova o plano de trabalho.',
+      'Assembleia geral de fundação do Instituto i10 com todos os fundadores. Formaliza a criação da organização, elege a diretoria e aprova o plano de trabalho.',
     targetDate: '2026-04-05',
     status: 'pendente',
     phaseId: 'phase-0',
@@ -1157,7 +1157,7 @@ export const milestones: Milestone[] = [
     id: 'marco-03',
     title: 'CNPJ Ativo e Regular',
     description:
-      'CNPJ do IBEF atualizado e regular na Receita Federal, habilitando a organização para operações financeiras e contratos.',
+      'CNPJ do Instituto i10 atualizado e regular na Receita Federal, habilitando a organização para operações financeiras e contratos.',
     targetDate: '2026-04-10',
     status: 'pendente',
     phaseId: 'phase-0',
@@ -1168,7 +1168,7 @@ export const milestones: Milestone[] = [
     id: 'marco-04',
     title: 'Assinatura do Contrato ETEC',
     description:
-      'Assinatura formal do contrato de Encomenda Tecnológica entre o Estado de Santa Catarina e o IBEF / consórcio ICT.',
+      'Assinatura formal do contrato de Encomenda Tecnológica entre o Estado de Santa Catarina e o Instituto i10 / consórcio ICT.',
     targetDate: '2026-07-15',
     status: 'pendente',
     phaseId: 'phase-0',
@@ -1328,7 +1328,7 @@ export const countdowns: CountdownTarget[] = [
     targetDate: '2026-03-18',
     isCritical: true,
     context:
-      'Prazo CRÍTICO - Quarta-feira. Sem registro, IBEF não existe juridicamente. Bloqueia todas as demais ações.',
+      'Prazo CRÍTICO - Quarta-feira. Sem registro, Instituto i10 não existe juridicamente. Bloqueia todas as demais ações.',
   },
   {
     id: 'countdown-assembleia',

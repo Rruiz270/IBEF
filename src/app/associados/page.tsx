@@ -202,7 +202,7 @@ export default function AssociadosPage() {
               Associados
             </h1>
             <p className="text-sm text-white/50 mt-0.5">
-              Empresas e pessoas associadas ao IBEF
+              Empresas e pessoas associadas ao Instituto i10
             </p>
           </div>
         </div>
