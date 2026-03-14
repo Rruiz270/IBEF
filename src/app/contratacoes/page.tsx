@@ -15,7 +15,7 @@ import { hiring, companies, departments } from '../../data/projectData';
 import type { HiringStatus, TaskPriority, DepartmentId } from '../../data/types';
 
 // ---------------------------------------------------------------------------
-// Configuracao de badges de status
+// Configuração de badges de status
 // ---------------------------------------------------------------------------
 
 const statusConfig: Record<
@@ -29,7 +29,7 @@ const statusConfig: Record<
     dot: 'bg-emerald-400',
   },
   em_selecao: {
-    label: 'Em Selecao',
+    label: 'Em Seleção',
     bg: 'bg-blue-500/15',
     text: 'text-blue-400',
     dot: 'bg-blue-400',
@@ -55,21 +55,21 @@ const statusConfig: Record<
 };
 
 // ---------------------------------------------------------------------------
-// Configuracao de prioridade
+// Configuração de prioridade
 // ---------------------------------------------------------------------------
 
 const priorityConfig: Record<
   TaskPriority,
   { label: string; color: string; icon: React.ElementType }
 > = {
-  critica: { label: 'Critica', color: 'text-red-400', icon: AlertTriangle },
+  critica: { label: 'Crítica', color: 'text-red-400', icon: AlertTriangle },
   alta: { label: 'Alta', color: 'text-amber-400', icon: ArrowUpCircle },
-  media: { label: 'Media', color: 'text-blue-400', icon: ArrowRightCircle },
+  media: { label: 'Média', color: 'text-blue-400', icon: ArrowRightCircle },
   baixa: { label: 'Baixa', color: 'text-white/40', icon: ArrowDownCircle },
 };
 
 // ---------------------------------------------------------------------------
-// Configuracao de tipo de empresa
+// Configuração de tipo de empresa
 // ---------------------------------------------------------------------------
 
 const companyTypeLabels: Record<string, { label: string; bg: string; text: string }> = {
@@ -124,7 +124,7 @@ function formatDate(dateStr: string): string {
 }
 
 // ---------------------------------------------------------------------------
-// Variantes de animacao
+// Variantes de animação
 // ---------------------------------------------------------------------------
 
 const containerVariants = {
@@ -147,13 +147,13 @@ const itemVariants = {
 };
 
 // ---------------------------------------------------------------------------
-// Componente da Pagina
+// Componente da Página
 // ---------------------------------------------------------------------------
 
 export default function ContratacoesPage() {
   return (
     <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-8">
-      {/* Cabecalho da pagina */}
+      {/* Cabeçalho da página */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -165,7 +165,7 @@ export default function ContratacoesPage() {
           </div>
           <div>
             <h1 className="text-xl sm:text-2xl font-bold text-white">
-              Contratacoes e Associados
+              Contratações e Associados
             </h1>
             <p className="text-sm text-white/50">
               Vagas abertas e empresas parceiras do IBEF
@@ -175,7 +175,7 @@ export default function ContratacoesPage() {
       </motion.div>
 
       {/* =================================================================
-          SECAO 1: Vagas Abertas
+          SEÇÃO 1: Vagas Abertas
           ================================================================= */}
       <motion.section
         variants={containerVariants}
@@ -214,7 +214,7 @@ export default function ContratacoesPage() {
                 <div className="h-1" style={{ backgroundColor: deptColor }} />
 
                 <div className="p-4 sm:p-5 space-y-3">
-                  {/* Titulo e prioridade */}
+                  {/* Título e prioridade */}
                   <div className="flex items-start justify-between gap-2">
                     <h3 className="text-sm font-bold text-white leading-snug">
                       {position.title}
@@ -245,7 +245,7 @@ export default function ContratacoesPage() {
                     </span>
                   </div>
 
-                  {/* Descricao */}
+                  {/* Descrição */}
                   <p className="text-[11px] text-white/40 leading-relaxed line-clamp-3">
                     {position.description}
                   </p>
@@ -265,7 +265,7 @@ export default function ContratacoesPage() {
       </motion.section>
 
       {/* =================================================================
-          SECAO 2: Empresas Associadas
+          SEÇÃO 2: Empresas Associadas
           ================================================================= */}
       <motion.section
         variants={containerVariants}
@@ -313,7 +313,7 @@ export default function ContratacoesPage() {
                     </span>
                   </div>
 
-                  {/* Descricao */}
+                  {/* Descrição */}
                   <p className="text-[11px] text-white/40 leading-relaxed line-clamp-3">
                     {company.description}
                   </p>

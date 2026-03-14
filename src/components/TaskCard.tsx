@@ -37,7 +37,7 @@ const statusConfig: Record<
   }
 > = {
   nao_iniciada: {
-    label: 'Nao Iniciada',
+    label: 'Não Iniciada',
     color: 'text-white/60',
     bg: 'bg-white/10',
     border: 'border-white/10',
@@ -51,7 +51,7 @@ const statusConfig: Record<
     icon: PlayCircle,
   },
   concluida: {
-    label: 'Concluida',
+    label: 'Concluída',
     color: 'text-[#00E5A0]',
     bg: 'bg-[#00E5A0]/15',
     border: 'border-[#00E5A0]/30',
@@ -85,9 +85,9 @@ const priorityConfig: Record<
   { label: string; color: string; dots: number }
 > = {
   baixa: { label: 'Baixa', color: 'text-white/40', dots: 1 },
-  media: { label: 'Media', color: 'text-[#00B4D8]', dots: 2 },
+  media: { label: 'Média', color: 'text-[#00B4D8]', dots: 2 },
   alta: { label: 'Alta', color: 'text-amber-400', dots: 3 },
-  critica: { label: 'Critica', color: 'text-red-400', dots: 4 },
+  critica: { label: 'Crítica', color: 'text-red-400', dots: 4 },
 };
 
 const departmentColors: Record<DepartmentId, string> = {
@@ -101,12 +101,12 @@ const departmentColors: Record<DepartmentId, string> = {
 };
 
 const departmentLabels: Record<DepartmentId, string> = {
-  juridico: 'Juridico',
+  juridico: 'Jurídico',
   tecnologia: 'Tecnologia',
-  relacoes_publicas: 'Relacoes Publicas',
-  operacoes_locais: 'Operacoes Locais',
+  relacoes_publicas: 'Relações Públicas',
+  operacoes_locais: 'Operações Locais',
   santa_catarina: 'Santa Catarina',
-  pedagogico: 'Pedagogico',
+  pedagogico: 'Pedagógico',
   administrativo_financeiro: 'Admin/Financeiro',
 };
 
@@ -336,7 +336,7 @@ export default function TaskCard({
               {task.dependencies.length > 0 && (
                 <div className="mb-3">
                   <p className="text-[10px] font-medium text-white/30 uppercase tracking-wider mb-1">
-                    Dependencias
+                    Dependências
                   </p>
                   <div className="flex flex-wrap gap-1">
                     {task.dependencies.map((dep) => (
@@ -394,7 +394,7 @@ export default function TaskCard({
                 {task.phaseId && <span>Fase: {task.phaseId}</span>}
                 <span>Criado: {task.createdAt}</span>
                 {task.completedAt && (
-                  <span>Concluido: {task.completedAt}</span>
+                  <span>Concluído: {task.completedAt}</span>
                 )}
               </div>
             </div>

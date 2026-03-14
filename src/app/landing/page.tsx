@@ -26,16 +26,15 @@ import {
   Ban,
 } from 'lucide-react';
 
+import { useProject } from '@/contexts/ProjectContext';
+import TaskEditModal from '@/components/TaskEditModal';
 import {
-  tasks,
   departments,
   people,
   milestones,
-  countdowns,
-  phases as dataPhases,
   daysUntil,
 } from '../../data/projectData';
-import type { Task, TaskStatus } from '../../data/types';
+import type { Task } from '../../data/types';
 
 /* ============================================
    Constantes
@@ -46,16 +45,16 @@ const CONTRACT_DATE = new Date('2026-07-15T00:00:00');
 const phases = [
   {
     id: 0,
-    title: 'Alinhamento e Imersao',
+    title: 'Alinhamento e Imersão',
     period: 'Abr - Mai 2026',
     budget: 'R$ 465.000',
-    status: 'Proxima',
+    status: 'Próxima',
     statusColor: 'text-[#90E0EF]',
     borderColor: 'border-[#90E0EF]/30',
     bgColor: 'bg-[#90E0EF]/5',
     progress: 0,
     description:
-      'Definicao da governanca, alinhamento de expectativas com SED/SC e imersao completa no ambiente educacional catarinense.',
+      'Definição da governança, alinhamento de expectativas com SED/SC e imersão completa no ambiente educacional catarinense.',
     icon: Target,
   },
   {
@@ -83,12 +82,12 @@ const phases = [
     bgColor: 'bg-[#00E5A0]/5',
     progress: 0,
     description:
-      'Expansao do piloto para multiplas escolas, coleta de dados e refinamento continuo dos algoritmos de IA.',
+      'Expansão do piloto para múltiplas escolas, coleta de dados e refinamento contínuo dos algoritmos de IA.',
     icon: Rocket,
   },
   {
     id: 3,
-    title: 'Validacao e Transferencia',
+    title: 'Validação e Transferência',
     period: 'Jul 2027 - Mar 2028',
     budget: 'R$ 1.395.000',
     status: 'Planejada',
@@ -97,7 +96,7 @@ const phases = [
     bgColor: 'bg-[#CAF0F8]/5',
     progress: 0,
     description:
-      'Validacao final dos resultados, documentacao completa e transferencia de tecnologia ao estado de Santa Catarina.',
+      'Validação final dos resultados, documentação completa e transferência de tecnologia ao estado de Santa Catarina.',
     icon: Shield,
   },
 ];
@@ -105,10 +104,10 @@ const phases = [
 const teamMembers = [
   { name: 'Raphael Ruiz', role: 'Project Leader', initials: 'RR', color: 'from-[#00B4D8] to-[#0A2463]' },
   { name: 'Bruno Almeida', role: 'Tecnologia', initials: 'BA', color: 'from-[#00E5A0] to-[#00B4D8]' },
-  { name: 'Bruno Quick', role: 'Relacoes Publicas', initials: 'BQ', color: 'from-[#90E0EF] to-[#0A2463]' },
-  { name: 'Mercia', role: 'Juridico', initials: 'ME', color: 'from-[#00B4D8] to-[#00E5A0]' },
-  { name: 'Emerson', role: 'Juridico', initials: 'EM', color: 'from-[#0A2463] to-[#00B4D8]' },
-  { name: 'Gustavo', role: 'Operacoes', initials: 'GU', color: 'from-[#00E5A0] to-[#0A2463]' },
+  { name: 'Bruno Quick', role: 'Relações Públicas', initials: 'BQ', color: 'from-[#90E0EF] to-[#0A2463]' },
+  { name: 'Mercia', role: 'Jurídico', initials: 'ME', color: 'from-[#00B4D8] to-[#00E5A0]' },
+  { name: 'Emerson', role: 'Jurídico', initials: 'EM', color: 'from-[#0A2463] to-[#00B4D8]' },
+  { name: 'Gustavo', role: 'Operações', initials: 'GU', color: 'from-[#00E5A0] to-[#0A2463]' },
   { name: 'Enio', role: 'Admin / Financeiro', initials: 'EN', color: 'from-[#90E0EF] to-[#00E5A0]' },
 ];
 
@@ -116,7 +115,7 @@ const partners = [
   { name: 'Jinso', description: 'Desenvolvimento de Software' },
   { name: 'Sprix', description: 'Tecnologia Educacional' },
   { name: 'MadeinWEB', description: 'Desenvolvimento Web' },
-  { name: 'Gestorial', description: 'Gestao e Consultoria' },
+  { name: 'Gestorial', description: 'Gestão e Consultoria' },
 ];
 
 /* ============================================
@@ -124,9 +123,9 @@ const partners = [
    ============================================ */
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: React.ElementType }> = {
-  nao_iniciada: { label: 'Nao Iniciada', color: 'text-gray-400', bg: 'bg-gray-500/20', icon: Circle },
+  nao_iniciada: { label: 'Não Iniciada', color: 'text-gray-400', bg: 'bg-gray-500/20', icon: Circle },
   em_andamento: { label: 'Em Andamento', color: 'text-cyan-400', bg: 'bg-cyan-500/20', icon: Clock },
-  concluida: { label: 'Concluida', color: 'text-emerald-400', bg: 'bg-emerald-500/20', icon: CheckCircle2 },
+  concluida: { label: 'Concluída', color: 'text-emerald-400', bg: 'bg-emerald-500/20', icon: CheckCircle2 },
   bloqueada: { label: 'Bloqueada', color: 'text-amber-400', bg: 'bg-amber-500/20', icon: Ban },
   atrasada: { label: 'Atrasada', color: 'text-red-400', bg: 'bg-red-500/20', icon: AlertTriangle },
 };
@@ -164,7 +163,7 @@ function daysRemaining(dueDate: string | null): number | null {
 }
 
 /* ============================================
-   Animacoes reutilizaveis
+   Animações reutilizáveis
    ============================================ */
 
 const fadeInUp = {
@@ -240,10 +239,10 @@ function CountdownTimer() {
 }
 
 /* ============================================
-   Task Card for Landing Page
+   Task Card for Landing Page (clickable)
    ============================================ */
 
-function LandingTaskCard({ task }: { task: Task }) {
+function LandingTaskCard({ task, onClick }: { task: Task; onClick: () => void }) {
   const status = STATUS_CONFIG[task.status] ?? STATUS_CONFIG.nao_iniciada;
   const StatusIcon = status.icon;
   const days = daysRemaining(task.dueDate);
@@ -256,7 +255,8 @@ function LandingTaskCard({ task }: { task: Task }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.4 }}
-      className="relative rounded-xl border border-[#142D5C] bg-[#0A1E3D]/80 p-5 hover:border-[#1E3F73] hover:shadow-[0_4px_24px_rgba(0,0,0,0.4)] transition-all duration-300"
+      onClick={onClick}
+      className="relative rounded-xl border border-[#142D5C] bg-[#0A1E3D]/80 p-5 hover:border-[#1E3F73] hover:shadow-[0_4px_24px_rgba(0,0,0,0.4)] transition-all duration-300 cursor-pointer"
     >
       {/* Department color accent */}
       <div className="absolute top-0 left-0 w-1 h-full rounded-l-xl" style={{ backgroundColor: deptColor }} />
@@ -330,7 +330,7 @@ function LandingTaskCard({ task }: { task: Task }) {
       {task.dependencies.length > 0 && (
         <div className="mt-2 pl-3">
           <span className="text-[10px] text-[#5A7499]">
-            Depende de: {task.dependencies.map((depId) => tasks.find((t) => t.id === depId)?.title ?? depId).join('; ')}
+            Depende de: {task.dependencies.join('; ')}
           </span>
         </div>
       )}
@@ -383,7 +383,7 @@ function MilestoneTimeline() {
                     <h4 className="text-sm font-medium text-white truncate">{milestone.title}</h4>
                     {milestone.isCritical && (
                       <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-red-500/20 text-red-400 font-medium shrink-0">
-                        Critico
+                        Cr&iacute;tico
                       </span>
                     )}
                   </div>
@@ -409,7 +409,7 @@ function MilestoneTimeline() {
    Department Progress Cards
    ============================================ */
 
-function DepartmentProgressGrid() {
+function DepartmentProgressGrid({ tasks }: { tasks: Task[] }) {
   const deptProgress = departments.map((dept) => {
     const deptTasks = tasks.filter((t) => t.departmentId === dept.id);
     const total = deptTasks.length;
@@ -468,6 +468,11 @@ function DepartmentProgressGrid() {
    ============================================ */
 
 export default function LandingPage() {
+  const { tasks } = useProject();
+
+  // Task edit modal state
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+
   // Get critical and upcoming tasks sorted by priority then due date
   const keyTasks = useMemo(() => {
     return tasks
@@ -481,7 +486,7 @@ export default function LandingPage() {
         if (b.dueDate) return 1;
         return 0;
       });
-  }, []);
+  }, [tasks]);
 
   // Summary stats
   const stats = useMemo(() => {
@@ -494,7 +499,7 @@ export default function LandingPage() {
       return new Date(t.dueDate + 'T23:59:59') < new Date();
     }).length;
     return { total, completed, inProgress, critical, overdue };
-  }, []);
+  }, [tasks]);
 
   return (
     <div className="relative overflow-x-hidden">
@@ -530,7 +535,7 @@ export default function LandingPage() {
             transition={{ delay: 0.2, duration: 0.5 }}
           >
             <span className="text-xs sm:text-sm text-[#90E0EF] font-medium tracking-wide">
-              Encomenda Tecnologica &mdash; Santa Catarina
+              {'Encomenda Tecnológica \u2014 Santa Catarina'}
             </span>
           </motion.div>
 
@@ -553,7 +558,7 @@ export default function LandingPage() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5, duration: 0.6 }}
           >
-            Instituto Brasileiro pela Educacao do Futuro
+            Instituto Brasileiro pela Educação do Futuro
           </motion.p>
 
           {/* Tagline */}
@@ -563,7 +568,7 @@ export default function LandingPage() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6, duration: 0.6 }}
           >
-            Transformando a educacao publica brasileira atraves da tecnologia e inovacao
+            Transformando a educação pública brasileira através da tecnologia e inovação
           </motion.p>
 
           {/* Countdown */}
@@ -574,7 +579,7 @@ export default function LandingPage() {
             transition={{ delay: 0.8, duration: 0.6 }}
           >
             <p className="text-sm text-[#8BA3C7] font-medium uppercase tracking-widest">
-              Dias ate a assinatura do contrato ETEC
+              Dias até a assinatura do contrato ETEC
             </p>
             <CountdownTimer />
           </motion.div>
@@ -592,7 +597,7 @@ export default function LandingPage() {
                          bg-gradient-to-r from-[#00B4D8] to-[#00E5A0] text-[#030B1A]
                          hover:shadow-[0_0_30px_rgba(0,180,216,0.3)] transition-shadow duration-300"
             >
-              Ver Painel de Controle
+              Entrar no Painel
               <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
             </Link>
           </motion.div>
@@ -617,15 +622,15 @@ export default function LandingPage() {
               <span className="text-xs text-[#00E5A0] font-medium uppercase tracking-wider">Sobre o Projeto</span>
             </div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white leading-tight">
-              Encomenda Tecnologica
+              Encomenda Tecnológica
               <br />
               <span className="bg-gradient-to-r from-[#00B4D8] to-[#00E5A0] bg-clip-text text-transparent">
                 Santa Catarina
               </span>
             </h2>
             <p className="mt-6 text-[#8BA3C7] text-base sm:text-lg max-w-3xl mx-auto leading-relaxed">
-              Parceria estrategica com a Secretaria de Estado da Educacao de Santa Catarina (SED/SC)
-              para o desenvolvimento de uma plataforma educacional potencializada por Inteligencia Artificial,
+              Parceria estratégica com a Secretaria de Estado da Educação de Santa Catarina (SED/SC)
+              para o desenvolvimento de uma plataforma educacional potencializada por Inteligência Artificial,
               com o objetivo de personalizar a aprendizagem e elevar os indicadores educacionais do estado.
             </p>
           </motion.div>
@@ -676,7 +681,7 @@ export default function LandingPage() {
               Atividades Chave
             </h2>
             <p className="mt-4 text-[#8BA3C7] text-base sm:text-lg max-w-2xl mx-auto">
-              Tarefas criticas e de alta prioridade com prazos, responsaveis e progresso atualizado.
+              Tarefas críticas e de alta prioridade com prazos, responsáveis e progresso atualizado.
             </p>
           </motion.div>
 
@@ -688,8 +693,8 @@ export default function LandingPage() {
             {[
               { label: 'Total', value: stats.total, color: '#90E0EF' },
               { label: 'Em Andamento', value: stats.inProgress, color: '#00B4D8' },
-              { label: 'Concluidas', value: stats.completed, color: '#00E5A0' },
-              { label: 'Criticas', value: stats.critical, color: '#EF4444' },
+              { label: 'Concluídas', value: stats.completed, color: '#00E5A0' },
+              { label: 'Críticas', value: stats.critical, color: '#EF4444' },
               { label: 'Atrasadas', value: stats.overdue, color: '#F59E0B' },
             ].map((item) => (
               <div
@@ -710,14 +715,18 @@ export default function LandingPage() {
                 Tarefas Pendentes (por prioridade)
               </h3>
               {keyTasks.map((task) => (
-                <LandingTaskCard key={task.id} task={task} />
+                <LandingTaskCard
+                  key={task.id}
+                  task={task}
+                  onClick={() => setEditingTaskId(task.id)}
+                />
               ))}
             </div>
 
             {/* Milestones Timeline - 1/3 width */}
             <div>
               <h3 className="text-sm font-semibold text-[#8BA3C7] uppercase tracking-wider mb-4">
-                Proximos Marcos
+                Próximos Marcos
               </h3>
               <div className="rounded-xl border border-[#142D5C] bg-[#0A1E3D]/80 p-5">
                 <MilestoneTimeline />
@@ -757,14 +766,14 @@ export default function LandingPage() {
               <span className="text-xs text-[#00E5A0] font-medium uppercase tracking-wider">Departamentos</span>
             </div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">
-              Progresso por Area
+              {'Progresso por Área'}
             </h2>
             <p className="mt-4 text-[#8BA3C7] text-base sm:text-lg max-w-2xl mx-auto">
-              Acompanhamento da evolucao de cada departamento do projeto.
+              Acompanhamento da evolução de cada departamento do projeto.
             </p>
           </motion.div>
 
-          <DepartmentProgressGrid />
+          <DepartmentProgressGrid tasks={tasks} />
         </div>
       </section>
 
@@ -783,7 +792,7 @@ export default function LandingPage() {
               Fases do Projeto
             </h2>
             <p className="mt-4 text-[#8BA3C7] text-base sm:text-lg max-w-2xl mx-auto">
-              Execucao planejada em quatro fases progressivas, cada uma com marcos e entregas definidos.
+              Execução planejada em quatro fases progressivas, cada uma com marcos e entregas definidos.
             </p>
           </motion.div>
 
@@ -836,11 +845,11 @@ export default function LandingPage() {
 
                       <div className="flex flex-row sm:flex-col gap-4 sm:gap-2 sm:text-right sm:min-w-[160px]">
                         <div>
-                          <p className="text-xs text-[#5A7499] uppercase tracking-wider">Periodo</p>
+                          <p className="text-xs text-[#5A7499] uppercase tracking-wider">Período</p>
                           <p className="text-sm font-semibold text-white">{phase.period}</p>
                         </div>
                         <div>
-                          <p className="text-xs text-[#5A7499] uppercase tracking-wider">Orcamento</p>
+                          <p className="text-xs text-[#5A7499] uppercase tracking-wider">Orçamento</p>
                           <p className="text-sm font-semibold text-[#00E5A0]">{phase.budget}</p>
                         </div>
                         <div>
@@ -880,13 +889,13 @@ export default function LandingPage() {
           <motion.div {...fadeInUp} className="text-center mb-16">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#00E5A0]/20 bg-[#00E5A0]/5 mb-6">
               <Users size={14} className="text-[#00E5A0]" />
-              <span className="text-xs text-[#00E5A0] font-medium uppercase tracking-wider">Lideranca</span>
+              <span className="text-xs text-[#00E5A0] font-medium uppercase tracking-wider">Liderança</span>
             </div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">
               Nossa Equipe
             </h2>
             <p className="mt-4 text-[#8BA3C7] text-base sm:text-lg max-w-2xl mx-auto">
-              Profissionais dedicados a transformar o futuro da educacao brasileira.
+              Profissionais dedicados a transformar o futuro da educação brasileira.
             </p>
           </motion.div>
 
@@ -974,7 +983,7 @@ export default function LandingPage() {
 
           <div>
             <p className="text-sm text-[#8BA3C7]">
-              IBEF &mdash; Instituto Brasileiro pela Educacao do Futuro
+              {'IBEF \u2014 Instituto Brasileiro pela Educação do Futuro'}
             </p>
             <p className="mt-1 text-xs text-[#5A7499]">
               Estabelecido em Santa Catarina
@@ -990,10 +999,16 @@ export default function LandingPage() {
           </Link>
 
           <p className="text-xs text-[#5A7499] mt-4">
-            &copy; {new Date().getFullYear()} IBEF. Todos os direitos reservados.
+            {`\u00A9 ${new Date().getFullYear()} IBEF. Todos os direitos reservados.`}
           </p>
         </div>
       </footer>
+
+      {/* ========== TASK EDIT MODAL ========== */}
+      <TaskEditModal
+        taskId={editingTaskId}
+        onClose={() => setEditingTaskId(null)}
+      />
     </div>
   );
 }

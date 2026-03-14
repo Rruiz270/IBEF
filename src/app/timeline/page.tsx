@@ -14,8 +14,10 @@ import {
   Info,
 } from 'lucide-react';
 
-import { phases, milestones, tasks, departments } from '../../data/projectData';
+import { phases, milestones, departments } from '../../data/projectData';
 import type { Task, Department, Phase, Milestone } from '../../data/types';
+import { useProject } from '@/contexts/ProjectContext';
+import TaskEditModal from '@/components/TaskEditModal';
 
 // =============================================================================
 // Animation Variants
@@ -87,14 +89,19 @@ const DEPT_ORDER: string[] = [
 ];
 
 const DEPT_SHORT_LABELS: Record<string, string> = {
-  juridico: 'Juridico',
+  juridico: 'Jur\u00eddico',
   tecnologia: 'Tecnologia',
-  relacoes_publicas: 'Relacoes Publicas',
-  operacoes_locais: 'Operacoes',
+  relacoes_publicas: 'Rela\u00e7\u00f5es P\u00fablicas',
+  operacoes_locais: 'Opera\u00e7\u00f5es',
   santa_catarina: 'Santa Catarina',
-  pedagogico: 'Pedagogico',
+  pedagogico: 'Pedag\u00f3gico',
   administrativo_financeiro: 'Admin/Financeiro',
 };
+
+// Height in px for each task bar row inside a department
+const TASK_ROW_HEIGHT = 28;
+// Vertical padding around the task bars inside a department row
+const DEPT_ROW_PADDING = 8;
 
 // =============================================================================
 // Utility Functions
@@ -173,12 +180,11 @@ function getMonthLabel(dateStr: string): string {
 }
 
 // Get tasks for a department, computing effective start/end from dueDate and createdAt
-function getTasksForDept(deptId: string): Array<Task & { effectiveStart: string; effectiveEnd: string }> {
-  return tasks
+function getTasksForDept(allTasks: Task[], deptId: string): Array<Task & { effectiveStart: string; effectiveEnd: string }> {
+  return allTasks
     .filter((t) => t.departmentId === deptId)
     .map((t) => {
       const effectiveEnd = t.dueDate ?? t.createdAt;
-      // Estimate start from createdAt
       const effectiveStart = t.createdAt;
       return { ...t, effectiveStart, effectiveEnd };
     });
@@ -406,7 +412,7 @@ function MilestonesRow({ selectedYear }: { selectedYear: number }) {
                     {milestone.isCritical && (
                       <div className="flex items-center gap-1 mt-1">
                         <AlertTriangle size={10} className="text-red-400" />
-                        <span className="text-[10px] text-red-400 font-medium">Caminho Critico</span>
+                        <span className="text-[10px] text-red-400 font-medium">Caminho Cr{'\u00ed'}tico</span>
                       </div>
                     )}
                   </div>
@@ -421,26 +427,45 @@ function MilestonesRow({ selectedYear }: { selectedYear: number }) {
 }
 
 // =============================================================================
-// Timeline Grid Row (per department)
+// Timeline Grid Row (per department) -- Each task gets its own vertical line
 // =============================================================================
 
 function TimelineGridRow({
   department,
   selectedYear,
   index,
+  allTasks,
+  onTaskClick,
 }: {
   department: Department;
   selectedYear: number;
   index: number;
+  allTasks: Task[];
+  onTaskClick: (taskId: string) => void;
 }) {
   const yearStart = `${selectedYear}-01-01`;
   const yearEnd = `${selectedYear}-12-31`;
   const quarters = YEAR_QUARTERS[selectedYear];
 
-  const deptTasks = getTasksForDept(department.id);
+  const deptTasks = getTasksForDept(allTasks, department.id);
   const visibleTasks = deptTasks.filter((t) =>
     dateOverlapsRange(t.effectiveStart, t.effectiveEnd, yearStart, yearEnd)
   );
+
+  // Calculate dynamic row height: each task gets its own horizontal line
+  const taskCount = visibleTasks.length;
+  const rowContentHeight = Math.max(1, taskCount) * TASK_ROW_HEIGHT;
+  const totalRowHeight = rowContentHeight + DEPT_ROW_PADDING * 2;
+
+  // Build a stable index map so that every task gets a unique vertical slot
+  const taskIndexMap = useMemo(() => {
+    const map = new Map<string, number>();
+    visibleTasks.forEach((t, i) => {
+      map.set(t.id, i);
+    });
+    return map;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visibleTasks.map((t) => t.id).join(',')]);
 
   return (
     <motion.div
@@ -448,87 +473,124 @@ function TimelineGridRow({
       className="flex items-stretch gap-0 group"
     >
       {/* Department label (left column) */}
-      <div className="w-36 sm:w-44 lg:w-52 shrink-0 flex items-center gap-2 px-3 py-3 bg-white/[0.02] border-r border-white/5 rounded-l-lg">
+      <div
+        className="w-36 sm:w-44 lg:w-52 shrink-0 flex items-start gap-2 px-3 py-3 bg-white/[0.02] border-r border-white/5 rounded-l-lg"
+        style={{ minHeight: `${totalRowHeight}px` }}
+      >
         <div
-          className="w-2.5 h-2.5 rounded-full shrink-0"
+          className="w-2.5 h-2.5 rounded-full shrink-0 mt-0.5"
           style={{ backgroundColor: department.color }}
         />
-        <span className="text-xs sm:text-sm font-medium text-white/70 truncate">
-          {DEPT_SHORT_LABELS[department.id] ?? department.name}
-        </span>
+        <div className="flex flex-col min-w-0">
+          <span className="text-xs sm:text-sm font-medium text-white/70 truncate">
+            {DEPT_SHORT_LABELS[department.id] ?? department.name}
+          </span>
+          <span className="text-[9px] text-white/30 mt-0.5">
+            {taskCount} {taskCount === 1 ? 'tarefa' : 'tarefas'}
+          </span>
+        </div>
       </div>
 
-      {/* Quarter grid cells */}
-      <div className="flex-1 flex relative">
-        {quarters.map((q, qi) => (
-          <div
-            key={q.label}
-            className={`
-              flex-1 relative border-r border-white/5 last:border-r-0
-              min-h-[48px] sm:min-h-[56px]
-              ${qi % 2 === 0 ? 'bg-white/[0.01]' : 'bg-transparent'}
-            `}
-          >
-            {/* Render task bars that overlap this quarter */}
-            {visibleTasks
-              .filter((t) => dateOverlapsRange(t.effectiveStart, t.effectiveEnd, q.start, q.end))
-              .map((task, ti) => {
-                const clampedStart =
-                  new Date(task.effectiveStart) < new Date(q.start) ? q.start : task.effectiveStart;
-                const clampedEnd =
-                  new Date(task.effectiveEnd) > new Date(q.end) ? q.end : task.effectiveEnd;
+      {/* Quarter grid cells -- full-year relative container for task bars */}
+      <div className="flex-1 relative" style={{ minHeight: `${totalRowHeight}px` }}>
+        {/* Quarter background stripes */}
+        <div className="absolute inset-0 flex">
+          {quarters.map((q, qi) => (
+            <div
+              key={q.label}
+              className={`
+                flex-1 border-r border-white/5 last:border-r-0
+                ${qi % 2 === 0 ? 'bg-white/[0.01]' : 'bg-transparent'}
+              `}
+            />
+          ))}
+        </div>
 
-                const leftPct = getQuarterPosition(clampedStart, q.start, q.end) * 100;
-                const rightPct = getQuarterPosition(clampedEnd, q.start, q.end) * 100;
-                const widthPct = Math.max(rightPct - leftPct, 4);
+        {/* Task bars rendered across the full year width */}
+        {visibleTasks.map((task) => {
+          const taskIdx = taskIndexMap.get(task.id) ?? 0;
 
-                const isCritical = task.priority === 'critica';
-                const isOverdue =
-                  task.dueDate &&
-                  new Date(task.dueDate) < new Date() &&
-                  task.status !== 'concluida';
+          // Compute position across the full year (0..100%)
+          const clampedStart =
+            new Date(task.effectiveStart) < new Date(yearStart) ? yearStart : task.effectiveStart;
+          const clampedEnd =
+            new Date(task.effectiveEnd) > new Date(yearEnd) ? yearEnd : task.effectiveEnd;
 
-                return (
-                  <motion.div
-                    key={task.id + q.label}
-                    initial={{ scaleX: 0, opacity: 0 }}
-                    animate={{ scaleX: 1, opacity: 1 }}
-                    transition={{ delay: 0.2 + index * 0.05 + ti * 0.03, duration: 0.4 }}
-                    className={`
-                      absolute h-5 sm:h-6 rounded-md cursor-pointer
-                      transition-all duration-200 hover:brightness-125 hover:z-20
-                      ${isCritical ? 'ring-1 ring-red-500/60' : ''}
-                      ${isOverdue ? 'ring-1 ring-amber-500/60' : ''}
-                    `}
-                    style={{
-                      left: `${leftPct}%`,
-                      width: `${widthPct}%`,
-                      top: `${8 + ti * 24}px`,
-                      backgroundColor: department.color + '40',
-                      borderLeft: `3px solid ${department.color}`,
-                      transformOrigin: 'left center',
-                    }}
-                    title={`${task.title} - ${task.progress}%`}
-                  >
-                    {/* Progress fill */}
-                    <div
-                      className="h-full rounded-md opacity-30"
-                      style={{
-                        width: `${task.progress}%`,
-                        backgroundColor: department.color,
-                      }}
-                    />
-                    {/* Task label (only if wide enough) */}
-                    {widthPct > 20 && (
-                      <span className="absolute inset-0 flex items-center px-1.5 text-[8px] sm:text-[10px] text-white/80 font-medium truncate">
-                        {task.title}
-                      </span>
+          const leftPct = getYearPosition(clampedStart, selectedYear) * 100;
+          const rightPct = getYearPosition(clampedEnd, selectedYear) * 100;
+          const widthPct = Math.max(rightPct - leftPct, 3);
+
+          const isCritical = task.priority === 'critica';
+          const isOverdue =
+            task.dueDate &&
+            new Date(task.dueDate) < new Date() &&
+            task.status !== 'concluida';
+
+          const topPx = DEPT_ROW_PADDING + taskIdx * TASK_ROW_HEIGHT;
+
+          return (
+            <motion.div
+              key={task.id}
+              initial={{ scaleX: 0, opacity: 0 }}
+              animate={{ scaleX: 1, opacity: 1 }}
+              transition={{ delay: 0.2 + index * 0.05 + taskIdx * 0.03, duration: 0.4 }}
+              className={`
+                absolute rounded-md cursor-pointer z-10
+                transition-all duration-200 hover:brightness-125 hover:z-20
+                group/task
+                ${isCritical ? 'ring-1 ring-red-500/60' : ''}
+                ${isOverdue ? 'ring-1 ring-amber-500/60' : ''}
+              `}
+              style={{
+                left: `${leftPct}%`,
+                width: `${widthPct}%`,
+                minWidth: '40px',
+                top: `${topPx}px`,
+                height: `${TASK_ROW_HEIGHT - 4}px`,
+                backgroundColor: department.color + '40',
+                borderLeft: `3px solid ${department.color}`,
+                transformOrigin: 'left center',
+              }}
+              title={`${task.title} - ${task.progress}%`}
+              onClick={() => onTaskClick(task.id)}
+            >
+              {/* Progress fill */}
+              <div
+                className="absolute inset-0 rounded-md opacity-30"
+                style={{
+                  width: `${task.progress}%`,
+                  backgroundColor: department.color,
+                }}
+              />
+              {/* Task label -- always shown with ellipsis */}
+              <span className="absolute inset-0 flex items-center px-1.5 text-[9px] sm:text-[10px] text-white/90 font-medium truncate pointer-events-none">
+                {task.title}
+              </span>
+
+              {/* Hover tooltip with full task name */}
+              <div
+                className="
+                  absolute bottom-full left-0 mb-1 z-50
+                  hidden group-hover/task:block
+                  pointer-events-none
+                "
+              >
+                <div className="bg-[#061742] border border-white/10 rounded-lg px-2.5 py-1.5 shadow-xl max-w-[260px]">
+                  <p className="text-[10px] font-semibold text-white whitespace-normal">{task.title}</p>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="text-[9px] text-white/40">{task.progress}%</span>
+                    {task.dueDate && (
+                      <span className="text-[9px] text-white/40">{formatDateBR(task.dueDate)}</span>
                     )}
-                  </motion.div>
-                );
-              })}
-          </div>
-        ))}
+                    {isCritical && (
+                      <span className="text-[9px] text-red-400 font-medium">Cr{'\u00ed'}tica</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          );
+        })}
       </div>
     </motion.div>
   );
@@ -567,7 +629,11 @@ function TodayMarker({ selectedYear }: { selectedYear: number }) {
 
 export default function TimelinePage() {
   const [selectedYear, setSelectedYear] = useState(2026);
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const overallProgress = useMemo(() => computeOverallProgress(), []);
+
+  // Use context for live task data instead of static import
+  const { tasks } = useProject();
 
   const quarters = YEAR_QUARTERS[selectedYear];
 
@@ -608,7 +674,7 @@ export default function TimelinePage() {
                     Cronograma Master
                   </motion.h1>
                   <p className="text-xs sm:text-sm text-white/40">
-                    Encomenda Tecnologica ETEC - Santa Catarina
+                    Encomenda Tecnol{'\u00f3'}gica ETEC - Santa Catarina
                   </p>
                 </div>
               </div>
@@ -664,7 +730,7 @@ export default function TimelinePage() {
         <div className="flex items-center gap-1.5">
           <Info size={12} className="text-white/30" />
           <span className="text-[10px] sm:text-xs text-white/30">
-            Clique nos anos para navegar | Barras coloridas por departamento
+            Clique nos anos para navegar | Clique nas barras para editar tarefas
           </span>
         </div>
       </motion.section>
@@ -735,7 +801,7 @@ export default function TimelinePage() {
           <div className="flex items-center gap-3 ml-4">
             <div className="flex items-center gap-1">
               <div className="w-2.5 h-2.5 rotate-45 bg-red-500/80 border border-red-400" />
-              <span className="text-[10px] text-white/30">Critico</span>
+              <span className="text-[10px] text-white/30">Cr{'\u00ed'}tico</span>
             </div>
             <div className="flex items-center gap-1">
               <div className="w-2.5 h-2.5 rotate-45 bg-[#00B4D8]/60 border border-[#00B4D8]" />
@@ -799,6 +865,8 @@ export default function TimelinePage() {
               department={dept}
               selectedYear={selectedYear}
               index={idx}
+              allTasks={tasks}
+              onTaskClick={(taskId) => setEditingTaskId(taskId)}
             />
           ))}
 
@@ -861,7 +929,7 @@ export default function TimelinePage() {
                   {phase.status === 'em_andamento'
                     ? 'Em andamento'
                     : phase.status === 'concluida'
-                    ? 'Concluida'
+                    ? 'Conclu\u00edda'
                     : phase.status === 'atrasada'
                     ? 'Atrasada'
                     : 'Planejada'}
@@ -898,7 +966,7 @@ export default function TimelinePage() {
 
               {phase.budgetBRL != null && (
                 <div className="mt-2 text-[10px] text-white/25">
-                  Orcamento: R$ {(phase.budgetBRL / 1000).toFixed(0)}k
+                  Or{'\u00e7'}amento: R$ {(phase.budgetBRL / 1000).toFixed(0)}k
                 </div>
               )}
             </div>
@@ -932,7 +1000,7 @@ export default function TimelinePage() {
           ))}
           <div className="flex items-center gap-2">
             <div className="w-3 h-2 rounded-sm ring-1 ring-red-500/60 bg-white/10" />
-            <span className="text-[10px] sm:text-xs text-white/50">Prioridade Critica</span>
+            <span className="text-[10px] sm:text-xs text-white/50">Prioridade Cr{'\u00ed'}tica</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-px h-4 bg-[#00E5A0]/40" />
@@ -943,6 +1011,14 @@ export default function TimelinePage() {
 
       {/* Bottom spacer */}
       <div className="h-4" />
+
+      {/* ================================================================= */}
+      {/* TASK EDIT MODAL                                                   */}
+      {/* ================================================================= */}
+      <TaskEditModal
+        taskId={editingTaskId}
+        onClose={() => setEditingTaskId(null)}
+      />
     </div>
   );
 }

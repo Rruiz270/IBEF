@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
   Building2,
@@ -16,7 +16,9 @@ import {
   PenTool,
   TrendingUp,
 } from 'lucide-react';
-import { tasks, departments, milestones, people } from '../../data/projectData';
+import { departments, milestones, people } from '../../data/projectData';
+import { useProject } from '../../contexts/ProjectContext';
+import TaskEditModal from '../../components/TaskEditModal';
 import type { Person } from '../../data/types';
 import TaskCard from '../../components/TaskCard';
 import CountdownCard from '../../components/CountdownCard';
@@ -28,7 +30,7 @@ import CountdownCard from '../../components/CountdownCard';
 const etecSteps = [
   {
     number: 1,
-    title: 'Planejamento e Diagnostico',
+    title: 'Planejamento e Diagnóstico',
     description:
       'Documento que justifica a necessidade da ETEC conforme diretrizes do TCU e Guia InovaGovSC.',
     icon: FileText,
@@ -36,25 +38,25 @@ const etecSteps = [
   },
   {
     number: 2,
-    title: 'ETP (Estudo Tecnico Preliminar)',
+    title: 'ETP (Estudo Técnico Preliminar)',
     description:
-      'Detalhamento da viabilidade tecnica e economica da Encomenda Tecnologica.',
+      'Detalhamento da viabilidade técnica e econômica da Encomenda Tecnológica.',
     icon: Search,
     taskId: 'task-sc-02',
   },
   {
     number: 3,
-    title: 'Portaria da Comissao ETEC',
+    title: 'Portaria da Comissão ETEC',
     description:
-      'Publicacao de Portaria oficial criando a comissao responsavel pela conducao do processo.',
+      'Publicação de Portaria oficial criando a comissão responsável pela condução do processo.',
     icon: Gavel,
     taskId: 'task-sc-03',
   },
   {
     number: 4,
-    title: 'Termo de Referencia',
+    title: 'Termo de Referência',
     description:
-      'Especificacoes tecnicas, criterios de selecao da ICT e metricas de avaliacao.',
+      'Especificações técnicas, critérios de seleção da ICT e métricas de avaliação.',
     icon: PenTool,
     taskId: 'task-sc-04',
   },
@@ -62,15 +64,15 @@ const etecSteps = [
     number: 5,
     title: 'Parecer PGE/SC',
     description:
-      'Submissao a Procuradoria Geral do Estado para parecer juridico de conformidade.',
+      'Submissão à Procuradoria Geral do Estado para parecer jurídico de conformidade.',
     icon: Scale,
     taskId: 'task-sc-05',
   },
   {
     number: 6,
-    title: 'Chamamento/Selecao ICT',
+    title: 'Chamamento/Seleção ICT',
     description:
-      'Publicacao do edital de chamamento publico para selecao da Instituicao Cientifica e Tecnologica.',
+      'Publicação do edital de chamamento público para seleção da Instituição Científica e Tecnológica.',
     icon: Handshake,
     taskId: 'task-sc-06',
   },
@@ -110,9 +112,9 @@ function statusLabel(status: string): string {
     case 'em_andamento':
       return 'Em Andamento';
     case 'concluida':
-      return 'Concluida';
+      return 'Concluída';
     case 'nao_iniciada':
-      return 'Nao Iniciada';
+      return 'Não Iniciada';
     default:
       return status;
   }
@@ -136,6 +138,9 @@ function statusColor(status: string): string {
 // ---------------------------------------------------------------------------
 
 export default function SantaCatarinaPage() {
+  const { tasks } = useProject();
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+
   // Build people map
   const peopleMap = useMemo<Record<string, Person>>(() => {
     const map: Record<string, Person> = {};
@@ -148,7 +153,7 @@ export default function SantaCatarinaPage() {
   // Filter SC tasks
   const scTasks = useMemo(
     () => tasks.filter((t) => t.departmentId === 'santa_catarina'),
-    [],
+    [tasks],
   );
 
   // Filter SC milestones
@@ -203,8 +208,8 @@ export default function SantaCatarinaPage() {
               Santa Catarina (SED/SC)
             </h1>
             <p className="text-sm text-white/50 mt-0.5">
-              Acompanhamento das acoes da Secretaria de Educacao de SC para
-              viabilizar a Encomenda Tecnologica
+              Acompanhamento das ações da Secretaria de Educação de SC para
+              viabilizar a Encomenda Tecnológica
             </p>
           </div>
         </div>
@@ -218,7 +223,7 @@ export default function SantaCatarinaPage() {
         className="rounded-2xl bg-gradient-to-br from-[#0A2463] to-[#8B5CF6]/20 border border-white/5 p-5 sm:p-6"
       >
         <h2 className="text-sm font-semibold text-white/70 uppercase tracking-wider mb-4">
-          Visao Geral do Progresso
+          Visão Geral do Progresso
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {/* Total */}
@@ -231,7 +236,7 @@ export default function SantaCatarinaPage() {
             <p className="text-2xl font-bold text-[#00E5A0]">
               {stats.completed}
             </p>
-            <p className="text-[11px] text-white/40 mt-1">Concluidas</p>
+            <p className="text-[11px] text-white/40 mt-1">Concluídas</p>
           </div>
           {/* In Progress */}
           <div className="bg-[#00B4D8]/10 rounded-xl p-4 text-center">
@@ -245,7 +250,7 @@ export default function SantaCatarinaPage() {
             <p className="text-2xl font-bold text-[#8B5CF6]">
               {stats.percentage}%
             </p>
-            <p className="text-[11px] text-white/40 mt-1">Progresso Medio</p>
+            <p className="text-[11px] text-white/40 mt-1">Progresso Médio</p>
           </div>
         </div>
 
@@ -322,7 +327,10 @@ export default function SantaCatarinaPage() {
                 <motion.div
                   key={step.number}
                   variants={itemVariants}
-                  className="relative flex items-start gap-4 pl-0"
+                  className="relative flex items-start gap-4 pl-0 cursor-pointer"
+                  onClick={() => {
+                    if (task) setEditingTaskId(task.id);
+                  }}
                 >
                   {/* Step circle */}
                   <div
@@ -453,11 +461,17 @@ export default function SantaCatarinaPage() {
         >
           {scTasks.map((task) => (
             <motion.div key={task.id} variants={itemVariants}>
-              <TaskCard task={task} people={peopleMap} />
+              <TaskCard
+                task={task}
+                people={peopleMap}
+              />
             </motion.div>
           ))}
         </motion.div>
       </motion.div>
+
+      {/* Task Edit Modal */}
+      <TaskEditModal taskId={editingTaskId} onClose={() => setEditingTaskId(null)} />
     </div>
   );
 }

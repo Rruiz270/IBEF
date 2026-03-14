@@ -28,7 +28,7 @@ const roleConfig: Record<
     border: 'border-purple-500/30',
   },
   contratacao: {
-    label: 'Contratacao',
+    label: 'Contratação',
     color: 'text-amber-400',
     bg: 'bg-amber-500/15',
     border: 'border-amber-500/30',
@@ -52,12 +52,12 @@ const departmentColorMap: Record<DepartmentId, string> = {
 };
 
 const departmentLabelMap: Record<DepartmentId, string> = {
-  juridico: 'Juridico',
+  juridico: 'Jurídico',
   tecnologia: 'Tecnologia',
-  relacoes_publicas: 'Relacoes Publicas',
-  operacoes_locais: 'Operacoes',
+  relacoes_publicas: 'Relações Públicas',
+  operacoes_locais: 'Operações',
   santa_catarina: 'Santa Catarina',
-  pedagogico: 'Pedagogico',
+  pedagogico: 'Pedagógico',
   administrativo_financeiro: 'Admin/Financeiro',
 };
 

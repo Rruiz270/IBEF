@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
   Scale,
@@ -9,7 +9,9 @@ import {
   ShieldCheck,
   FileWarning,
 } from 'lucide-react';
-import { tasks, people, milestones } from '../../data/projectData';
+import { people, milestones } from '../../data/projectData';
+import { useProject } from '../../contexts/ProjectContext';
+import TaskEditModal from '../../components/TaskEditModal';
 import type { Person } from '../../data/types';
 import TaskCard from '../../components/TaskCard';
 import CountdownCard from '../../components/CountdownCard';
@@ -36,6 +38,9 @@ const itemVariants = {
 // ---------------------------------------------------------------------------
 
 export default function JuridicoPage() {
+  const { tasks } = useProject();
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+
   // Build people map
   const peopleMap = useMemo<Record<string, Person>>(() => {
     const map: Record<string, Person> = {};
@@ -48,7 +53,7 @@ export default function JuridicoPage() {
   // Filter juridico tasks
   const juridicoTasks = useMemo(
     () => tasks.filter((t) => t.departmentId === 'juridico'),
-    [],
+    [tasks],
   );
 
   // Department leads: Mercia and Emerson
@@ -80,10 +85,10 @@ export default function JuridicoPage() {
           </div>
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-white">
-              Juridico
+              Jurídico
             </h1>
             <p className="text-sm text-white/50 mt-0.5">
-              Assessoria juridica, contratos e conformidade regulatoria
+              Assessoria jurídica, contratos e conformidade regulatória
             </p>
           </div>
         </div>
@@ -106,13 +111,13 @@ export default function JuridicoPage() {
             <div className="flex items-center gap-2 mb-3">
               <FileWarning size={16} className="text-red-400" />
               <h2 className="text-sm font-bold text-red-400 uppercase tracking-wider">
-                Prazo Critico Iminente
+                Prazo Crítico Iminente
               </h2>
             </div>
             <CountdownCard
               targetDate="2026-03-18"
               title="Registro do Estatuto do IBEF"
-              subtitle="Prazo CRITICO - Quarta-feira 18/03/2026. Sem registro, o IBEF nao existe juridicamente. Bloqueia todas as demais acoes."
+              subtitle="Prazo CRÍTICO - Quarta-feira 18/03/2026. Sem registro, o IBEF não existe juridicamente. Bloqueia todas as demais ações."
               urgency="critical"
               totalDays={18}
             />
@@ -127,7 +132,7 @@ export default function JuridicoPage() {
         transition={{ delay: 0.2, duration: 0.5 }}
       >
         <h2 className="text-sm font-semibold text-white/70 uppercase tracking-wider mb-4">
-          Lideranca do Departamento
+          Liderança do Departamento
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {leads.map((lead, idx) => (
@@ -189,7 +194,7 @@ export default function JuridicoPage() {
                       t.assigneeIds.includes(lead.id),
                     ).length
                   }{' '}
-                  tarefa(s) atribuida(s)
+                  tarefa(s) atribuída(s)
                 </span>
               </div>
             </motion.div>
@@ -205,7 +210,7 @@ export default function JuridicoPage() {
           transition={{ delay: 0.3, duration: 0.5 }}
         >
           <h2 className="text-sm font-semibold text-white/70 uppercase tracking-wider mb-4">
-            Marcos Juridicos
+            Marcos Jurídicos
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {juridicoMilestones.map((milestone) => (
@@ -235,7 +240,7 @@ export default function JuridicoPage() {
       >
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-sm font-semibold text-white/70 uppercase tracking-wider">
-            Todas as Tarefas do Juridico
+            Todas as Tarefas do Jurídico
           </h2>
           <span className="text-xs text-white/30">
             {juridicoTasks.length} tarefa(s)
@@ -249,11 +254,17 @@ export default function JuridicoPage() {
         >
           {juridicoTasks.map((task) => (
             <motion.div key={task.id} variants={itemVariants}>
-              <TaskCard task={task} people={peopleMap} />
+              <TaskCard
+                task={task}
+                people={peopleMap}
+              />
             </motion.div>
           ))}
         </motion.div>
       </motion.div>
+
+      {/* Task Edit Modal */}
+      <TaskEditModal taskId={editingTaskId} onClose={() => setEditingTaskId(null)} />
     </div>
   );
 }

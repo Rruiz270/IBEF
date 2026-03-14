@@ -26,8 +26,11 @@ import {
   Filter,
   ArrowUpDown,
   ListChecks,
+  Pencil,
 } from 'lucide-react';
-import { departments, tasks, people, milestones } from '../../data/projectData';
+import { departments, people, milestones } from '../../data/projectData';
+import { useProject } from '../../contexts/ProjectContext';
+import TaskEditModal from '../../components/TaskEditModal';
 import type { Task, Department, Person } from '../../data/types';
 
 // ---------------------------------------------------------------------------
@@ -45,18 +48,18 @@ const ICON_MAP: Record<string, React.ElementType> = {
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: React.ElementType }> = {
-  nao_iniciada: { label: 'Nao Iniciada', color: 'text-gray-400', bg: 'bg-gray-500/20', icon: Circle },
+  nao_iniciada: { label: 'Não Iniciada', color: 'text-gray-400', bg: 'bg-gray-500/20', icon: Circle },
   em_andamento: { label: 'Em Andamento', color: 'text-cyan-400', bg: 'bg-cyan-500/20', icon: Clock },
-  concluida:    { label: 'Concluida', color: 'text-emerald-400', bg: 'bg-emerald-500/20', icon: CheckCircle2 },
+  concluida:    { label: 'Concluída', color: 'text-emerald-400', bg: 'bg-emerald-500/20', icon: CheckCircle2 },
   bloqueada:    { label: 'Bloqueada', color: 'text-amber-400', bg: 'bg-amber-500/20', icon: Ban },
   atrasada:     { label: 'Atrasada', color: 'text-red-400', bg: 'bg-red-500/20', icon: AlertTriangle },
   cancelada:    { label: 'Cancelada', color: 'text-gray-500', bg: 'bg-gray-600/20', icon: Ban },
 };
 
 const PRIORITY_CONFIG: Record<string, { label: string; color: string; dots: number }> = {
-  critica: { label: 'Critica', color: 'bg-red-500', dots: 4 },
+  critica: { label: 'Crítica', color: 'bg-red-500', dots: 4 },
   alta:    { label: 'Alta', color: 'bg-amber-500', dots: 3 },
-  media:   { label: 'Media', color: 'bg-blue-500', dots: 2 },
+  media:   { label: 'Média', color: 'bg-blue-500', dots: 2 },
   baixa:   { label: 'Baixa', color: 'bg-gray-500', dots: 1 },
 };
 
@@ -192,7 +195,7 @@ function StatusStackedBar({ taskList }: { taskList: Task[] }) {
 // Task Card
 // ---------------------------------------------------------------------------
 
-function WorkstreamTaskCard({ task }: { task: Task }) {
+function WorkstreamTaskCard({ task, allTasks, onEdit }: { task: Task; allTasks: Task[]; onEdit?: (taskId: string) => void }) {
   const [notesOpen, setNotesOpen] = useState(false);
   const status = STATUS_CONFIG[task.status];
   const priority = PRIORITY_CONFIG[task.priority];
@@ -200,7 +203,7 @@ function WorkstreamTaskCard({ task }: { task: Task }) {
   const StatusIcon = status.icon;
 
   const depTitles = task.dependencies
-    .map((depId) => tasks.find((t) => t.id === depId)?.title ?? depId)
+    .map((depId) => allTasks.find((t) => t.id === depId)?.title ?? depId)
     .filter(Boolean);
 
   return (
@@ -215,6 +218,16 @@ function WorkstreamTaskCard({ task }: { task: Task }) {
       <div className="flex flex-wrap items-start justify-between gap-2 mb-3">
         <h4 className="text-sm font-semibold text-white flex-1 min-w-0">{task.title}</h4>
         <div className="flex items-center gap-2 shrink-0">
+          {/* Edit button */}
+          {onEdit && (
+            <button
+              onClick={() => onEdit(task.id)}
+              className="p-1 rounded-md hover:bg-white/10 transition-colors"
+              title="Editar tarefa"
+            >
+              <Pencil size={12} className="text-white/40 hover:text-white/70" />
+            </button>
+          )}
           {/* Priority dots */}
           <div className="flex items-center gap-0.5" title={`Prioridade: ${priority.label}`}>
             {Array.from({ length: priority.dots }).map((_, i) => (
@@ -304,7 +317,7 @@ function WorkstreamTaskCard({ task }: { task: Task }) {
             className="flex items-center gap-1 text-xs text-white/40 hover:text-white/60 transition-colors"
           >
             <StickyNote size={12} />
-            <span>Observacoes</span>
+            <span>Observações</span>
             {notesOpen ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
           </button>
           <AnimatePresence>
@@ -333,17 +346,21 @@ function WorkstreamTaskCard({ task }: { task: Task }) {
 function WorkstreamItem({
   dept,
   deptTasks,
+  allTasks,
   isOpen,
   onToggle,
   statusFilter,
   sortMode,
+  onEditTask,
 }: {
   dept: Department;
   deptTasks: Task[];
+  allTasks: Task[];
   isOpen: boolean;
   onToggle: () => void;
   statusFilter: StatusFilter;
   sortMode: SortMode;
+  onEditTask?: (taskId: string) => void;
 }) {
   const DeptIcon = ICON_MAP[dept.icon] || ListChecks;
 
@@ -462,11 +479,11 @@ function WorkstreamItem({
               {/* Quick Stats */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="bg-white/[0.03] rounded-lg p-3 border border-white/[0.05]">
-                  <p className="text-[10px] uppercase tracking-wider text-white/30 mb-1">Distribuicao por Status</p>
+                  <p className="text-[10px] uppercase tracking-wider text-white/30 mb-1">Distribuição por Status</p>
                   <StatusStackedBar taskList={deptTasks} />
                 </div>
                 <div className="bg-white/[0.03] rounded-lg p-3 border border-white/[0.05] flex flex-col justify-center">
-                  <p className="text-[10px] uppercase tracking-wider text-white/30 mb-1">Prazo Mais Proximo</p>
+                  <p className="text-[10px] uppercase tracking-wider text-white/30 mb-1">Prazo Mais Próximo</p>
                   {nearestDeadline ? (
                     <>
                       <p className="text-sm font-medium text-white truncate">{nearestDeadline.title}</p>
@@ -494,7 +511,7 @@ function WorkstreamItem({
                   )}
                 </div>
                 <div className="bg-white/[0.03] rounded-lg p-3 border border-white/[0.05] flex flex-col justify-center">
-                  <p className="text-[10px] uppercase tracking-wider text-white/30 mb-1">Tarefas Criticas</p>
+                  <p className="text-[10px] uppercase tracking-wider text-white/30 mb-1">Tarefas Críticas</p>
                   <div className="flex items-center gap-2">
                     <Flame size={18} className={criticalCount > 0 ? 'text-red-400' : 'text-white/20'} />
                     <span className={`text-2xl font-bold ${criticalCount > 0 ? 'text-red-400' : 'text-white/30'}`}>
@@ -508,7 +525,7 @@ function WorkstreamItem({
               {sortedTasks.length > 0 ? (
                 <div className="space-y-3">
                   {sortedTasks.map((task) => (
-                    <WorkstreamTaskCard key={task.id} task={task} />
+                    <WorkstreamTaskCard key={task.id} task={task} allTasks={allTasks} onEdit={onEditTask} />
                   ))}
                 </div>
               ) : (
@@ -528,7 +545,7 @@ function WorkstreamItem({
 // Summary Bar
 // ---------------------------------------------------------------------------
 
-function SummaryBar() {
+function SummaryBar({ tasks }: { tasks: Task[] }) {
   const total = tasks.length;
   const emAndamento = tasks.filter((t) => t.status === 'em_andamento').length;
   const concluidas = tasks.filter((t) => t.status === 'concluida').length;
@@ -541,9 +558,9 @@ function SummaryBar() {
   const items = [
     { label: 'Total Tarefas', value: total, color: '#90E0EF', pct: 100 },
     { label: 'Em Andamento', value: emAndamento, color: '#00B4D8', pct: total > 0 ? (emAndamento / total) * 100 : 0 },
-    { label: 'Concluidas', value: concluidas, color: '#00E5A0', pct: total > 0 ? (concluidas / total) * 100 : 0 },
+    { label: 'Concluídas', value: concluidas, color: '#00E5A0', pct: total > 0 ? (concluidas / total) * 100 : 0 },
     { label: 'Atrasadas', value: atrasadas, color: '#EF4444', pct: total > 0 ? (atrasadas / total) * 100 : 0 },
-    { label: 'Nao Iniciadas', value: naoIniciadas, color: '#6B7280', pct: total > 0 ? (naoIniciadas / total) * 100 : 0 },
+    { label: 'Não Iniciadas', value: naoIniciadas, color: '#6B7280', pct: total > 0 ? (naoIniciadas / total) * 100 : 0 },
   ];
 
   return (
@@ -579,6 +596,8 @@ function SummaryBar() {
 // ---------------------------------------------------------------------------
 
 export default function WorkstreamsPage() {
+  const { tasks } = useProject();
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [openDepts, setOpenDepts] = useState<Set<string>>(new Set());
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('todas');
   const [sortMode, setSortMode] = useState<SortMode>('prioridade');
@@ -599,14 +618,14 @@ export default function WorkstreamsPage() {
       map[d.id] = tasks.filter((t) => t.departmentId === d.id);
     });
     return map;
-  }, []);
+  }, [tasks]);
 
   const statusFilters: { key: StatusFilter; label: string }[] = [
     { key: 'todas', label: 'Todas' },
     { key: 'em_andamento', label: 'Em Andamento' },
-    { key: 'nao_iniciada', label: 'Nao Iniciadas' },
-    { key: 'concluida', label: 'Concluidas' },
-    { key: 'critica', label: 'Criticas' },
+    { key: 'nao_iniciada', label: 'Não Iniciadas' },
+    { key: 'concluida', label: 'Concluídas' },
+    { key: 'critica', label: 'Críticas' },
   ];
 
   const sortOptions: { key: SortMode; label: string }[] = [
@@ -626,12 +645,12 @@ export default function WorkstreamsPage() {
           Departamentos e Atividades
         </h1>
         <p className="text-sm text-white/50 mt-1">
-          Acompanhamento detalhado por area de atuacao
+          Acompanhamento detalhado por área de atuação
         </p>
       </motion.div>
 
       {/* Summary Bar */}
-      <SummaryBar />
+      <SummaryBar tasks={tasks} />
 
       {/* Filters and Sort */}
       <motion.div
@@ -689,14 +708,19 @@ export default function WorkstreamsPage() {
             <WorkstreamItem
               dept={dept}
               deptTasks={deptTasksMap[dept.id] || []}
+              allTasks={tasks}
               isOpen={openDepts.has(dept.id)}
               onToggle={() => toggleDept(dept.id)}
               statusFilter={statusFilter}
               sortMode={sortMode}
+              onEditTask={(id) => setEditingTaskId(id)}
             />
           </motion.div>
         ))}
       </div>
+
+      {/* Task Edit Modal */}
+      <TaskEditModal taskId={editingTaskId} onClose={() => setEditingTaskId(null)} />
     </div>
   );
 }

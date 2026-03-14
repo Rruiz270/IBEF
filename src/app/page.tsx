@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import type { Variants } from 'framer-motion';
 import {
@@ -15,13 +15,15 @@ import {
 import {
   phases,
   departments,
-  tasks,
   people,
   countdowns,
   getDashboardSummary,
   daysUntil,
   computeOverallProgress,
 } from '../data/projectData';
+
+import { useProject } from '../contexts/ProjectContext';
+import TaskEditModal from '../components/TaskEditModal';
 
 import type { UrgencyLevel } from '../data/types';
 
@@ -119,6 +121,9 @@ function SummaryCard({ title, value, icon: Icon, gradient, index }: SummaryCardP
 // ---------------------------------------------------------------------------
 
 export default function DashboardPage() {
+  const { tasks } = useProject();
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+
   const summary = useMemo(() => getDashboardSummary(), []);
   const overallProgress = useMemo(() => computeOverallProgress(), []);
   const today = useMemo(() => new Date(), []);
@@ -132,7 +137,7 @@ export default function DashboardPage() {
       index: 0,
     },
     {
-      title: 'Concluidas',
+      title: 'Concluídas',
       value: summary.completedTasks,
       icon: CheckCircle2,
       gradient: 'from-[#0A2463] via-[#0A2463] to-[#00E5A0]/20',
@@ -146,7 +151,7 @@ export default function DashboardPage() {
       index: 2,
     },
     {
-      title: 'Tarefas Criticas',
+      title: 'Tarefas Críticas',
       value: summary.criticalTasks,
       icon: Flame,
       gradient: 'from-[#0A2463] via-[#0A2463] to-red-900/30',
@@ -185,7 +190,7 @@ export default function DashboardPage() {
               transition={{ delay: 0.35, duration: 0.5 }}
               className="text-sm sm:text-base text-white/50 mt-1"
             >
-              Instituto Brasileiro pela Educacao do Futuro — Encomenda Tecnologica SC
+              Instituto Brasileiro pela Educação do Futuro — Encomenda Tecnológica SC
             </motion.p>
           </div>
 
@@ -235,7 +240,7 @@ export default function DashboardPage() {
               Prazos e Contagens Regressivas
             </h2>
             <p className="text-xs text-white/40">
-              Datas criticas do projeto ETEC
+              Datas críticas do projeto ETEC
             </p>
           </div>
         </div>
@@ -286,7 +291,7 @@ export default function DashboardPage() {
               Progresso por Departamento
             </h2>
             <p className="text-xs text-white/40">
-              Acompanhamento das areas do projeto
+              Acompanhamento das áreas do projeto
             </p>
           </div>
         </div>
@@ -319,7 +324,7 @@ export default function DashboardPage() {
               Progresso Geral do Projeto
             </h2>
             <p className="text-xs text-white/40">
-              Ponderado pelo orcamento de cada fase
+              Ponderado pelo orçamento de cada fase
             </p>
           </div>
           <motion.div
@@ -374,6 +379,9 @@ export default function DashboardPage() {
 
       {/* Bottom spacer */}
       <div className="h-4" />
+
+      {/* Task Edit Modal */}
+      <TaskEditModal taskId={editingTaskId} onClose={() => setEditingTaskId(null)} />
     </div>
   );
 }

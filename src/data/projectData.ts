@@ -391,6 +391,7 @@ export const tasks: Task[] = [
       'URGENTE - Prazo iminente. Sem o registro do estatuto, o IBEF nao existe juridicamente e nenhuma outra acao formal pode prosseguir. Bloqueia CNPJ, assembleia e contratos.',
     progress: 60,
     tags: ['urgente', 'bloqueante', 'fundacao'],
+    subtasks: [],
   },
   {
     id: 'task-jur-02',
@@ -410,6 +411,7 @@ export const tasks: Task[] = [
       'Depende do registro do estatuto. Necessario para operar formalmente em SC e firmar contratos com o governo estadual.',
     progress: 0,
     tags: ['fundacao', 'sc'],
+    subtasks: [],
   },
   {
     id: 'task-jur-03',
@@ -429,6 +431,7 @@ export const tasks: Task[] = [
       'Depende do registro do estatuto. CNPJ necessario para abertura de conta bancaria, contratos e notas fiscais.',
     progress: 0,
     tags: ['fundacao', 'bloqueante'],
+    subtasks: [],
   },
   {
     id: 'task-jur-04',
@@ -448,6 +451,7 @@ export const tasks: Task[] = [
       'Contratos devem prever termos de propriedade intelectual, confidencialidade e escopo de atuacao de cada parceiro.',
     progress: 0,
     tags: ['contratos', 'parcerias'],
+    subtasks: [],
   },
   {
     id: 'task-jur-05',
@@ -467,6 +471,7 @@ export const tasks: Task[] = [
       'Critico para a plataforma educacional que lidara com dados de menores de idade. Deve estar pronto antes do inicio da PoC com escolas.',
     progress: 0,
     tags: ['lgpd', 'compliance', 'dados'],
+    subtasks: [],
   },
 
   // =========================================================================
@@ -490,6 +495,7 @@ export const tasks: Task[] = [
       'Deve considerar sistemas legados de SC (SISGESC, Professor Online, etc). Arquitetura precisa ser escalavel para expansao estadual.',
     progress: 25,
     tags: ['arquitetura', 'integracao', 'plataforma'],
+    subtasks: [],
   },
   {
     id: 'task-tech-02',
@@ -509,6 +515,7 @@ export const tasks: Task[] = [
       'Depende de acesso concedido pela SED/SC. Bruno Quick esta articulando junto ao governo.',
     progress: 10,
     tags: ['apis', 'legado', 'sc', 'integracao'],
+    subtasks: [],
   },
   {
     id: 'task-tech-03',
@@ -528,6 +535,7 @@ export const tasks: Task[] = [
       'PoC deve demonstrar valor suficiente para justificar o investimento completo no piloto. Meta: 3 escolas testando ate setembro/2026.',
     progress: 0,
     tags: ['poc', 'desenvolvimento', 'plataforma'],
+    subtasks: [],
   },
   {
     id: 'task-tech-04',
@@ -547,6 +555,7 @@ export const tasks: Task[] = [
       'Depende do alinhamento curricular BNCC do time pedagogico. Modelos iniciais podem usar dados sinteticos ate dados reais estarem disponiveis.',
     progress: 0,
     tags: ['ia', 'machine-learning', 'bncc', 'personalizacao'],
+    subtasks: [],
   },
   {
     id: 'task-tech-05',
@@ -566,6 +575,7 @@ export const tasks: Task[] = [
       'Deve considerar requisitos de soberania de dados (dados educacionais brasileiros). Verificar se ha exigencia de datacenter nacional.',
     progress: 0,
     tags: ['infraestrutura', 'devops', 'cloud'],
+    subtasks: [],
   },
   {
     id: 'task-tech-06',
@@ -585,6 +595,7 @@ export const tasks: Task[] = [
       'Alinhamento com parceiros tecnologicos (Jinso, Sprix, MadeinWEB) sobre capacidades e preferencias tecnicas.',
     progress: 30,
     tags: ['stack', 'padroes', 'documentacao'],
+    subtasks: [],
   },
 
   // =========================================================================
@@ -608,6 +619,7 @@ export const tasks: Task[] = [
       'Atividade continua. Fundamental para o sucesso do projeto. Inclui reunioes periodicas, alinhamento de expectativas e suporte politico.',
     progress: 30,
     tags: ['governo', 'sc', 'relacionamento'],
+    subtasks: [],
   },
   {
     id: 'task-rp-02',
@@ -627,6 +639,7 @@ export const tasks: Task[] = [
       'Inclui newsletter mensal, relatorios de progresso para investidores e comunicacao com comunidade educacional.',
     progress: 0,
     tags: ['comunicacao', 'stakeholders'],
+    subtasks: [],
   },
   {
     id: 'task-rp-03',
@@ -646,6 +659,7 @@ export const tasks: Task[] = [
       'Depende da existencia juridica do IBEF (estatuto registrado e IBEF registrado em SC).',
     progress: 0,
     tags: ['parcerias', 'governo', 'acordos'],
+    subtasks: [],
   },
   {
     id: 'task-rp-04',
@@ -665,6 +679,7 @@ export const tasks: Task[] = [
       'Convites devem ser formalizados apos registro do estatuto. Preparar material institucional e proposta de valor para cada convidado.',
     progress: 0,
     tags: ['conselho', 'advisory', 'convites'],
+    subtasks: [],
   },
 
   // =========================================================================
@@ -688,6 +703,7 @@ export const tasks: Task[] = [
       'Considerar cobertura geografica de SC, diversidade de regioes (litoral, serra, oeste) e diferentes necessidades de infraestrutura.',
     progress: 0,
     tags: ['provedores', 'infraestrutura', 'sc'],
+    subtasks: [],
   },
   {
     id: 'task-ops-02',
@@ -707,6 +723,7 @@ export const tasks: Task[] = [
       'Depende do CNPJ para contrato de aluguel. Considerar coworking como opcao temporaria.',
     progress: 0,
     tags: ['escritorio', 'florianopolis', 'infraestrutura'],
+    subtasks: [],
   },
   {
     id: 'task-ops-03',
@@ -726,6 +743,7 @@ export const tasks: Task[] = [
       'Processos devem estar prontos antes do inicio do piloto controlado em outubro/2026.',
     progress: 0,
     tags: ['equipe', 'campo', 'processos'],
+    subtasks: [],
   },
   {
     id: 'task-ops-04',
@@ -745,6 +763,7 @@ export const tasks: Task[] = [
       'Trabalho conjunto com SED/SC para acesso as escolas. Resultado alimenta criterios de selecao do time pedagogico.',
     progress: 0,
     tags: ['diagnostico', 'escolas', 'infraestrutura'],
+    subtasks: [],
   },
 
   // =========================================================================
@@ -768,6 +787,7 @@ export const tasks: Task[] = [
       'Documento fundamental conforme TCU. Deve conter analise do problema, justificativa da ETEC vs. outras modalidades de contratacao, e diagnostico da situacao atual.',
     progress: 40,
     tags: ['sed', 'tcu', 'inovagovsc', 'documento'],
+    subtasks: [],
   },
   {
     id: 'task-sc-02',
@@ -787,6 +807,7 @@ export const tasks: Task[] = [
       'Conforme Guia InovaGovSC. Deve incluir analise de risco tecnologico, estimativa de custos e cronograma preliminar.',
     progress: 0,
     tags: ['sed', 'etp', 'inovagovsc'],
+    subtasks: [],
   },
   {
     id: 'task-sc-03',
@@ -806,6 +827,7 @@ export const tasks: Task[] = [
       'Portaria deve designar membros da comissao com representantes da SED, CIASC e areas tecnicas do governo.',
     progress: 0,
     tags: ['sed', 'portaria', 'comissao'],
+    subtasks: [],
   },
   {
     id: 'task-sc-04',
@@ -825,6 +847,7 @@ export const tasks: Task[] = [
       'Deve definir claramente: problema a ser resolvido, requisitos tecnicos, marcos contratuais, propriedade intelectual e metricas de sucesso.',
     progress: 0,
     tags: ['sed', 'termo-referencia', 'especificacoes'],
+    subtasks: [],
   },
   {
     id: 'task-sc-05',
@@ -844,6 +867,7 @@ export const tasks: Task[] = [
       'PGE deve atestar legalidade do processo. Tempo medio de parecer: 15-30 dias. Pode haver pedidos de esclarecimento.',
     progress: 0,
     tags: ['sed', 'pge', 'parecer-juridico'],
+    subtasks: [],
   },
   {
     id: 'task-sc-06',
@@ -863,6 +887,7 @@ export const tasks: Task[] = [
       'Conforme Lei de Inovacao e regulamentacao estadual. IBEF deve estar preparado para apresentar proposta tecnica e financeira.',
     progress: 0,
     tags: ['sed', 'chamamento', 'ict', 'selecao'],
+    subtasks: [],
   },
   {
     id: 'task-sc-07',
@@ -882,6 +907,7 @@ export const tasks: Task[] = [
       'Marco fundamental do projeto. Apos assinatura, inicia-se oficialmente a execucao da ETEC com recursos do estado.',
     progress: 0,
     tags: ['sed', 'contrato', 'etec', 'marco'],
+    subtasks: [],
   },
 
   // =========================================================================
@@ -905,6 +931,7 @@ export const tasks: Task[] = [
       'Priorizar Ensino Fundamental II e Ensino Medio para a PoC. Considerar curriculo de SC (Curriculo Base do Territorio Catarinense).',
     progress: 0,
     tags: ['bncc', 'curriculo', 'conteudo'],
+    subtasks: [],
   },
   {
     id: 'task-ped-02',
@@ -924,6 +951,7 @@ export const tasks: Task[] = [
       'Formacao deve cobrir: uso da plataforma, metodologias ativas, interpretacao de dados de aprendizagem e personalicao do ensino.',
     progress: 0,
     tags: ['formacao', 'professores', 'capacitacao'],
+    subtasks: [],
   },
   {
     id: 'task-ped-03',
@@ -943,6 +971,7 @@ export const tasks: Task[] = [
       'Criterios: infraestrutura minima, engajamento da gestao escolar, diversidade regional (litoral/serra/oeste), diferentes portes de escola.',
     progress: 0,
     tags: ['escolas', 'piloto', 'selecao', 'criterios'],
+    subtasks: [],
   },
   {
     id: 'task-ped-04',
@@ -962,6 +991,7 @@ export const tasks: Task[] = [
       'Deve incluir: metricas quantitativas (notas, frequencia, engajamento), qualitativas (percepcao de professores/alunos) e grupo de controle.',
     progress: 0,
     tags: ['avaliacao', 'impacto', 'metricas'],
+    subtasks: [],
   },
 
   // =========================================================================
@@ -985,6 +1015,7 @@ export const tasks: Task[] = [
       'Depende do CNPJ para abertura de conta bancaria. Orcamento total estimado: R$ 4.65M ao longo de 24 meses.',
     progress: 0,
     tags: ['financeiro', 'planejamento', 'orcamento'],
+    subtasks: [],
   },
   {
     id: 'task-adm-02',
@@ -1004,6 +1035,7 @@ export const tasks: Task[] = [
       'Fase 0: R$150k | Fase 1: R$800k | Fase 2: R$2.5M | Fase 3: R$1.2M. Incluir 10% de contingencia em cada fase.',
     progress: 0,
     tags: ['orcamento', 'fases', 'alocacao'],
+    subtasks: [],
   },
   {
     id: 'task-adm-03',
@@ -1023,6 +1055,7 @@ export const tasks: Task[] = [
       'Essencial para contrato com governo. Deve atender requisitos de transparencia, auditabilidade e prestacao de contas periodica.',
     progress: 0,
     tags: ['compliance', 'tcu', 'transparencia', 'prestacao-contas'],
+    subtasks: [],
   },
   {
     id: 'task-adm-04',
@@ -1042,6 +1075,7 @@ export const tasks: Task[] = [
       'Depende do CNPJ atualizado. Priorizar banco com experiencia em contas de organizacoes do terceiro setor.',
     progress: 0,
     tags: ['banco', 'conta', 'financeiro'],
+    subtasks: [],
   },
 ];
 

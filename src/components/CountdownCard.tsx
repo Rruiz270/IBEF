@@ -51,7 +51,7 @@ const urgencyConfig: Record<
     gradient: 'from-[#0A2463] to-[#00B4D8]/30',
     glow: 'shadow-[#00B4D8]/20',
     icon: Clock,
-    label: 'Atencao',
+    label: 'Atenção',
   },
   high: {
     gradient: 'from-[#0A2463] to-amber-900/40',
@@ -63,7 +63,7 @@ const urgencyConfig: Record<
     gradient: 'from-[#0A2463] to-red-900/40',
     glow: 'shadow-red-500/30',
     icon: Flame,
-    label: 'Critico',
+    label: 'Crítico',
   },
 };
 

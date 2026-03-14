@@ -28,7 +28,7 @@ const itemVariants = {
 export default function OrganogramaPage() {
   return (
     <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-8">
-      {/* Cabecalho da pagina */}
+      {/* Cabeçalho da página */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -58,7 +58,7 @@ export default function OrganogramaPage() {
         <OrgChart />
       </motion.div>
 
-      {/* Secao: Todos os Membros */}
+      {/* Seção: Todos os Membros */}
       <motion.section
         variants={containerVariants}
         initial="hidden"

@@ -67,6 +67,13 @@ export type HiringStatus =
 // Core Data Structures
 // ---------------------------------------------------------------------------
 
+/** A subtask within a task */
+export interface Subtask {
+  id: string;
+  title: string;
+  completed: boolean;
+}
+
 /** A single task within a department */
 export interface Task {
   id: string;
@@ -91,6 +98,7 @@ export interface Task {
   /** 0-100 percentage */
   progress: number;
   tags: string[];
+  subtasks: Subtask[];
 }
 
 /** An ETEC project phase */

@@ -17,22 +17,22 @@ const defaultOrgData: OrgNode = {
     id: 'raphael',
     name: 'Raphael Ruiz',
     role: 'fundador',
-    title: 'Presidente',
+    title: 'Project Leader / Diretor Executivo Presidente',
     departmentIds: [],
     email: null,
-    notes: 'Presidente e fundador do IBEF',
+    notes: 'Líder geral do projeto ETEC. Todos reportam a ele.',
     avatarUrl: null,
     assembleiaConfirmed: true,
   },
   expanded: true,
   children: [
     {
-      label: 'Juridico',
+      label: 'Jurídico',
       person: {
         id: 'mercia',
         name: 'Mercia',
         role: 'parceiro',
-        title: 'Assessoria Juridica',
+        title: 'Assessoria Jurídica',
         departmentIds: ['juridico'],
         email: null,
         notes: '',
@@ -46,7 +46,7 @@ const defaultOrgData: OrgNode = {
             id: 'emerson',
             name: 'Emerson',
             role: 'parceiro',
-            title: 'Assessoria Juridica',
+            title: 'Assessoria Jurídica',
             departmentIds: ['juridico'],
             email: null,
             notes: '',
@@ -76,7 +76,7 @@ const defaultOrgData: OrgNode = {
         id: 'bruno-quick',
         name: 'Bruno Quick',
         role: 'fundador',
-        title: 'Diretor de Relacoes Publicas',
+        title: 'Diretor de Relações Públicas',
         departmentIds: ['relacoes_publicas'],
         email: null,
         notes: '',
@@ -91,7 +91,7 @@ const defaultOrgData: OrgNode = {
         id: 'gustavo',
         name: 'Gustavo',
         role: 'fundador',
-        title: 'Diretor de Operacoes',
+        title: 'Diretor de Operações',
         departmentIds: ['operacoes_locais'],
         email: null,
         notes: '',
@@ -327,7 +327,7 @@ export default function OrgChart({ data, onPersonClick }: OrgChartProps) {
             </span>
             <span className="flex items-center gap-1">
               <span className="w-2 h-2 rounded-full bg-[#00B4D8]" />{' '}
-              Contratacao
+              Contratação
             </span>
           </div>
         </div>
@@ -367,16 +367,16 @@ export default function OrgChart({ data, onPersonClick }: OrgChartProps) {
         <SectionHeader title="Conselho Fiscal" icon={Users} />
         <TBDCard
           title="A Definir"
-          description="Membros do Conselho Fiscal serao definidos na proxima assembleia"
+          description="Membros do Conselho Fiscal serão definidos na próxima assembleia"
         />
       </section>
 
-      {/* Coordenacao Cientifica */}
+      {/* Coordenação Científica */}
       <section>
-        <SectionHeader title="Coordenacao Cientifica" icon={Users} />
+        <SectionHeader title="Coordenação Científica" icon={Users} />
         <TBDCard
           title="A Definir"
-          description="Coordenacao Cientifica em processo de estruturacao"
+          description="Coordenação Científica em processo de estruturação"
         />
       </section>
     </div>

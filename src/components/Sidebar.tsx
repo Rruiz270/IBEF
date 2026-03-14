@@ -202,7 +202,7 @@ export default function Sidebar() {
         <button
           onClick={toggleCollapsed}
           className="flex items-center justify-center w-full py-2 rounded-lg text-white/50 hover:text-white hover:bg-white/5 transition-colors"
-          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          aria-label={collapsed ? 'Expandir sidebar' : 'Recolher sidebar'}
         >
           <motion.div
             animate={{ rotate: collapsed ? 180 : 0 }}
@@ -236,7 +236,7 @@ export default function Sidebar() {
           >
             <p className="text-[10px] text-white/30 leading-relaxed">
               IBEF &mdash; Instituto Brasileiro<br />
-              pela Educa&ccedil;&atilde;o do Futuro
+              pela Educação do Futuro
             </p>
           </motion.div>
         )}

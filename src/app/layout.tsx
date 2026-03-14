@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { ProjectProvider } from "@/contexts/ProjectContext";
 import LayoutShell from "@/components/LayoutShell";
 import "./globals.css";
 
@@ -24,7 +25,9 @@ export default function RootLayout({
       <body
         className={`${inter.variable} font-sans antialiased bg-[#030B1A] min-h-screen text-text-primary`}
       >
-        <LayoutShell>{children}</LayoutShell>
+        <ProjectProvider>
+          <LayoutShell>{children}</LayoutShell>
+        </ProjectProvider>
       </body>
     </html>
   );
