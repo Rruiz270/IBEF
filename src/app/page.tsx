@@ -16,6 +16,17 @@ import {
   Globe,
   Sparkles,
   HandshakeIcon,
+  Brain,
+  Users,
+  School,
+  BarChart3,
+  Shield,
+  Lightbulb,
+  Layers,
+  Monitor,
+  Search,
+  Route,
+  Zap,
 } from 'lucide-react';
 
 /* ============================================
@@ -23,37 +34,148 @@ import {
    ============================================ */
 
 const valores = [
-  'Inovação com propósito',
-  'Transparência e prestação de contas',
-  'Colaboração público-privada',
-  'Compromisso com resultados mensuráveis',
-  'Respeito à diversidade regional',
+  {
+    title: 'Humanismo Tecnológico',
+    description: 'IA ética e sem vieses, colocando o ser humano no centro de cada solução.',
+  },
+  {
+    title: 'Maturidade Cívica',
+    description: 'Formação para autonomia e pensamento crítico dos estudantes e educadores.',
+  },
+  {
+    title: 'Transparência',
+    description: 'Decisões fundamentadas em dados abertos e auditáveis.',
+  },
 ];
 
-const oQueFazemos = [
+const pilares = [
   {
-    icon: Sparkles,
-    title: 'Inteligência Artificial Educacional',
+    icon: Lightbulb,
+    title: 'Inovação',
+    subtitle: 'Orquestração e Ecossistema',
     description:
-      'Desenvolvemos plataformas de IA que personalizam a aprendizagem, adaptando conteúdos e metodologias ao ritmo de cada aluno.',
+      'Capacidade de articular parcerias intersetoriais, unindo o setor público, o privado e o terceiro setor para solucionar desafios educacionais complexos.',
+    color: '#C2703E',
   },
   {
-    icon: HandshakeIcon,
-    title: 'Parcerias com Governos',
+    icon: Layers,
+    title: 'Tecnologia',
+    subtitle: 'Alicerce Escalável',
     description:
-      'Articulamos parcerias estratégicas com secretarias estaduais de educação para implementar soluções em larga escala na rede pública.',
+      'Infraestrutura de nuvem, IA preditiva e generativa, e engenharia de dados capaz de suportar redes com mais de 1.000 escolas, 50 mil docentes e 550 mil alunos.',
+    color: '#2E5A88',
   },
   {
-    icon: Briefcase,
-    title: 'Gestão de Projetos Educacionais',
+    icon: BookOpen,
+    title: 'Ciência',
+    subtitle: 'Metodologia Baseada em Evidências',
     description:
-      'Gerenciamos projetos complexos de tecnologia educacional, da concepção à implementação, com foco em resultados mensuráveis.',
+      'Produção de conhecimento científico, documentação de aprendizados e avaliação de impacto de intervenções em contextos educacionais.',
+    color: '#1A3A5C',
+  },
+];
+
+const ecossistema = [
+  {
+    icon: GraduationCap,
+    title: 'Eixo Discente',
+    subtitle: 'Centro',
+    description:
+      'Personalização do percurso, engajamento interativo e foco na redução do abandono escolar.',
+    color: '#C2703E',
   },
   {
-    icon: Globe,
-    title: 'Pesquisa e Inovação',
+    icon: Users,
+    title: 'Eixo Docente',
+    subtitle: 'Empoderamento',
     description:
-      'Investimos em pesquisa aplicada para criar soluções baseadas em evidências que melhorem os indicadores educacionais do país.',
+      'Empoderamento do professor como mediador, liberação de tempo burocrático e suporte com IA.',
+    color: '#2E5A88',
+  },
+  {
+    icon: Building2,
+    title: 'Eixo Institucional',
+    subtitle: 'Infraestrutura',
+    description:
+      'Simplificação administrativa e estruturação de infraestrutura para aprendizagem digital.',
+    color: '#1A3A5C',
+  },
+  {
+    icon: BarChart3,
+    title: 'Convergência Sistêmica',
+    subtitle: 'Anel Externo',
+    description:
+      'Repositório unificado de dados transformando registros administrativos e pedagógicos em inteligência acionável.',
+    color: '#64748B',
+  },
+];
+
+const jornadaDocente = [
+  {
+    icon: Monitor,
+    title: 'Simplificação Operacional',
+    description: 'Redução de até 30% do tempo em tarefas burocráticas através de interface unificada.',
+  },
+  {
+    icon: School,
+    title: 'Capacitação Pedagógica',
+    description: 'Trilhas formativas alinhadas à Escola de Formação.',
+  },
+  {
+    icon: BookOpen,
+    title: 'Planejamento Pedagógico',
+    description: 'Criação de aulas alinhadas à BNCC com suporte inteligente.',
+  },
+  {
+    icon: Zap,
+    title: 'Execução Digital',
+    description: 'Aulas em ambiente interativo com coleta de dados em tempo real.',
+  },
+  {
+    icon: Brain,
+    title: 'IA como Suporte',
+    description: 'Co-piloto de IA generativa para sugerir intervenções e roteiros adaptados à turma.',
+  },
+];
+
+const aprendizagemAluno = [
+  {
+    icon: Search,
+    title: 'Diagnóstico de Competências',
+    description: 'Identificação precisa de lacunas de aprendizagem em tempo real.',
+  },
+  {
+    icon: Route,
+    title: 'Percursos Adaptativos',
+    description:
+      'O motor de IA prescreve trilhas de recuperação estruturadas conforme o perfil individual do aluno.',
+  },
+  {
+    icon: Zap,
+    title: 'Engajamento Constante',
+    description:
+      'Retorno formativo imediato, mantendo o aluno no centro de seu próprio desenvolvimento educacional.',
+  },
+];
+
+const governanca = [
+  {
+    icon: Users,
+    title: 'Conselho Consultivo & Diretoria',
+    description:
+      'Governança estratégica pro bono, garantindo independência, ética e alinhamento inabalável aos interesses públicos.',
+  },
+  {
+    icon: BookOpen,
+    title: 'Coordenação Científica',
+    description:
+      'Supervisão rigorosa de metodologias, validando a eficácia pedagógica de todas as intervenções tecnológicas implantadas.',
+  },
+  {
+    icon: Shield,
+    title: 'Segurança e LGPD',
+    description:
+      'Proteção absoluta de dados de menores de idade, com arquitetura criptografada, DPO próprio e Relatórios de Impacto contínuos.',
   },
 ];
 
@@ -90,7 +212,7 @@ const clientes = [
     name: 'Estado de Santa Catarina',
     detail: 'Secretaria de Estado da Educação (SED/SC)',
     description:
-      'Encomenda Tecnológica para desenvolvimento de plataforma educacional com IA para a rede pública estadual.',
+      'Encomenda Tecnológica para desenvolvimento de plataforma educacional com IA para a rede pública estadual — mais de 1.000 escolas, 50 mil docentes e 550 mil alunos.',
   },
 ];
 
@@ -169,7 +291,7 @@ export default function LandingPage() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5, duration: 0.6 }}
           >
-            Instituto Brasileiro pela Educação do Futuro
+            Orquestrando o Futuro da Educação Pública
           </motion.p>
 
           <motion.p
@@ -178,8 +300,9 @@ export default function LandingPage() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6, duration: 0.6 }}
           >
-            Transformando a educação pública brasileira por meio da tecnologia,
-            inteligência artificial e inovação pedagógica.
+            Não somos apenas desenvolvedores de software — somos orquestradores
+            da transformação educacional. Nossa tecnologia não substitui o humano;
+            ela o liberta para focar no que realmente importa: a aprendizagem.
           </motion.p>
 
           <motion.div
@@ -209,24 +332,28 @@ export default function LandingPage() {
         </motion.div>
       </section>
 
-      {/* ========== SOBRE NÓS ========== */}
+      {/* ========== O MANIFESTO ========== */}
       <section className="relative py-24 sm:py-32 px-4 sm:px-6 bg-[#F8FAFC]">
         <div className="max-w-4xl mx-auto">
           <motion.div {...fadeInUp} className="text-center">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#0A2463]/10 bg-[#0A2463]/5 mb-6">
               <BookOpen size={14} className="text-[#0A2463]" />
-              <span className="text-xs text-[#0A2463] font-medium uppercase tracking-wider">Sobre Nós</span>
+              <span className="text-xs text-[#0A2463] font-medium uppercase tracking-wider">Manifesto</span>
             </div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#0F172A] leading-tight">
               Quem Somos
             </h2>
             <p className="mt-8 text-[#64748B] text-base sm:text-lg leading-relaxed max-w-3xl mx-auto">
-              O IBEF — Instituto Brasileiro pela Educação do Futuro — é uma organização
-              dedicada a transformar a educação pública brasileira por meio da inovação
-              tecnológica, inteligência artificial e parcerias estratégicas com governos
-              estaduais. Acreditamos que a tecnologia, quando aplicada com propósito e
-              rigor científico, pode personalizar a aprendizagem e garantir que cada
-              estudante alcance seu potencial máximo.
+              O IBEF é uma Instituição Científica, Tecnológica e de Inovação (ICT)
+              que atua na intersecção entre a pesquisa metodológica, o desenvolvimento
+              tecnológico e a efetividade das políticas públicas educacionais.
+              Nascemos da urgência em conectar o rigor da ciência, a agilidade da
+              inovação e o compromisso do setor público.
+            </p>
+            <p className="mt-6 text-[#64748B] text-base sm:text-lg leading-relaxed max-w-3xl mx-auto">
+              Operamos projetos de risco tecnológico (Encomendas Tecnológicas) para
+              gerar soluções em escala que o mercado tradicional não consegue absorver.
+              Transformamos a complexidade dos dados em impacto humano mensurável e duradouro.
             </p>
           </motion.div>
         </div>
@@ -237,7 +364,7 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto">
           <motion.div {...fadeInUp} className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#0F172A] leading-tight">
-              Missão, Visão e Valores
+              O Propósito Que Nos Move
             </h2>
           </motion.div>
 
@@ -247,47 +374,47 @@ export default function LandingPage() {
           >
             <motion.div
               {...staggerItem}
-              className="relative rounded-2xl bg-white border border-[#E2E8F0] p-8 shadow-sm hover:shadow-md hover:border-[#00B4D8]/30 transition-all duration-300"
+              className="relative rounded-2xl bg-white border border-[#E2E8F0] p-8 shadow-sm hover:shadow-md hover:border-[#C2703E]/30 transition-all duration-300"
             >
-              <div className="w-12 h-12 rounded-xl bg-[#0A2463]/5 flex items-center justify-center mb-5">
-                <Target size={24} className="text-[#0A2463]" />
+              <div className="w-12 h-12 rounded-xl bg-[#C2703E]/10 flex items-center justify-center mb-5">
+                <Target size={24} className="text-[#C2703E]" />
               </div>
               <h3 className="text-xl font-bold text-[#0F172A] mb-3">Missão</h3>
               <p className="text-sm sm:text-base text-[#64748B] leading-relaxed">
-                Desenvolver e implementar soluções tecnológicas inovadoras que personalizem
-                o processo de aprendizagem, elevando os indicadores educacionais da rede
-                pública brasileira.
+                Gerar impacto mensurável na qualidade da educação pública,
+                desenvolvendo pesquisa aplicada e soluções tecnológicas com foco
+                em aprendizagem, fluxo escolar e equidade.
               </p>
             </motion.div>
 
             <motion.div
               {...staggerItem}
-              className="relative rounded-2xl bg-white border border-[#E2E8F0] p-8 shadow-sm hover:shadow-md hover:border-[#00B4D8]/30 transition-all duration-300"
+              className="relative rounded-2xl bg-white border border-[#E2E8F0] p-8 shadow-sm hover:shadow-md hover:border-[#2E5A88]/30 transition-all duration-300"
             >
-              <div className="w-12 h-12 rounded-xl bg-[#00B4D8]/10 flex items-center justify-center mb-5">
-                <Eye size={24} className="text-[#00B4D8]" />
+              <div className="w-12 h-12 rounded-xl bg-[#2E5A88]/10 flex items-center justify-center mb-5">
+                <Eye size={24} className="text-[#2E5A88]" />
               </div>
               <h3 className="text-xl font-bold text-[#0F172A] mb-3">Visão</h3>
               <p className="text-sm sm:text-base text-[#64748B] leading-relaxed">
-                Ser referência nacional na aplicação de inteligência artificial para
-                educação pública, promovendo equidade e excelência no ensino em todo o
-                território brasileiro.
+                Ser o centro de inteligência orquestrador que consolida uma
+                capacidade institucional permanente no Estado, transformando redes
+                de ensino em ecossistemas baseados em evidências.
               </p>
             </motion.div>
 
             <motion.div
               {...staggerItem}
-              className="relative rounded-2xl bg-white border border-[#E2E8F0] p-8 shadow-sm hover:shadow-md hover:border-[#00B4D8]/30 transition-all duration-300"
+              className="relative rounded-2xl bg-white border border-[#E2E8F0] p-8 shadow-sm hover:shadow-md hover:border-[#00E5A0]/30 transition-all duration-300"
             >
               <div className="w-12 h-12 rounded-xl bg-[#00E5A0]/10 flex items-center justify-center mb-5">
                 <Heart size={24} className="text-[#00E5A0]" />
               </div>
               <h3 className="text-xl font-bold text-[#0F172A] mb-3">Valores</h3>
-              <ul className="space-y-2">
+              <ul className="space-y-3">
                 {valores.map((valor) => (
-                  <li key={valor} className="flex items-start gap-2 text-sm sm:text-base text-[#64748B]">
-                    <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#00E5A0] shrink-0" />
-                    {valor}
+                  <li key={valor.title}>
+                    <span className="text-sm font-semibold text-[#0F172A]">{valor.title}</span>
+                    <p className="text-sm text-[#64748B] mt-0.5">{valor.description}</p>
                   </li>
                 ))}
               </ul>
@@ -296,19 +423,69 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ========== O QUE FAZEMOS ========== */}
+      {/* ========== OS TRÊS PILARES ========== */}
       <section className="relative py-24 sm:py-32 px-4 sm:px-6 bg-[#F8FAFC]">
         <div className="max-w-6xl mx-auto">
           <motion.div {...fadeInUp} className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#00B4D8]/15 bg-[#00B4D8]/5 mb-6">
-              <Sparkles size={14} className="text-[#00B4D8]" />
-              <span className="text-xs text-[#00B4D8] font-medium uppercase tracking-wider">Atuação</span>
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#0A2463]/10 bg-[#0A2463]/5 mb-6">
+              <Layers size={14} className="text-[#0A2463]" />
+              <span className="text-xs text-[#0A2463] font-medium uppercase tracking-wider">Fundamentos</span>
             </div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#0F172A] leading-tight">
-              O Que Fazemos
+              Os Três Pilares
             </h2>
             <p className="mt-4 text-[#64748B] text-base sm:text-lg max-w-2xl mx-auto">
-              Nossas áreas de atuação combinam tecnologia de ponta com impacto social na educação.
+              Nossa atuação se sustenta sobre três pilares que, juntos, garantem soluções robustas e de impacto real.
+            </p>
+          </motion.div>
+
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8"
+            {...staggerContainer}
+          >
+            {pilares.map((pilar) => {
+              const Icon = pilar.icon;
+              return (
+                <motion.div
+                  key={pilar.title}
+                  {...staggerItem}
+                  className="relative rounded-2xl bg-white border border-[#E2E8F0] p-8 shadow-sm hover:shadow-md transition-all duration-300"
+                  style={{ '--hover-color': pilar.color } as React.CSSProperties}
+                >
+                  <div
+                    className="w-12 h-12 rounded-xl flex items-center justify-center mb-5"
+                    style={{ backgroundColor: `${pilar.color}15` }}
+                  >
+                    <Icon size={24} style={{ color: pilar.color }} />
+                  </div>
+                  <h3 className="text-lg font-bold text-[#0F172A]">{pilar.title}</h3>
+                  <p className="text-xs font-medium uppercase tracking-wider mt-1 mb-3" style={{ color: pilar.color }}>
+                    {pilar.subtitle}
+                  </p>
+                  <p className="text-sm text-[#64748B] leading-relaxed">
+                    {pilar.description}
+                  </p>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ========== ECOSSISTEMA INTEGRADO ========== */}
+      <section className="relative py-24 sm:py-32 px-4 sm:px-6 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <motion.div {...fadeInUp} className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#00B4D8]/15 bg-[#00B4D8]/5 mb-6">
+              <Globe size={14} className="text-[#00B4D8]" />
+              <span className="text-xs text-[#00B4D8] font-medium uppercase tracking-wider">Ecossistema</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#0F172A] leading-tight">
+              Visão Integrada
+            </h2>
+            <p className="mt-4 text-[#64748B] text-base sm:text-lg max-w-3xl mx-auto">
+              Um ecossistema completo que conecta alunos, professores, gestores e dados
+              em uma plataforma coesa de transformação educacional.
             </p>
           </motion.div>
 
@@ -316,21 +493,155 @@ export default function LandingPage() {
             className="grid grid-cols-1 sm:grid-cols-2 gap-6"
             {...staggerContainer}
           >
-            {oQueFazemos.map((item) => {
+            {ecossistema.map((item) => {
               const Icon = item.icon;
               return (
                 <motion.div
                   key={item.title}
                   {...staggerItem}
-                  className="rounded-2xl bg-white border border-[#E2E8F0] p-8 shadow-sm hover:shadow-md hover:border-[#00B4D8]/30 transition-all duration-300"
+                  className="rounded-2xl bg-white border border-[#E2E8F0] p-8 shadow-sm hover:shadow-md transition-all duration-300"
                 >
-                  <div className="w-12 h-12 rounded-xl bg-[#00B4D8]/10 flex items-center justify-center mb-5">
-                    <Icon size={24} className="text-[#00B4D8]" />
+                  <div className="flex items-center gap-3 mb-4">
+                    <div
+                      className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
+                      style={{ backgroundColor: `${item.color}15` }}
+                    >
+                      <Icon size={20} style={{ color: item.color }} />
+                    </div>
+                    <div>
+                      <h3 className="text-base font-bold text-[#0F172A]">{item.title}</h3>
+                      <p className="text-[11px] font-medium uppercase tracking-wider" style={{ color: item.color }}>
+                        {item.subtitle}
+                      </p>
+                    </div>
                   </div>
-                  <h3 className="text-lg font-bold text-[#0F172A] mb-2">{item.title}</h3>
-                  <p className="text-sm sm:text-base text-[#64748B] leading-relaxed">
+                  <p className="text-sm text-[#64748B] leading-relaxed">
                     {item.description}
                   </p>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ========== JORNADA DO PROFESSOR ========== */}
+      <section className="relative py-24 sm:py-32 px-4 sm:px-6 bg-[#F8FAFC]">
+        <div className="max-w-6xl mx-auto">
+          <motion.div {...fadeInUp} className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#2E5A88]/15 bg-[#2E5A88]/5 mb-6">
+              <Users size={14} className="text-[#2E5A88]" />
+              <span className="text-xs text-[#2E5A88] font-medium uppercase tracking-wider">Eixo Docente</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#0F172A] leading-tight">
+              A Jornada de Empoderamento
+            </h2>
+            <p className="mt-4 text-[#64748B] text-base sm:text-lg max-w-2xl mx-auto">
+              O sistema não substitui a mediação do professor — ele a potencializa.
+            </p>
+          </motion.div>
+
+          <motion.div
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4"
+            {...staggerContainer}
+          >
+            {jornadaDocente.map((step, index) => {
+              const Icon = step.icon;
+              return (
+                <motion.div
+                  key={step.title}
+                  {...staggerItem}
+                  className="relative rounded-2xl bg-white border border-[#E2E8F0] p-6 shadow-sm hover:shadow-md transition-all duration-300"
+                >
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-xs font-bold text-[#2E5A88]/40">{String(index + 1).padStart(2, '0')}</span>
+                    <div className="w-8 h-8 rounded-lg bg-[#2E5A88]/10 flex items-center justify-center">
+                      <Icon size={16} className="text-[#2E5A88]" />
+                    </div>
+                  </div>
+                  <h3 className="text-sm font-bold text-[#0F172A] mb-1.5">{step.title}</h3>
+                  <p className="text-xs text-[#64748B] leading-relaxed">{step.description}</p>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ========== APRENDIZAGEM DO ALUNO ========== */}
+      <section className="relative py-24 sm:py-32 px-4 sm:px-6 bg-white">
+        <div className="max-w-5xl mx-auto">
+          <motion.div {...fadeInUp} className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#C2703E]/15 bg-[#C2703E]/5 mb-6">
+              <GraduationCap size={14} className="text-[#C2703E]" />
+              <span className="text-xs text-[#C2703E] font-medium uppercase tracking-wider">Eixo Discente</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#0F172A] leading-tight">
+              Aprendizagem Personalizada
+            </h2>
+            <p className="mt-4 text-[#64748B] text-base sm:text-lg max-w-2xl mx-auto">
+              O aluno acessa um ambiente digital interativo, gerando dados sistemáticos
+              sobre seu desempenho que alimentam intervenções cada vez mais precisas.
+            </p>
+          </motion.div>
+
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-3 gap-6"
+            {...staggerContainer}
+          >
+            {aprendizagemAluno.map((item) => {
+              const Icon = item.icon;
+              return (
+                <motion.div
+                  key={item.title}
+                  {...staggerItem}
+                  className="rounded-2xl bg-white border border-[#E2E8F0] p-8 shadow-sm hover:shadow-md transition-all duration-300"
+                >
+                  <div className="w-12 h-12 rounded-xl bg-[#C2703E]/10 flex items-center justify-center mb-5">
+                    <Icon size={24} className="text-[#C2703E]" />
+                  </div>
+                  <h3 className="text-lg font-bold text-[#0F172A] mb-2">{item.title}</h3>
+                  <p className="text-sm text-[#64748B] leading-relaxed">{item.description}</p>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ========== GOVERNANÇA ========== */}
+      <section className="relative py-24 sm:py-32 px-4 sm:px-6 bg-[#F8FAFC]">
+        <div className="max-w-6xl mx-auto">
+          <motion.div {...fadeInUp} className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#0A2463]/10 bg-[#0A2463]/5 mb-6">
+              <Shield size={14} className="text-[#0A2463]" />
+              <span className="text-xs text-[#0A2463] font-medium uppercase tracking-wider">Governança</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#0F172A] leading-tight">
+              A Fundação da Confiança
+            </h2>
+            <p className="mt-4 text-[#64748B] text-base sm:text-lg max-w-2xl mx-auto">
+              Governança, transparência e proteção de dados como pilares inegociáveis.
+            </p>
+          </motion.div>
+
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8"
+            {...staggerContainer}
+          >
+            {governanca.map((item) => {
+              const Icon = item.icon;
+              return (
+                <motion.div
+                  key={item.title}
+                  {...staggerItem}
+                  className="rounded-2xl bg-white border border-[#E2E8F0] p-8 shadow-sm hover:shadow-md transition-all duration-300"
+                >
+                  <div className="w-12 h-12 rounded-xl bg-[#0A2463]/5 flex items-center justify-center mb-5">
+                    <Icon size={24} className="text-[#0A2463]" />
+                  </div>
+                  <h3 className="text-lg font-bold text-[#0F172A] mb-2">{item.title}</h3>
+                  <p className="text-sm text-[#64748B] leading-relaxed">{item.description}</p>
                 </motion.div>
               );
             })}
@@ -443,6 +754,46 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ========== LEGADO ========== */}
+      <section className="relative py-24 sm:py-32 px-4 sm:px-6 bg-white">
+        <div className="max-w-4xl mx-auto">
+          <motion.div {...fadeInUp} className="text-center">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#0F172A] leading-tight mb-8">
+              O Nosso Verdadeiro Legado
+            </h2>
+            <p className="text-[#64748B] text-base sm:text-lg leading-relaxed max-w-3xl mx-auto">
+              O IBEF não entrega apenas um artefato tecnológico — nós transferimos
+              capacidade institucional permanente. Ao final de nossos ciclos de
+              Encomenda Tecnológica, as redes de ensino alcançam autonomia plena para
+              operar, analisar e evoluir seus sistemas.
+            </p>
+            <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-6 text-left max-w-3xl mx-auto">
+              <div className="flex items-start gap-3">
+                <div className="w-2 h-2 rounded-full bg-[#C2703E] mt-2 shrink-0" />
+                <p className="text-sm text-[#64748B]">
+                  A sala de aula transformada em ambiente integrado de pesquisa e inovação.
+                </p>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-2 h-2 rounded-full bg-[#2E5A88] mt-2 shrink-0" />
+                <p className="text-sm text-[#64748B]">
+                  Políticas públicas orientadas por dados em tempo real.
+                </p>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-2 h-2 rounded-full bg-[#1A3A5C] mt-2 shrink-0" />
+                <p className="text-sm text-[#64748B]">
+                  Um Estado capacitado para orquestrar continuamente o futuro da educação.
+                </p>
+              </div>
+            </div>
+            <p className="mt-12 text-xl sm:text-2xl font-bold text-[#0A2463]">
+              IBEF — A Inteligência a Serviço do Humano.
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
       {/* ========== FOOTER ========== */}
       <footer className="relative py-16 px-4 sm:px-6 bg-[#0A2463] text-white">
         <div className="max-w-6xl mx-auto flex flex-col items-center text-center gap-6">
@@ -452,7 +803,7 @@ export default function LandingPage() {
             </div>
             <div className="text-left">
               <p className="text-sm font-bold text-white">IBEF</p>
-              <p className="text-xs text-white/60">Instituto Brasileiro pela Educação do Futuro</p>
+              <p className="text-xs text-white/60">Orquestrando o Futuro da Educação Pública</p>
             </div>
           </div>
 
