@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronDown,
@@ -28,6 +29,10 @@ import {
   ListChecks,
   Pencil,
   Plus,
+  LayoutGrid,
+  List,
+  Download,
+  GripVertical,
 } from 'lucide-react';
 import { departments, people, milestones } from '../../data/projectData';
 import { useProject } from '../../contexts/ProjectContext';
@@ -604,15 +609,138 @@ function SummaryBar({ tasks }: { tasks: Task[] }) {
 }
 
 // ---------------------------------------------------------------------------
+// Kanban Board View
+// ---------------------------------------------------------------------------
+
+const KANBAN_COLUMNS: { key: string; label: string; color: string }[] = [
+  { key: 'nao_iniciada', label: 'Não Iniciada', color: '#6B7280' },
+  { key: 'em_andamento', label: 'Em Andamento', color: '#00B4D8' },
+  { key: 'bloqueada', label: 'Bloqueada', color: '#F59E0B' },
+  { key: 'atrasada', label: 'Atrasada', color: '#EF4444' },
+  { key: 'concluida', label: 'Concluída', color: '#10B981' },
+];
+
+function KanbanBoard({ tasks, onEditTask, onStatusChange }: { tasks: Task[]; onEditTask: (id: string) => void; onStatusChange: (id: string, status: string) => void }) {
+  const columns = useMemo(() => {
+    const map: Record<string, Task[]> = {};
+    KANBAN_COLUMNS.forEach((col) => { map[col.key] = []; });
+    tasks.forEach((t) => {
+      if (map[t.status]) map[t.status].push(t);
+      else if (map['nao_iniciada']) map['nao_iniciada'].push(t);
+    });
+    return map;
+  }, [tasks]);
+
+  const [draggedTask, setDraggedTask] = useState<string | null>(null);
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+      {KANBAN_COLUMNS.map((col) => (
+        <div
+          key={col.key}
+          className="rounded-xl bg-white/[0.02] border border-white/[0.06] p-3 min-h-[200px]"
+          onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('bg-white/[0.06]'); }}
+          onDragLeave={(e) => { e.currentTarget.classList.remove('bg-white/[0.06]'); }}
+          onDrop={(e) => {
+            e.preventDefault();
+            e.currentTarget.classList.remove('bg-white/[0.06]');
+            if (draggedTask) {
+              onStatusChange(draggedTask, col.key);
+              setDraggedTask(null);
+            }
+          }}
+        >
+          {/* Column header */}
+          <div className="flex items-center gap-2 mb-3 pb-2 border-b border-white/[0.06]">
+            <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: col.color }} />
+            <span className="text-xs font-semibold text-white/70">{col.label}</span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-white/[0.06] text-white/40 ml-auto">
+              {columns[col.key]?.length ?? 0}
+            </span>
+          </div>
+
+          {/* Cards */}
+          <div className="space-y-2">
+            {(columns[col.key] ?? []).map((task) => {
+              const priority = PRIORITY_CONFIG[task.priority];
+              return (
+                <motion.div
+                  key={task.id}
+                  layout
+                  draggable
+                  onDragStart={() => setDraggedTask(task.id)}
+                  onDragEnd={() => setDraggedTask(null)}
+                  onClick={() => onEditTask(task.id)}
+                  className="rounded-lg bg-white/[0.04] border border-white/[0.08] p-3 cursor-pointer hover:bg-white/[0.07] transition-colors"
+                  whileHover={{ scale: 1.01 }}
+                >
+                  <div className="flex items-start gap-2 mb-2">
+                    <GripVertical size={12} className="text-white/20 mt-0.5 shrink-0 cursor-grab" />
+                    <h5 className="text-xs font-medium text-white leading-snug flex-1">{task.title}</h5>
+                  </div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <div className="flex items-center gap-0.5">
+                      {Array.from({ length: priority.dots }).map((_, i) => (
+                        <span key={i} className={`w-1 h-1 rounded-full ${priority.color}`} />
+                      ))}
+                    </div>
+                    {task.progress > 0 && (
+                      <span className="text-[10px] text-white/40">{task.progress}%</span>
+                    )}
+                    {task.assigneeIds.length > 0 && (
+                      <span className="text-[10px] text-white/30">
+                        {task.assigneeIds.length} pessoa(s)
+                      </span>
+                    )}
+                  </div>
+                  {task.progress > 0 && (
+                    <div className="mt-2 h-1 rounded-full bg-white/[0.06] overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-[#00B4D8]/60"
+                        style={{ width: `${task.progress}%` }}
+                      />
+                    </div>
+                  )}
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Main Page
 // ---------------------------------------------------------------------------
 
-export default function WorkstreamsPage() {
-  const { tasks, addTask } = useProject();
+type ViewMode = 'list' | 'kanban';
+
+function WorkstreamsContent() {
+  const { tasks, addTask, updateTask } = useProject();
+  const searchParams = useSearchParams();
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [openDepts, setOpenDepts] = useState<Set<string>>(new Set());
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('todas');
   const [sortMode, setSortMode] = useState<SortMode>('prioridade');
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
+
+  // Read filter from URL (dashboard drill-down)
+  useEffect(() => {
+    const urlFilter = searchParams.get('filter');
+    if (urlFilter) {
+      if (['todas', 'em_andamento', 'nao_iniciada', 'concluida', 'critica'].includes(urlFilter)) {
+        setStatusFilter(urlFilter as StatusFilter);
+      }
+      // Handle special "atrasada" filter
+      if (urlFilter === 'atrasada') {
+        setStatusFilter('todas');
+        // Open all departments so user sees overdue tasks
+        setOpenDepts(new Set(departments.map((d) => d.id)));
+      }
+    }
+  }, [searchParams]);
 
   const toggleDept = useCallback((id: string) => {
     setOpenDepts((prev) => {
@@ -664,7 +792,36 @@ export default function WorkstreamsPage() {
       {/* Summary Bar */}
       <SummaryBar tasks={tasks} />
 
-      {/* Filters and Sort */}
+      {/* View Toggle + Filters and Sort */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.1 }}
+        className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4"
+      >
+        {/* View mode toggle */}
+        <div className="flex items-center gap-1 p-1 rounded-lg bg-white/[0.04] border border-white/[0.06]">
+          <button
+            onClick={() => setViewMode('list')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+              viewMode === 'list' ? 'bg-[#00B4D8]/20 text-[#00B4D8]' : 'text-white/40 hover:text-white/60'
+            }`}
+          >
+            <List size={14} />
+            Lista
+          </button>
+          <button
+            onClick={() => setViewMode('kanban')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+              viewMode === 'kanban' ? 'bg-[#00B4D8]/20 text-[#00B4D8]' : 'text-white/40 hover:text-white/60'
+            }`}
+          >
+            <LayoutGrid size={14} />
+            Kanban
+          </button>
+        </div>
+      </motion.div>
+
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -708,8 +865,22 @@ export default function WorkstreamsPage() {
         </div>
       </motion.div>
 
+      {/* Kanban View */}
+      {viewMode === 'kanban' && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <KanbanBoard
+            tasks={tasks}
+            onEditTask={(id) => setEditingTaskId(id)}
+            onStatusChange={(id, status) => updateTask(id, { status: status as Task['status'] })}
+          />
+        </motion.div>
+      )}
+
       {/* Workstream Accordion List */}
-      <div className="space-y-3">
+      {viewMode === 'list' && <div className="space-y-3">
         {departments.map((dept, i) => (
           <motion.div
             key={dept.id}
@@ -738,10 +909,18 @@ export default function WorkstreamsPage() {
             />
           </motion.div>
         ))}
-      </div>
+      </div>}
 
       {/* Task Edit Modal */}
       <TaskEditModal taskId={editingTaskId} onClose={() => setEditingTaskId(null)} />
     </div>
+  );
+}
+
+export default function WorkstreamsPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <WorkstreamsContent />
+    </Suspense>
   );
 }

@@ -245,6 +245,19 @@ export interface ProjectData {
 
 export type UrgencyLevel = 'low' | 'medium' | 'high' | 'critical';
 
+/** An entry in the activity log */
+export interface ActivityLogEntry {
+  id: string;
+  timestamp: string;       // ISO date string
+  entityType: 'task' | 'hiring' | 'company' | 'person' | 'orgchart';
+  entityId: string;
+  entityTitle: string;
+  action: 'created' | 'updated' | 'deleted' | 'status_changed';
+  field?: string;          // Which field changed
+  oldValue?: string;
+  newValue?: string;
+}
+
 /** Used by the org chart component for tree rendering */
 export interface OrgNode {
   person: Person;

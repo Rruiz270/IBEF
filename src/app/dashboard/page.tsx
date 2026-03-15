@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import type { Variants } from 'framer-motion';
 import {
@@ -10,12 +11,13 @@ import {
   Flame,
   CalendarDays,
   TrendingUp,
+  Download,
+  History,
 } from 'lucide-react';
 
 import {
   phases,
   departments,
-  people,
   countdowns,
   getDashboardSummary,
   daysUntil,
@@ -69,7 +71,7 @@ function getUrgencyForDays(days: number): UrgencyLevel {
 }
 
 // ---------------------------------------------------------------------------
-// Summary Card Component
+// Summary Card Component (now clickable)
 // ---------------------------------------------------------------------------
 
 interface SummaryCardProps {
@@ -78,17 +80,20 @@ interface SummaryCardProps {
   icon: React.ElementType;
   gradient: string;
   index: number;
+  onClick?: () => void;
 }
 
-function SummaryCard({ title, value, icon: Icon, gradient, index }: SummaryCardProps) {
+function SummaryCard({ title, value, icon: Icon, gradient, index, onClick }: SummaryCardProps) {
   return (
     <motion.div
       variants={itemVariants}
       whileHover={{ y: -3, transition: { duration: 0.2 } }}
+      onClick={onClick}
       className={`
         relative overflow-hidden rounded-2xl p-5 sm:p-6
         bg-gradient-to-br ${gradient}
         border border-white/5 shadow-xl
+        ${onClick ? 'cursor-pointer hover:border-white/15 transition-colors' : ''}
       `}
     >
       {/* Background decoration */}
@@ -112,6 +117,9 @@ function SummaryCard({ title, value, icon: Icon, gradient, index }: SummaryCardP
           <Icon size={22} className="text-white/80" />
         </div>
       </div>
+      {onClick && (
+        <p className="text-[10px] text-white/30 mt-2">Clique para filtrar</p>
+      )}
     </motion.div>
   );
 }
@@ -121,43 +129,66 @@ function SummaryCard({ title, value, icon: Icon, gradient, index }: SummaryCardP
 // ---------------------------------------------------------------------------
 
 export default function DashboardPage() {
-  const { tasks } = useProject();
+  const { tasks, activityLog, teamPeople: people } = useProject();
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+  const router = useRouter();
 
   const summary = useMemo(() => getDashboardSummary(), []);
   const overallProgress = useMemo(() => computeOverallProgress(), []);
   const today = useMemo(() => new Date(), []);
 
+  // Dynamic counts from live task data
+  const liveSummary = useMemo(() => {
+    const now = new Date();
+    const total = tasks.length;
+    const completed = tasks.filter((t) => t.status === 'concluida').length;
+    const overdue = tasks.filter((t) => {
+      if (!t.dueDate || t.status === 'concluida' || t.status === 'cancelada') return false;
+      return new Date(t.dueDate + 'T23:59:59') < now;
+    }).length;
+    const critical = tasks.filter(
+      (t) => t.priority === 'critica' && t.status !== 'concluida' && t.status !== 'cancelada'
+    ).length;
+    return { total, completed, overdue, critical };
+  }, [tasks]);
+
   const summaryCards: SummaryCardProps[] = [
     {
       title: 'Total Tarefas',
-      value: summary.totalTasks,
+      value: liveSummary.total,
       icon: ListChecks,
       gradient: 'from-[#0A2463] to-[#0A2463]/70',
       index: 0,
+      onClick: () => router.push('/workstreams?filter=todas'),
     },
     {
       title: 'Conclu\u00eddas',
-      value: summary.completedTasks,
+      value: liveSummary.completed,
       icon: CheckCircle2,
       gradient: 'from-[#0A2463] via-[#0A2463] to-[#00E5A0]/20',
       index: 1,
+      onClick: () => router.push('/workstreams?filter=concluida'),
     },
     {
       title: 'Atrasadas',
-      value: summary.overdueTasks,
+      value: liveSummary.overdue,
       icon: AlertTriangle,
       gradient: 'from-[#0A2463] via-[#0A2463] to-amber-900/30',
       index: 2,
+      onClick: () => router.push('/workstreams?filter=atrasada'),
     },
     {
       title: 'Tarefas Cr\u00edticas',
-      value: summary.criticalTasks,
+      value: liveSummary.critical,
       icon: Flame,
       gradient: 'from-[#0A2463] via-[#0A2463] to-red-900/30',
       index: 3,
+      onClick: () => router.push('/workstreams?filter=critica'),
     },
   ];
+
+  // Recent activity (last 10)
+  const recentActivity = activityLog.slice(0, 10);
 
   return (
     <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8">
@@ -190,7 +221,7 @@ export default function DashboardPage() {
               transition={{ delay: 0.35, duration: 0.5 }}
               className="text-sm sm:text-base text-white/50 mt-1"
             >
-              Instituto i10 — Educação do Futuro — Encomenda Tecnológica SC
+              Instituto i10 — Educa\u00e7\u00e3o do Futuro — Encomenda Tecnol\u00f3gica SC
             </motion.p>
           </div>
 
@@ -210,7 +241,7 @@ export default function DashboardPage() {
       </motion.header>
 
       {/* ================================================================= */}
-      {/* SUMMARY CARDS                                                     */}
+      {/* SUMMARY CARDS (now clickable)                                     */}
       {/* ================================================================= */}
       <motion.section
         variants={containerVariants}
@@ -347,7 +378,6 @@ export default function DashboardPage() {
             transition={{ duration: 2, ease: 'easeOut', delay: 0.8 }}
             className="h-full rounded-full bg-gradient-to-r from-[#00B4D8] via-[#00B4D8] to-[#00E5A0] relative"
           >
-            {/* Shine effect */}
             <motion.div
               className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
               animate={{ x: ['-100%', '200%'] }}
@@ -377,6 +407,68 @@ export default function DashboardPage() {
         </div>
       </motion.section>
 
+      {/* ================================================================= */}
+      {/* RECENT ACTIVITY LOG                                               */}
+      {/* ================================================================= */}
+      {recentActivity.length > 0 && (
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8, duration: 0.5 }}
+          className="rounded-2xl bg-[#061742]/60 border border-white/5 p-5 sm:p-6"
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center">
+              <History size={16} className="text-purple-400" />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-white">Atividade Recente</h2>
+              <p className="text-xs text-white/40">Últimas alterações no projeto</p>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            {recentActivity.map((entry) => {
+              const actionLabels: Record<string, string> = {
+                created: 'criou',
+                updated: 'atualizou',
+                deleted: 'excluiu',
+                status_changed: 'alterou status de',
+              };
+              const actionColors: Record<string, string> = {
+                created: 'text-emerald-400',
+                updated: 'text-cyan-400',
+                deleted: 'text-red-400',
+                status_changed: 'text-amber-400',
+              };
+              const timeAgo = getTimeAgo(entry.timestamp);
+
+              return (
+                <div
+                  key={entry.id}
+                  className="flex items-start gap-3 px-3 py-2 rounded-lg bg-white/[0.02] border border-white/[0.04]"
+                >
+                  <div className={`text-xs font-medium mt-0.5 ${actionColors[entry.action] ?? 'text-white/50'}`}>
+                    {actionLabels[entry.action] ?? entry.action}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs text-white/70 truncate">
+                      <span className="font-semibold">{entry.entityTitle}</span>
+                      {entry.field && entry.action === 'status_changed' && (
+                        <span className="text-white/40">
+                          {' '}{entry.oldValue} → {entry.newValue}
+                        </span>
+                      )}
+                    </p>
+                  </div>
+                  <span className="text-[10px] text-white/30 shrink-0">{timeAgo}</span>
+                </div>
+              );
+            })}
+          </div>
+        </motion.section>
+      )}
+
       {/* Bottom spacer */}
       <div className="h-4" />
 
@@ -384,4 +476,23 @@ export default function DashboardPage() {
       <TaskEditModal taskId={editingTaskId} onClose={() => setEditingTaskId(null)} />
     </div>
   );
+}
+
+// ---------------------------------------------------------------------------
+// Time ago helper
+// ---------------------------------------------------------------------------
+
+function getTimeAgo(timestamp: string): string {
+  const now = new Date();
+  const then = new Date(timestamp);
+  const diffMs = now.getTime() - then.getTime();
+  const diffMin = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+
+  if (diffMin < 1) return 'agora';
+  if (diffMin < 60) return `${diffMin}min atrás`;
+  if (diffHours < 24) return `${diffHours}h atrás`;
+  if (diffDays < 7) return `${diffDays}d atrás`;
+  return then.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
 }

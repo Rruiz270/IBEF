@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -16,12 +16,18 @@ import {
   Menu,
   X,
   ChevronLeft,
+  Search,
+  AlertTriangle,
+  Flame,
 } from 'lucide-react';
+import { useProject } from '@/contexts/ProjectContext';
+import NotificationBell from './NotificationBell';
 
 interface NavItem {
   label: string;
   href: string;
   icon: React.ElementType;
+  badgeKey?: 'overdue' | 'critical';
 }
 
 const navItems: NavItem[] = [
@@ -43,7 +49,6 @@ function I10Logo({ collapsed }: { collapsed: boolean }) {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      {/* Open book shape */}
       <path
         d="M24 8C24 8 18 6 10 8C10 8 8 8.5 8 11V34C8 35.5 9.5 36 10 36C18 34 24 36 24 36C24 36 30 34 38 36C38.5 36 40 35.5 40 34V11C40 8.5 38 8 38 8C30 6 24 8 24 8Z"
         stroke="#00B4D8"
@@ -52,34 +57,23 @@ function I10Logo({ collapsed }: { collapsed: boolean }) {
         strokeLinejoin="round"
         fill="rgba(0, 180, 216, 0.08)"
       />
-      {/* Book spine */}
-      <path
-        d="M24 8V36"
-        stroke="#00B4D8"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-      {/* Neural network nodes - left page */}
+      <path d="M24 8V36" stroke="#00B4D8" strokeWidth="1.5" strokeLinecap="round" />
       <circle cx="14" cy="16" r="2" fill="#00E5A0" />
       <circle cx="20" cy="20" r="1.5" fill="#00E5A0" />
       <circle cx="14" cy="26" r="1.5" fill="#00E5A0" />
       <circle cx="19" cy="30" r="1.5" fill="#00B4D8" />
-      {/* Neural network nodes - right page */}
       <circle cx="34" cy="16" r="2" fill="#00E5A0" />
       <circle cx="28" cy="20" r="1.5" fill="#00E5A0" />
       <circle cx="34" cy="26" r="1.5" fill="#00E5A0" />
       <circle cx="29" cy="30" r="1.5" fill="#00B4D8" />
-      {/* Connection lines - left */}
       <line x1="14" y1="16" x2="20" y2="20" stroke="#00E5A0" strokeWidth="0.7" opacity="0.6" />
       <line x1="20" y1="20" x2="14" y2="26" stroke="#00E5A0" strokeWidth="0.7" opacity="0.6" />
       <line x1="14" y1="26" x2="19" y2="30" stroke="#00B4D8" strokeWidth="0.7" opacity="0.6" />
       <line x1="14" y1="16" x2="14" y2="26" stroke="#00E5A0" strokeWidth="0.5" opacity="0.3" />
-      {/* Connection lines - right */}
       <line x1="34" y1="16" x2="28" y2="20" stroke="#00E5A0" strokeWidth="0.7" opacity="0.6" />
       <line x1="28" y1="20" x2="34" y2="26" stroke="#00E5A0" strokeWidth="0.7" opacity="0.6" />
       <line x1="34" y1="26" x2="29" y2="30" stroke="#00B4D8" strokeWidth="0.7" opacity="0.6" />
       <line x1="34" y1="16" x2="34" y2="26" stroke="#00E5A0" strokeWidth="0.5" opacity="0.3" />
-      {/* Cross connections through spine */}
       <line x1="20" y1="20" x2="28" y2="20" stroke="#00B4D8" strokeWidth="0.5" opacity="0.3" strokeDasharray="2 2" />
       <line x1="19" y1="30" x2="29" y2="30" stroke="#00B4D8" strokeWidth="0.5" opacity="0.3" strokeDasharray="2 2" />
     </svg>
@@ -90,10 +84,24 @@ export default function Sidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { tasks, unreadCount } = useProject();
 
   const toggleCollapsed = useCallback(() => setCollapsed((c) => !c), []);
   const toggleMobile = useCallback(() => setMobileOpen((m) => !m), []);
   const closeMobile = useCallback(() => setMobileOpen(false), []);
+
+  // Compute badge counts
+  const badges = useMemo(() => {
+    const now = new Date();
+    const overdue = tasks.filter((t) => {
+      if (!t.dueDate || t.status === 'concluida' || t.status === 'cancelada') return false;
+      return new Date(t.dueDate + 'T23:59:59') < now;
+    }).length;
+    const critical = tasks.filter(
+      (t) => t.priority === 'critica' && t.status !== 'concluida' && t.status !== 'cancelada'
+    ).length;
+    return { overdue, critical, total: overdue + critical };
+  }, [tasks]);
 
   const isActive = (href: string) => {
     if (href === '/dashboard') return pathname === '/dashboard';
@@ -119,30 +127,71 @@ export default function Sidebar() {
               transition={{ duration: 0.2 }}
               className="overflow-hidden whitespace-nowrap"
             >
-              <h1 className="text-sm font-bold text-white leading-tight">
-                i10
-              </h1>
-              <p className="text-xs text-[#90E0EF] leading-tight">
-                Project Control
-              </p>
+              <h1 className="text-sm font-bold text-white leading-tight">i10</h1>
+              <p className="text-xs text-[#90E0EF] leading-tight">Project Control</p>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
 
+      {/* Search hint + Notification bell */}
+      <div className="px-2 pt-3 pb-1 space-y-2">
+        {/* Search shortcut hint */}
+        <AnimatePresence>
+          {!collapsed && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="overflow-hidden"
+            >
+              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.03] border border-white/5 text-white/30 text-xs">
+                <Search size={14} />
+                <span className="flex-1">Buscar...</span>
+                <kbd className="px-1.5 py-0.5 rounded bg-white/10 text-[10px] text-white/40 font-mono">⌘K</kbd>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Badges row */}
+        {badges.total > 0 && (
+          <AnimatePresence>
+            {!collapsed && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="overflow-hidden"
+              >
+                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/20">
+                  {badges.overdue > 0 && (
+                    <div className="flex items-center gap-1">
+                      <AlertTriangle size={12} className="text-amber-400" />
+                      <span className="text-[10px] font-bold text-amber-400">{badges.overdue} atrasada(s)</span>
+                    </div>
+                  )}
+                  {badges.critical > 0 && (
+                    <div className="flex items-center gap-1">
+                      <Flame size={12} className="text-red-400" />
+                      <span className="text-[10px] font-bold text-red-400">{badges.critical} cr\u00edtica(s)</span>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        )}
+      </div>
+
       {/* Navigation */}
-      <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
+      <nav className="flex-1 px-2 py-2 space-y-1 overflow-y-auto">
         {navItems.map((item) => {
           const active = isActive(item.href);
           const Icon = item.icon;
 
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={closeMobile}
-              className="block"
-            >
+            <Link key={item.href} href={item.href} onClick={closeMobile} className="block">
               <motion.div
                 className={`
                   relative flex items-center gap-3 px-3 py-2.5 rounded-lg
@@ -155,7 +204,6 @@ export default function Sidebar() {
                 whileHover={{ x: 2 }}
                 whileTap={{ scale: 0.98 }}
               >
-                {/* Active indicator bar */}
                 {active && (
                   <motion.div
                     layoutId="activeIndicator"
@@ -176,7 +224,7 @@ export default function Sidebar() {
                       animate={{ opacity: 1, width: 'auto' }}
                       exit={{ opacity: 0, width: 0 }}
                       transition={{ duration: 0.2 }}
-                      className={`text-sm font-medium overflow-hidden whitespace-nowrap ${
+                      className={`text-sm font-medium overflow-hidden whitespace-nowrap flex-1 ${
                         active ? 'text-[#00B4D8]' : ''
                       }`}
                     >
@@ -185,7 +233,13 @@ export default function Sidebar() {
                   )}
                 </AnimatePresence>
 
-                {/* Tooltip for collapsed mode */}
+                {/* Dashboard badge */}
+                {item.href === '/dashboard' && badges.total > 0 && !collapsed && (
+                  <span className="px-1.5 py-0.5 rounded-full bg-red-500/20 text-red-400 text-[10px] font-bold">
+                    {badges.total}
+                  </span>
+                )}
+
                 {collapsed && (
                   <div className="absolute left-full ml-2 px-2 py-1 bg-[#061742] text-white text-xs rounded-md opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50 shadow-lg border border-white/10">
                     {item.label}
@@ -197,17 +251,19 @@ export default function Sidebar() {
         })}
       </nav>
 
+      {/* Notification bell */}
+      <div className="px-3 py-2 border-t border-white/10">
+        <NotificationBell />
+      </div>
+
       {/* Collapse button (desktop only) */}
-      <div className="hidden lg:block px-2 py-4 border-t border-white/10">
+      <div className="hidden lg:block px-2 py-2 border-t border-white/10">
         <button
           onClick={toggleCollapsed}
           className="flex items-center justify-center w-full py-2 rounded-lg text-white/50 hover:text-white hover:bg-white/5 transition-colors"
           aria-label={collapsed ? 'Expandir sidebar' : 'Recolher sidebar'}
         >
-          <motion.div
-            animate={{ rotate: collapsed ? 180 : 0 }}
-            transition={{ duration: 0.3 }}
-          >
+          <motion.div animate={{ rotate: collapsed ? 180 : 0 }} transition={{ duration: 0.3 }}>
             <ChevronLeft size={18} />
           </motion.div>
           <AnimatePresence>
@@ -235,8 +291,8 @@ export default function Sidebar() {
             className="px-4 py-3 border-t border-white/10"
           >
             <p className="text-[10px] text-white/30 leading-relaxed">
-              Instituto i10 &mdash; Educação<br />
-              · Tecnologia · Inovação
+              Instituto i10 &mdash; Educa\u00e7\u00e3o<br />
+              · Tecnologia · Inova\u00e7\u00e3o
             </p>
           </motion.div>
         )}
@@ -246,7 +302,6 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Mobile hamburger button */}
       <button
         onClick={toggleMobile}
         className="fixed top-4 left-4 z-50 lg:hidden p-2 rounded-lg bg-[#0A2463] text-white shadow-lg"
@@ -254,30 +309,17 @@ export default function Sidebar() {
       >
         <AnimatePresence mode="wait">
           {mobileOpen ? (
-            <motion.div
-              key="close"
-              initial={{ rotate: -90, opacity: 0 }}
-              animate={{ rotate: 0, opacity: 1 }}
-              exit={{ rotate: 90, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-            >
+            <motion.div key="close" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.2 }}>
               <X size={22} />
             </motion.div>
           ) : (
-            <motion.div
-              key="menu"
-              initial={{ rotate: 90, opacity: 0 }}
-              animate={{ rotate: 0, opacity: 1 }}
-              exit={{ rotate: -90, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-            >
+            <motion.div key="menu" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.2 }}>
               <Menu size={22} />
             </motion.div>
           )}
         </AnimatePresence>
       </button>
 
-      {/* Mobile overlay */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
@@ -290,7 +332,6 @@ export default function Sidebar() {
         )}
       </AnimatePresence>
 
-      {/* Mobile sidebar */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.aside
@@ -306,7 +347,6 @@ export default function Sidebar() {
         )}
       </AnimatePresence>
 
-      {/* Desktop sidebar */}
       <motion.aside
         animate={{ width: collapsed ? 72 : 256 }}
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}

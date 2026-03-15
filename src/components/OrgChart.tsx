@@ -1,71 +1,85 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { Crown, Users, HelpCircle, Scale, Code, Handshake, MapPin, GraduationCap, Wallet } from 'lucide-react';
-import { people, departments } from '../data/projectData';
-import type { Person, DepartmentId } from '../data/types';
+import { useState, useMemo, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  Crown,
+  Users,
+  HelpCircle,
+  Scale,
+  Code,
+  Handshake,
+  MapPin,
+  GraduationCap,
+  Wallet,
+  Pencil,
+  Plus,
+  X,
+  Trash2,
+  Check,
+} from 'lucide-react';
+import { departments } from '../data/projectData';
+import { useProject } from '../contexts/ProjectContext';
+import type { Person, PersonRole, DepartmentId } from '../data/types';
+
+// ---------------------------------------------------------------------------
+// Props
+// ---------------------------------------------------------------------------
 
 interface OrgChartProps {
   onPersonClick?: (person: Person) => void;
 }
 
 // ---------------------------------------------------------------------------
-// Department config: display data for each department in the org chart
+// Constants
 // ---------------------------------------------------------------------------
 
-interface DeptConfig {
+const ROLE_LABELS: Record<PersonRole, string> = {
+  fundador: 'Fundador',
+  convidado: 'Convidado',
+  contratacao: 'Contratacao',
+  parceiro: 'Parceiro',
+  lider: 'Lider',
+};
+
+const ALL_DEPARTMENT_IDS: DepartmentId[] = [
+  'juridico',
+  'tecnologia',
+  'relacoes_publicas',
+  'operacoes_locais',
+  'santa_catarina',
+  'pedagogico',
+  'administrativo_financeiro',
+];
+
+const DEPT_LABELS: Record<DepartmentId, string> = {
+  juridico: 'Juridico',
+  tecnologia: 'Tecnologia',
+  relacoes_publicas: 'Relacoes Publicas',
+  operacoes_locais: 'Operacoes Locais',
+  santa_catarina: 'Santa Catarina',
+  pedagogico: 'Pedagogico',
+  administrativo_financeiro: 'Admin/Financeiro',
+};
+
+// ---------------------------------------------------------------------------
+// Department display config
+// ---------------------------------------------------------------------------
+
+interface DeptDisplayConfig {
   id: DepartmentId;
   label: string;
   color: string;
   icon: React.ElementType;
-  leadIds: string[];
-  isHiring?: boolean;
 }
 
-const deptConfigs: DeptConfig[] = [
-  {
-    id: 'juridico',
-    label: 'Juridico',
-    color: '#8B5CF6',
-    icon: Scale,
-    leadIds: ['pessoa-mercia', 'pessoa-emerson'],
-  },
-  {
-    id: 'tecnologia',
-    label: 'Tecnologia',
-    color: '#00E5A0',
-    icon: Code,
-    leadIds: ['pessoa-bruno-almeida'],
-  },
-  {
-    id: 'relacoes_publicas',
-    label: 'Relacoes Publicas',
-    color: '#F59E0B',
-    icon: Handshake,
-    leadIds: ['pessoa-bruno-quick'],
-  },
-  {
-    id: 'operacoes_locais',
-    label: 'Operacoes',
-    color: '#EF4444',
-    icon: MapPin,
-    leadIds: ['pessoa-gustavo'],
-  },
-  {
-    id: 'administrativo_financeiro',
-    label: 'Admin/Financeiro',
-    color: '#14B8A6',
-    icon: Wallet,
-    leadIds: ['pessoa-enio'],
-  },
-  {
-    id: 'pedagogico',
-    label: 'Pedagogico',
-    color: '#EC4899',
-    icon: GraduationCap,
-    leadIds: [],
-    isHiring: true,
-  },
+const deptDisplayConfigs: DeptDisplayConfig[] = [
+  { id: 'juridico', label: 'Juridico', color: '#8B5CF6', icon: Scale },
+  { id: 'tecnologia', label: 'Tecnologia', color: '#00E5A0', icon: Code },
+  { id: 'relacoes_publicas', label: 'Relacoes Publicas', color: '#F59E0B', icon: Handshake },
+  { id: 'operacoes_locais', label: 'Operacoes', color: '#EF4444', icon: MapPin },
+  { id: 'administrativo_financeiro', label: 'Admin/Financeiro', color: '#14B8A6', icon: Wallet },
+  { id: 'pedagogico', label: 'Pedagogico', color: '#EC4899', icon: GraduationCap },
 ];
 
 // ---------------------------------------------------------------------------
@@ -81,20 +95,284 @@ function getInitials(name: string): string {
     .toUpperCase();
 }
 
-function getPersonById(id: string): Person | undefined {
-  return people.find((p) => p.id === id);
+function emptyPerson(): Omit<Person, 'id'> {
+  return {
+    name: '',
+    role: 'fundador',
+    title: '',
+    departmentIds: [],
+    email: null,
+    notes: '',
+    avatarUrl: null,
+    assembleiaConfirmed: false,
+  };
 }
 
 // ---------------------------------------------------------------------------
-// LeaderCard - prominent golden card for Raphael
+// EditPersonModal
+// ---------------------------------------------------------------------------
+
+function EditPersonModal({
+  person,
+  isNew,
+  onSave,
+  onDelete,
+  onClose,
+}: {
+  person: Person | Omit<Person, 'id'>;
+  isNew: boolean;
+  onSave: (data: Omit<Person, 'id'>) => void;
+  onDelete?: () => void;
+  onClose: () => void;
+}) {
+  const [form, setForm] = useState<Omit<Person, 'id'>>({
+    name: person.name,
+    role: person.role,
+    title: person.title,
+    departmentIds: [...person.departmentIds],
+    email: person.email,
+    notes: person.notes,
+    avatarUrl: person.avatarUrl,
+    assembleiaConfirmed: person.assembleiaConfirmed,
+  });
+
+  const handleDeptToggle = (deptId: DepartmentId) => {
+    setForm((prev) => {
+      const has = prev.departmentIds.includes(deptId);
+      return {
+        ...prev,
+        departmentIds: has
+          ? prev.departmentIds.filter((d) => d !== deptId)
+          : [...prev.departmentIds, deptId],
+      };
+    });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.name.trim()) return;
+    onSave(form);
+  };
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+        onClick={onClose}
+      >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 20 }}
+          transition={{ duration: 0.2 }}
+          className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl bg-[#0A2463] border border-white/10 shadow-2xl"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between p-5 border-b border-white/10">
+            <h3 className="text-base font-bold text-white">
+              {isNew ? 'Adicionar Pessoa' : 'Editar Pessoa'}
+            </h3>
+            <button
+              onClick={onClose}
+              className="p-1.5 rounded-lg hover:bg-white/10 text-white/50 hover:text-white transition-colors"
+            >
+              <X size={18} />
+            </button>
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="p-5 space-y-4">
+            {/* Name */}
+            <div>
+              <label className="block text-[11px] font-semibold text-white/50 uppercase tracking-wider mb-1.5">
+                Nome
+              </label>
+              <input
+                type="text"
+                value={form.name}
+                onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
+                className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/30 transition-colors"
+                placeholder="Nome completo"
+                autoFocus
+              />
+            </div>
+
+            {/* Role */}
+            <div>
+              <label className="block text-[11px] font-semibold text-white/50 uppercase tracking-wider mb-1.5">
+                Funcao
+              </label>
+              <select
+                value={form.role}
+                onChange={(e) => setForm((p) => ({ ...p, role: e.target.value as PersonRole }))}
+                className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/30 transition-colors"
+              >
+                {(Object.entries(ROLE_LABELS) as [PersonRole, string][]).map(([val, label]) => (
+                  <option key={val} value={val} className="bg-[#0A2463] text-white">
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Title */}
+            <div>
+              <label className="block text-[11px] font-semibold text-white/50 uppercase tracking-wider mb-1.5">
+                Titulo / Cargo
+              </label>
+              <input
+                type="text"
+                value={form.title}
+                onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))}
+                className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/30 transition-colors"
+                placeholder="Ex: Diretor de Tecnologia"
+              />
+            </div>
+
+            {/* Email */}
+            <div>
+              <label className="block text-[11px] font-semibold text-white/50 uppercase tracking-wider mb-1.5">
+                Email
+              </label>
+              <input
+                type="email"
+                value={form.email ?? ''}
+                onChange={(e) =>
+                  setForm((p) => ({ ...p, email: e.target.value || null }))
+                }
+                className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/30 transition-colors"
+                placeholder="email@exemplo.com"
+              />
+            </div>
+
+            {/* Departments (checkboxes) */}
+            <div>
+              <label className="block text-[11px] font-semibold text-white/50 uppercase tracking-wider mb-2">
+                Departamentos
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                {ALL_DEPARTMENT_IDS.map((deptId) => {
+                  const checked = form.departmentIds.includes(deptId);
+                  return (
+                    <label
+                      key={deptId}
+                      className={`
+                        flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors text-xs
+                        ${checked ? 'bg-amber-500/15 border border-amber-500/30 text-amber-300' : 'bg-white/[0.03] border border-white/5 text-white/50 hover:bg-white/[0.06]'}
+                      `}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => handleDeptToggle(deptId)}
+                        className="sr-only"
+                      />
+                      <div
+                        className={`w-3.5 h-3.5 rounded border flex items-center justify-center shrink-0 transition-colors ${
+                          checked
+                            ? 'bg-amber-500 border-amber-500'
+                            : 'border-white/20 bg-transparent'
+                        }`}
+                      >
+                        {checked && <Check size={10} className="text-white" />}
+                      </div>
+                      {DEPT_LABELS[deptId]}
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Notes */}
+            <div>
+              <label className="block text-[11px] font-semibold text-white/50 uppercase tracking-wider mb-1.5">
+                Observacoes
+              </label>
+              <textarea
+                value={form.notes}
+                onChange={(e) => setForm((p) => ({ ...p, notes: e.target.value }))}
+                rows={3}
+                className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/30 transition-colors resize-none"
+                placeholder="Notas adicionais..."
+              />
+            </div>
+
+            {/* Assembleia toggle */}
+            <label className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-white/[0.03] border border-white/5 cursor-pointer hover:bg-white/[0.06] transition-colors">
+              <input
+                type="checkbox"
+                checked={form.assembleiaConfirmed}
+                onChange={(e) =>
+                  setForm((p) => ({ ...p, assembleiaConfirmed: e.target.checked }))
+                }
+                className="sr-only"
+              />
+              <div
+                className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${
+                  form.assembleiaConfirmed
+                    ? 'bg-[#00E5A0] border-[#00E5A0]'
+                    : 'border-white/20 bg-transparent'
+                }`}
+              >
+                {form.assembleiaConfirmed && <Check size={11} className="text-white" />}
+              </div>
+              <span className="text-xs text-white/70">Assembleia Confirmada</span>
+            </label>
+
+            {/* Actions */}
+            <div className="flex items-center justify-between pt-2">
+              {!isNew && onDelete ? (
+                <button
+                  type="button"
+                  onClick={onDelete}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-red-400 hover:bg-red-500/10 transition-colors"
+                >
+                  <Trash2 size={13} />
+                  Excluir
+                </button>
+              ) : (
+                <div />
+              )}
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="px-4 py-2 rounded-lg text-xs font-medium text-white/50 hover:bg-white/5 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={!form.name.trim()}
+                  className="px-4 py-2 rounded-lg text-xs font-bold bg-amber-500 text-white hover:bg-amber-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                >
+                  {isNew ? 'Adicionar' : 'Salvar'}
+                </button>
+              </div>
+            </div>
+          </form>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// LeaderCard
 // ---------------------------------------------------------------------------
 
 function LeaderCard({
   person,
   onClick,
+  onEdit,
 }: {
   person: Person;
   onClick?: (person: Person) => void;
+  onEdit: (person: Person) => void;
 }) {
   const initials = getInitials(person.name);
 
@@ -104,15 +382,24 @@ function LeaderCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
       whileHover={{ y: -4, transition: { duration: 0.2 } }}
-      onClick={() => onClick?.(person)}
-      className={`
-        relative mx-auto max-w-sm w-full rounded-2xl overflow-hidden
+      className="relative mx-auto max-w-sm w-full rounded-2xl overflow-hidden group
         bg-gradient-to-br from-amber-500/20 via-[#0A2463]/80 to-[#061742]/90
         border border-amber-500/30
         shadow-[0_0_40px_rgba(245,158,11,0.15)]
-        ${onClick ? 'cursor-pointer' : ''}
-      `}
+        cursor-pointer"
+      onClick={() => onClick?.(person)}
     >
+      {/* Edit icon on hover */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onEdit(person);
+        }}
+        className="absolute top-3 right-3 z-10 p-1.5 rounded-lg bg-white/10 text-white/50 opacity-0 group-hover:opacity-100 hover:bg-white/20 hover:text-white transition-all"
+      >
+        <Pencil size={13} />
+      </button>
+
       {/* Top golden accent bar */}
       <div className="h-1.5 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-400" />
 
@@ -123,7 +410,6 @@ function LeaderCard({
             <div className="w-16 h-16 rounded-full bg-amber-500/20 flex items-center justify-center text-xl font-bold text-amber-300 ring-2 ring-amber-500/40 ring-offset-2 ring-offset-[#0A2463]">
               {initials}
             </div>
-            {/* Pulsing gold indicator */}
             <motion.div
               className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-amber-400 border-2 border-[#0A2463]"
               animate={{ scale: [1, 1.2, 1], opacity: [1, 0.7, 1] }}
@@ -142,7 +428,7 @@ function LeaderCard({
               {person.name}
             </h3>
             <p className="text-xs text-white/50 mt-0.5">
-              Visao estrategica e coordenacao geral
+              {person.title || 'Visao estrategica e coordenacao geral'}
             </p>
           </div>
         </div>
@@ -165,22 +451,76 @@ function LeaderCard({
 }
 
 // ---------------------------------------------------------------------------
-// DepartmentCard - card for each department with its leads
+// PersonRow - a person row inside a department card
+// ---------------------------------------------------------------------------
+
+function PersonRow({
+  person,
+  color,
+  onClick,
+  onEdit,
+}: {
+  person: Person;
+  color: string;
+  onClick?: (person: Person) => void;
+  onEdit: (person: Person) => void;
+}) {
+  return (
+    <motion.div
+      whileHover={{ scale: 1.02 }}
+      className="flex items-center gap-2.5 p-2 rounded-lg group/row
+        bg-white/[0.03] hover:bg-white/[0.06]
+        transition-colors duration-150 cursor-pointer"
+      onClick={() => onClick?.(person)}
+    >
+      <div className="relative shrink-0">
+        <div
+          className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
+          style={{ backgroundColor: `${color}30` }}
+        >
+          {getInitials(person.name)}
+        </div>
+        <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#00E5A0] border-[1.5px] border-[#0A2463]" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-[11px] font-semibold text-white truncate">
+          {person.name}
+        </p>
+        <p className="text-[9px] text-white/35 truncate">{person.title}</p>
+      </div>
+      {/* Edit button */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onEdit(person);
+        }}
+        className="p-1 rounded text-white/30 opacity-0 group-hover/row:opacity-100 hover:text-white hover:bg-white/10 transition-all shrink-0"
+      >
+        <Pencil size={11} />
+      </button>
+    </motion.div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// DepartmentCard
 // ---------------------------------------------------------------------------
 
 function DepartmentCard({
   config,
+  people,
   index,
   onClick,
+  onEdit,
 }: {
-  config: DeptConfig;
+  config: DeptDisplayConfig;
+  people: Person[];
   index: number;
   onClick?: (person: Person) => void;
+  onEdit: (person: Person) => void;
 }) {
   const Icon = config.icon;
-  const leads = config.leadIds
-    .map((id) => getPersonById(id))
-    .filter((p): p is Person => p != null);
+  const isEmpty = people.length === 0;
 
   return (
     <motion.div
@@ -206,59 +546,36 @@ function DepartmentCard({
               {config.label}
             </h4>
             <p className="text-[10px] text-white/30">
-              {leads.length > 1 ? 'Co-lideres' : leads.length === 1 ? 'Lider' : ''}
-              {config.isHiring ? 'A Contratar' : ''}
+              {people.length > 1
+                ? `${people.length} membros`
+                : people.length === 1
+                ? '1 membro'
+                : 'A Contratar'}
             </p>
           </div>
         </div>
 
         {/* People in department */}
         <div className="space-y-2">
-          {leads.map((person) => (
-            <motion.div
+          {people.map((person) => (
+            <PersonRow
               key={person.id}
-              whileHover={{ scale: 1.02 }}
-              onClick={() => onClick?.(person)}
-              className={`
-                flex items-center gap-2.5 p-2 rounded-lg
-                bg-white/[0.03] hover:bg-white/[0.06]
-                transition-colors duration-150
-                ${onClick ? 'cursor-pointer' : ''}
-              `}
-            >
-              <div className="relative shrink-0">
-                <div
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
-                  style={{ backgroundColor: `${config.color}30` }}
-                >
-                  {getInitials(person.name)}
-                </div>
-                <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#00E5A0] border-[1.5px] border-[#0A2463]" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[11px] font-semibold text-white truncate">
-                  {person.name}
-                </p>
-                <p className="text-[9px] text-white/35 truncate">
-                  {person.title}
-                </p>
-              </div>
-            </motion.div>
+              person={person}
+              color={config.color}
+              onClick={onClick}
+              onEdit={onEdit}
+            />
           ))}
 
-          {/* Hiring placeholder */}
-          {config.isHiring && leads.length === 0 && (
+          {/* Hiring placeholder when empty */}
+          {isEmpty && (
             <div className="flex items-center gap-2.5 p-2 rounded-lg bg-white/[0.02] border border-dashed border-white/10">
               <div className="w-8 h-8 rounded-full flex items-center justify-center bg-white/5">
                 <HelpCircle size={14} className="text-white/20" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-[11px] font-medium text-white/30">
-                  A Contratar
-                </p>
-                <p className="text-[9px] text-white/15">
-                  Gerente Pedagogico
-                </p>
+                <p className="text-[11px] font-medium text-white/30">A Contratar</p>
+                <p className="text-[9px] text-white/15">Nenhum membro atribuido</p>
               </div>
               <span className="text-[9px] font-medium px-1.5 py-0.5 rounded bg-cyan-500/15 text-cyan-400 shrink-0">
                 Vaga
@@ -272,17 +589,19 @@ function DepartmentCard({
 }
 
 // ---------------------------------------------------------------------------
-// AdvisoryCard - card for a conselho consultivo member
+// AdvisoryCard
 // ---------------------------------------------------------------------------
 
 function AdvisoryCard({
   person,
   index,
   onClick,
+  onEdit,
 }: {
   person: Person;
   index: number;
   onClick?: (person: Person) => void;
+  onEdit: (person: Person) => void;
 }) {
   const initials = getInitials(person.name);
 
@@ -292,13 +611,10 @@ function AdvisoryCard({
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: 0.2 + index * 0.06, duration: 0.3 }}
       whileHover={{ scale: 1.02 }}
-      onClick={() => onClick?.(person)}
-      className={`
-        flex items-center gap-3 p-3 rounded-xl
+      className="flex items-center gap-3 p-3 rounded-xl group/adv
         bg-[#0A2463]/40 border border-white/5
-        hover:border-purple-500/20 transition-all duration-200
-        ${onClick ? 'cursor-pointer' : ''}
-      `}
+        hover:border-purple-500/20 transition-all duration-200 cursor-pointer"
+      onClick={() => onClick?.(person)}
     >
       <div className="relative shrink-0">
         <div className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-purple-300 bg-purple-500/15">
@@ -307,11 +623,18 @@ function AdvisoryCard({
         <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-purple-400 border-[1.5px] border-[#0A2463]" />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-xs font-semibold text-white truncate">
-          {person.name}
-        </p>
+        <p className="text-xs font-semibold text-white truncate">{person.name}</p>
         <p className="text-[10px] text-white/35 truncate">{person.title}</p>
       </div>
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onEdit(person);
+        }}
+        className="p-1 rounded text-white/30 opacity-0 group-hover/adv:opacity-100 hover:text-white hover:bg-white/10 transition-all shrink-0"
+      >
+        <Pencil size={11} />
+      </button>
       <span className="text-[9px] font-medium px-1.5 py-0.5 rounded bg-purple-500/15 text-purple-400 shrink-0">
         Convidado
       </span>
@@ -320,7 +643,7 @@ function AdvisoryCard({
 }
 
 // ---------------------------------------------------------------------------
-// ConnectingLine - CSS-based hierarchy connector
+// ConnectingLine / HorizontalBranch (visual elements)
 // ---------------------------------------------------------------------------
 
 function ConnectingLine({ className = '' }: { className?: string }) {
@@ -339,10 +662,6 @@ function ConnectingLineThin({ className = '' }: { className?: string }) {
   );
 }
 
-// ---------------------------------------------------------------------------
-// HorizontalBranch - horizontal line with vertical drops for departments
-// ---------------------------------------------------------------------------
-
 function HorizontalBranch() {
   return (
     <div className="hidden sm:flex justify-center px-8">
@@ -356,39 +675,130 @@ function HorizontalBranch() {
 // ---------------------------------------------------------------------------
 
 export default function OrgChart({ onPersonClick }: OrgChartProps) {
-  // Get the leader (Raphael)
-  const leader = people.find((p) => p.role === 'lider') ?? people[0];
+  const { teamPeople, updatePerson, addPerson, deletePerson } = useProject();
 
-  // Get advisory board members
-  const advisoryBoard = people.filter((p) => p.role === 'convidado');
+  // Modal state
+  const [editingPerson, setEditingPerson] = useState<Person | null>(null);
+  const [isAddingNew, setIsAddingNew] = useState(false);
+
+  // Derived data
+  const leader = useMemo(
+    () => teamPeople.find((p) => p.role === 'lider') ?? null,
+    [teamPeople],
+  );
+
+  const advisoryBoard = useMemo(
+    () => teamPeople.filter((p) => p.role === 'convidado'),
+    [teamPeople],
+  );
+
+  // For each display department, find all people whose departmentIds includes it
+  const deptPeopleMap = useMemo(() => {
+    const map: Record<DepartmentId, Person[]> = {} as any;
+    for (const cfg of deptDisplayConfigs) {
+      map[cfg.id] = teamPeople.filter((p) => p.departmentIds.includes(cfg.id));
+    }
+    return map;
+  }, [teamPeople]);
+
+  // Handlers
+  const handleOpenEdit = useCallback((person: Person) => {
+    setEditingPerson(person);
+    setIsAddingNew(false);
+  }, []);
+
+  const handleOpenAdd = useCallback(() => {
+    setEditingPerson(null);
+    setIsAddingNew(true);
+  }, []);
+
+  const handleCloseModal = useCallback(() => {
+    setEditingPerson(null);
+    setIsAddingNew(false);
+  }, []);
+
+  const handleSave = useCallback(
+    (data: Omit<Person, 'id'>) => {
+      if (editingPerson) {
+        updatePerson(editingPerson.id, data);
+      } else {
+        addPerson(data);
+      }
+      handleCloseModal();
+    },
+    [editingPerson, updatePerson, addPerson, handleCloseModal],
+  );
+
+  const handleDelete = useCallback(() => {
+    if (editingPerson) {
+      deletePerson(editingPerson.id);
+      handleCloseModal();
+    }
+  }, [editingPerson, deletePerson, handleCloseModal]);
+
+  // Click on person: fire the external callback AND open edit
+  const handlePersonClick = useCallback(
+    (person: Person) => {
+      onPersonClick?.(person);
+    },
+    [onPersonClick],
+  );
 
   return (
     <div className="w-full space-y-8">
       {/* Title & Legend */}
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-2">
         <h2 className="text-lg sm:text-xl font-bold text-white">
           Organograma i10
         </h2>
-        <div className="flex items-center gap-3 text-[10px] text-white/30">
-          <span className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-amber-400" /> Lider
-          </span>
-          <span className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-[#00E5A0]" /> Fundador
-          </span>
-          <span className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-purple-400" /> Convidado
-          </span>
-          <span className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-[#00B4D8]" /> Contratacao
-          </span>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 text-[10px] text-white/30">
+            <span className="flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-amber-400" /> Lider
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-[#00E5A0]" /> Fundador
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-purple-400" /> Convidado
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-[#00B4D8]" /> Contratacao
+            </span>
+          </div>
+          {/* Add Person button */}
+          <button
+            onClick={handleOpenAdd}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-amber-500/15 text-amber-400 border border-amber-500/30 hover:bg-amber-500/25 transition-colors"
+          >
+            <Plus size={13} />
+            Adicionar Pessoa
+          </button>
         </div>
       </div>
 
       {/* ====== HIERARCHY VISUALIZATION ====== */}
       <section className="p-4 sm:p-8 rounded-2xl bg-[#061742]/50 border border-white/5">
         {/* Level 1: Leader */}
-        <LeaderCard person={leader} onClick={onPersonClick} />
+        {leader ? (
+          <LeaderCard
+            person={leader}
+            onClick={handlePersonClick}
+            onEdit={handleOpenEdit}
+          />
+        ) : (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="mx-auto max-w-sm w-full p-6 rounded-2xl bg-white/[0.02] border border-dashed border-amber-500/20 text-center"
+          >
+            <Crown size={24} className="text-amber-400/40 mx-auto mb-2" />
+            <p className="text-xs text-white/30">Nenhum lider definido</p>
+            <p className="text-[10px] text-white/15 mt-1">
+              Adicione uma pessoa com a funcao &quot;Lider&quot;
+            </p>
+          </motion.div>
+        )}
 
         {/* Connecting line from leader to departments */}
         <ConnectingLine />
@@ -398,12 +808,14 @@ export default function OrgChart({ onPersonClick }: OrgChartProps) {
 
         {/* Level 2: Departments - responsive grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-2">
-          {deptConfigs.map((config, i) => (
+          {deptDisplayConfigs.map((config, i) => (
             <DepartmentCard
               key={config.id}
               config={config}
+              people={deptPeopleMap[config.id]}
               index={i}
-              onClick={onPersonClick}
+              onClick={handlePersonClick}
+              onEdit={handleOpenEdit}
             />
           ))}
         </div>
@@ -421,19 +833,37 @@ export default function OrgChart({ onPersonClick }: OrgChartProps) {
           </span>
         </div>
 
-        {/* Connecting line from org chart to advisory */}
         <ConnectingLineThin className="mb-2" />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
-          {advisoryBoard.map((person, i) => (
-            <AdvisoryCard
-              key={person.id}
-              person={person}
-              index={i}
-              onClick={onPersonClick}
-            />
-          ))}
-        </div>
+        {advisoryBoard.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+            {advisoryBoard.map((person, i) => (
+              <AdvisoryCard
+                key={person.id}
+                person={person}
+                index={i}
+                onClick={handlePersonClick}
+                onEdit={handleOpenEdit}
+              />
+            ))}
+          </div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] border border-dashed border-white/10"
+          >
+            <div className="w-9 h-9 rounded-full flex items-center justify-center bg-white/5">
+              <HelpCircle size={16} className="text-white/20" />
+            </div>
+            <div>
+              <p className="text-xs font-medium text-white/30">Nenhum convidado</p>
+              <p className="text-[10px] text-white/15">
+                Adicione pessoas com a funcao &quot;Convidado&quot; para popular o conselho consultivo
+              </p>
+            </div>
+          </motion.div>
+        )}
       </section>
 
       {/* ====== CONSELHO FISCAL ====== */}
@@ -485,6 +915,17 @@ export default function OrgChart({ onPersonClick }: OrgChartProps) {
           </div>
         </motion.div>
       </section>
+
+      {/* ====== EDIT / ADD MODAL ====== */}
+      {(editingPerson || isAddingNew) && (
+        <EditPersonModal
+          person={editingPerson ?? emptyPerson() as Person}
+          isNew={isAddingNew}
+          onSave={handleSave}
+          onDelete={editingPerson ? handleDelete : undefined}
+          onClose={handleCloseModal}
+        />
+      )}
     </div>
   );
 }
