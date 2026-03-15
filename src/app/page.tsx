@@ -15,7 +15,7 @@ const IMAGES = {
   classroom: 'https://images.pexels.com/photos/8613312/pexels-photo-8613312.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
   students: 'https://images.pexels.com/photos/8612990/pexels-photo-8612990.jpeg?auto=compress&cs=tinysrgb&w=1200&h=800&fit=crop',
   teacher: 'https://images.pexels.com/photos/5212345/pexels-photo-5212345.jpeg?auto=compress&cs=tinysrgb&w=1200&h=800&fit=crop',
-  technology: 'https://images.pexels.com/photos/5905709/pexels-photo-5905709.jpeg?auto=compress&cs=tinysrgb&w=1200&h=800&fit=crop',
+  technology: 'https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg?auto=compress&cs=tinysrgb&w=1200&h=800&fit=crop',
   legacy: 'https://images.pexels.com/photos/8613070/pexels-photo-8613070.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
   science: 'https://images.pexels.com/photos/256395/pexels-photo-256395.jpeg?auto=compress&cs=tinysrgb&w=1200&h=800&fit=crop',
 };
@@ -80,9 +80,9 @@ const pillars = [
 
 const partners = [
   { name: 'Better EdTech', role: 'Tecnologia Educacional e Inovação', url: 'https://www.betteredtech.com.br/' },
-  { name: 'Jinso', role: 'Desenvolvimento de Software', url: null },
-  { name: 'Sprix', role: 'Tecnologia Educacional', url: null },
-  { name: 'MadeinWEB', role: 'Desenvolvimento Web', url: null },
+  { name: 'Jinso', role: 'Desenvolvimento de Software', url: 'https://www.jinso.com/' },
+  { name: 'Sprix', role: 'Tecnologia Educacional', url: 'https://sprixportal.jp/' },
+  { name: 'MadeinWEB', role: 'Desenvolvimento Web', url: 'https://madeinweb.com.br/' },
   { name: 'Gestorial', role: 'Gestão Administrativa e Contábil', url: null },
 ];
 
