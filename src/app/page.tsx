@@ -12,10 +12,10 @@ import { ArrowRight, ExternalLink } from 'lucide-react';
 
 const IMAGES = {
   hero: 'https://images.pexels.com/photos/8613089/pexels-photo-8613089.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
-  classroom: 'https://images.pexels.com/photos/8613312/pexels-photo-8613312.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
+  classroom: 'https://images.pexels.com/photos/5905497/pexels-photo-5905497.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
   students: 'https://images.pexels.com/photos/8612990/pexels-photo-8612990.jpeg?auto=compress&cs=tinysrgb&w=1200&h=800&fit=crop',
   teacher: 'https://images.pexels.com/photos/5212345/pexels-photo-5212345.jpeg?auto=compress&cs=tinysrgb&w=1200&h=800&fit=crop',
-  technology: 'https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg?auto=compress&cs=tinysrgb&w=1200&h=800&fit=crop',
+  technology: 'https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
   legacy: 'https://images.pexels.com/photos/8613070/pexels-photo-8613070.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
   science: 'https://images.pexels.com/photos/256395/pexels-photo-256395.jpeg?auto=compress&cs=tinysrgb&w=1200&h=800&fit=crop',
 };
@@ -228,52 +228,54 @@ export default function LandingPage() {
       <Hero />
 
       {/* ========== MANIFESTO ========== */}
-      <section className="relative py-32 sm:py-48 px-6 sm:px-12 lg:px-20 bg-[#030B1A] overflow-hidden">
-        <div className="absolute inset-0 noise pointer-events-none" />
-        {/* Subtle ambient glow */}
-        <div className="absolute top-1/2 left-0 w-[600px] h-[600px] -translate-y-1/2 -translate-x-1/2 bg-[#00B4D8]/[0.03] blur-[200px] rounded-full" />
-
-        <div className="relative z-10 max-w-6xl mx-auto">
-          <motion.div {...fadeUp} className="max-w-3xl">
-            <p className="text-[#00B4D8] text-xs font-medium tracking-[0.3em] uppercase mb-6">
+      <section className="relative overflow-hidden">
+        {/* Full-bleed image band */}
+        <div className="relative h-[50vh] sm:h-[60vh]">
+          <Image
+            src={IMAGES.classroom}
+            alt="Equipe trabalhando com tecnologia educacional"
+            fill
+            className="object-cover"
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#030B1A] via-[#0A2463]/70 to-[#030B1A]" />
+          <div className="absolute inset-0 noise pointer-events-none" />
+          {/* Centered label over image */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <motion.p
+              {...fadeIn}
+              className="text-[#00B4D8] text-xs font-medium tracking-[0.4em] uppercase"
+            >
               Quem Somos
-            </p>
-            <h2 className="font-serif text-4xl sm:text-6xl lg:text-7xl font-light text-white leading-[1.05] tracking-tight">
-              Não somos apenas desenvolvedores de software.
-            </h2>
-          </motion.div>
+            </motion.p>
+          </div>
+        </div>
 
-          <div className="mt-16 sm:mt-24 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
-            <motion.div {...fadeUp} className="lg:col-span-5">
-              <div className="relative aspect-[3/4] overflow-hidden">
-                <Image
-                  src={IMAGES.classroom}
-                  alt="Sala de aula brasileira"
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 1024px) 100vw, 42vw"
-                />
-                <div className="absolute inset-0 bg-[#0A2463]/65" />
-                <div className="absolute inset-0 hex-mesh opacity-[0.06] mix-blend-overlay" />
-              </div>
-            </motion.div>
+        {/* Text content — overlapping the image bottom */}
+        <div className="relative bg-[#030B1A] px-6 sm:px-12 lg:px-20 pb-32 sm:pb-48 -mt-20">
+          <div className="absolute inset-0 noise pointer-events-none" />
+          <div className="relative z-10 max-w-4xl mx-auto">
+            <motion.h2
+              {...fadeUp}
+              className="font-serif text-4xl sm:text-6xl lg:text-7xl font-light text-white leading-[1.05] tracking-tight mb-16"
+            >
+              Não somos apenas desenvolvedores de software.
+            </motion.h2>
 
             <motion.div
               {...fadeUp}
-              className="lg:col-span-7 flex flex-col justify-center"
+              className="grid grid-cols-1 sm:grid-cols-2 gap-12"
             >
-              <div className="space-y-8 text-white/70 text-lg sm:text-xl leading-relaxed font-serif">
-                <p>
-                  Somos orquestradores da transformação educacional. O Instituto i10 é uma
-                  Instituição Científica, Tecnológica e de Inovação (ICT) que atua como
-                  catalisador — articulando competências do setor público, acadêmico e
-                  privado em projetos de inovação educacional de grande escala.
-                </p>
-                <p>
-                  Nossa tecnologia não substitui o humano. Ela o liberta das amarras
-                  burocráticas para que possa focar no que realmente importa: a aprendizagem.
-                </p>
-              </div>
+              <p className="text-white/60 text-lg leading-relaxed font-serif">
+                Somos orquestradores da transformação educacional. O Instituto i10 é uma
+                Instituição Científica, Tecnológica e de Inovação (ICT) que atua como
+                catalisador — articulando competências do setor público, acadêmico e
+                privado em projetos de inovação educacional de grande escala.
+              </p>
+              <p className="text-white/60 text-lg leading-relaxed font-serif">
+                Nossa tecnologia não substitui o humano. Ela o liberta das amarras
+                burocráticas para que possa focar no que realmente importa: a aprendizagem.
+              </p>
             </motion.div>
           </div>
         </div>
@@ -476,61 +478,67 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ========== GOVERNANÇA — Inverted section ========== */}
-      <section className="relative py-32 sm:py-48 px-6 sm:px-12 lg:px-20 bg-[#F0EDEA] overflow-hidden">
-        <div className="absolute inset-0 noise pointer-events-none opacity-40" />
-        <div className="relative z-10 max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
-          <motion.div {...fadeUp} className="lg:col-span-7">
-            <p className="text-[#0A2463]/50 text-xs font-medium tracking-[0.3em] uppercase mb-6">
+      {/* ========== GOVERNANÇA — Full-bleed with glass cards ========== */}
+      <section className="relative py-32 sm:py-48 px-6 sm:px-12 lg:px-20 overflow-hidden">
+        {/* Background image */}
+        <Image
+          src={IMAGES.technology}
+          alt="Equipe colaborando em ambiente tecnológico"
+          fill
+          className="object-cover"
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 bg-[#0A2463]/80" />
+        <div className="absolute inset-0 noise pointer-events-none" />
+        <div className="absolute inset-0 hex-mesh opacity-[0.04] pointer-events-none" />
+
+        <div className="relative z-10 max-w-6xl mx-auto">
+          <motion.div {...fadeUp} className="text-center mb-20">
+            <p className="text-[#00B4D8] text-xs font-medium tracking-[0.3em] uppercase mb-6">
               Governança e Transparência
             </p>
-            <h2 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-light text-[#0A2463] leading-[1.05] tracking-tight mb-12">
+            <h2 className="font-serif text-4xl sm:text-6xl lg:text-7xl font-light text-white leading-[1.05] tracking-tight">
               A fundação da confiança.
             </h2>
-            <div className="space-y-10">
-              {[
-                {
-                  title: 'Conselho Consultivo & Diretoria',
-                  text: 'Governança estratégica pro bono, garantindo independência, ética e alinhamento inabalável aos interesses públicos.',
-                },
-                {
-                  title: 'Coordenação Científica',
-                  text: 'Supervisão rigorosa de metodologias, validando a eficácia pedagógica de todas as intervenções tecnológicas implantadas.',
-                },
-                {
-                  title: 'Segurança e LGPD',
-                  text: 'Proteção absoluta de dados de menores de idade, com arquitetura criptografada, DPO próprio e Relatórios de Impacto contínuos.',
-                },
-              ].map((item, i) => (
-                <motion.div
-                  key={item.title}
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: i * 0.15, ease }}
-                >
-                  <h3 className="text-lg font-semibold text-[#0A2463] mb-2">{item.title}</h3>
-                  <p className="text-[#0A2463]/50 leading-relaxed">{item.text}</p>
-                </motion.div>
-              ))}
-            </div>
           </motion.div>
-          <motion.div
-            {...fadeUp}
-            className="lg:col-span-5 flex items-center"
-          >
-            <div className="relative w-full aspect-[3/4] overflow-hidden">
-              <Image
-                src={IMAGES.technology}
-                alt="Dashboard de dados e governança"
-                fill
-                className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 42vw"
-              />
-              <div className="absolute inset-0 bg-[#0A2463]/60" />
-              <div className="absolute inset-0 hex-mesh opacity-[0.06] mix-blend-overlay" />
-            </div>
-          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              {
+                num: '01',
+                title: 'Conselho Consultivo & Diretoria',
+                text: 'Governança estratégica pro bono, garantindo independência, ética e alinhamento inabalável aos interesses públicos.',
+                accent: '#00B4D8',
+              },
+              {
+                num: '02',
+                title: 'Coordenação Científica',
+                text: 'Supervisão rigorosa de metodologias, validando a eficácia pedagógica de todas as intervenções tecnológicas implantadas.',
+                accent: '#00E5A0',
+              },
+              {
+                num: '03',
+                title: 'Segurança e LGPD',
+                text: 'Proteção absoluta de dados de menores de idade, com arquitetura criptografada, DPO próprio e Relatórios de Impacto contínuos.',
+                accent: '#00B4D8',
+              },
+            ].map((item, i) => (
+              <motion.div
+                key={item.title}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.7, delay: i * 0.15, ease }}
+                className="glass rounded-2xl p-8 sm:p-10 hover:bg-white/[0.08] transition-all duration-500"
+              >
+                <span className="font-serif text-5xl font-light leading-none block mb-6" style={{ color: `${item.accent}30` }}>
+                  {item.num}
+                </span>
+                <h3 className="text-lg font-semibold text-white mb-3">{item.title}</h3>
+                <p className="text-white/50 leading-relaxed text-sm">{item.text}</p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
