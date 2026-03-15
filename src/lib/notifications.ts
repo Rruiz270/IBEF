@@ -72,9 +72,11 @@ export async function subscribeToPush(): Promise<string | null> {
   if (typeof window === 'undefined') return null;
   if (!('serviceWorker' in navigator) || !('PushManager' in window)) return null;
 
-  const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+  const vapidPublicKey =
+    process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ||
+    'BGAXtmWuEMzAUBq2CJ46p0ysgpnQjeJX1Ei3mspPu6-P1KsMmrAbVgqo1kF27x-yyJOzcbAdUgB2-I2EkG87xBw';
   if (!vapidPublicKey) {
-    console.warn('[push] NEXT_PUBLIC_VAPID_PUBLIC_KEY not set');
+    console.warn('[push] VAPID public key not available');
     return null;
   }
 
