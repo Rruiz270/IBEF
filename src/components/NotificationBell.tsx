@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Bell,
+  BellRing,
   AlertTriangle,
   AlertCircle,
   Clock,
@@ -13,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useProject } from '@/contexts/ProjectContext';
 import type { Notification } from '@/contexts/ProjectContext';
+import { useNotificationPermission } from '@/hooks/useNotificationPermission';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -74,6 +76,8 @@ export default function NotificationBell() {
     markAllNotificationsRead,
     unreadCount,
   } = useProject();
+
+  const { permission, isGranted, isDenied, isSupported, requestPermission } = useNotificationPermission();
 
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -155,6 +159,19 @@ export default function NotificationBell() {
                 </span>
               )}
             </div>
+
+            {/* Browser notification permission banner */}
+            {isSupported && !isGranted && !isDenied && (
+              <button
+                onClick={() => requestPermission()}
+                className="flex items-center gap-2 w-full px-4 py-2.5 border-b border-white/10 text-left hover:bg-white/5 transition-colors"
+              >
+                <BellRing size={14} className="text-[#00E5A0] shrink-0" />
+                <span className="text-xs text-[#00E5A0] font-medium">
+                  Ativar alertas do navegador
+                </span>
+              </button>
+            )}
 
             {/* Notification list */}
             <div className="flex-1 overflow-y-auto overscroll-contain">

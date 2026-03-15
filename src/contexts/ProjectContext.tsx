@@ -12,6 +12,7 @@ import type {
   HiringPosition, HiringStatus, AssociateCompany, CompanyType,
   Person, PersonRole, ActivityLogEntry,
 } from '../data/types';
+import { showBrowserNotification } from '../lib/notifications';
 
 // ---------------------------------------------------------------------------
 // Notification type
@@ -196,9 +197,22 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       }
     });
 
-    // Merge: keep read state from existing notifications
+    // Merge: keep read state from existing notifications, fire browser notifications for new ones
     setNotifications((prev) => {
       const readMap = new Map(prev.map((n) => [n.id, n.read]));
+      const existingIds = new Set(prev.map((n) => n.id));
+
+      // Fire browser notifications only for genuinely new overdue/critical items
+      newNotifs.forEach((n) => {
+        if (!existingIds.has(n.id) && (n.type === 'overdue' || n.type === 'critical')) {
+          showBrowserNotification({
+            title: n.title,
+            body: n.message,
+            url: '/dashboard',
+          });
+        }
+      });
+
       return newNotifs.map((n) => ({
         ...n,
         read: readMap.get(n.id) ?? false,
@@ -229,6 +243,24 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
             });
           }
         });
+
+        // Browser notification: task completed
+        if (updates.status === 'concluida' && oldTask.status !== 'concluida') {
+          showBrowserNotification({
+            title: 'Tarefa Concluída',
+            body: `"${oldTask.title}" foi marcada como concluída.`,
+            url: '/dashboard',
+          });
+        }
+
+        // Browser notification: task became critical
+        if (updates.priority === 'critica' && oldTask.priority !== 'critica') {
+          showBrowserNotification({
+            title: 'Prioridade Crítica',
+            body: `"${oldTask.title}" foi marcada como prioridade crítica.`,
+            url: '/dashboard',
+          });
+        }
       }
       return newTasks;
     });
@@ -262,6 +294,14 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
         entityTitle: partial.title,
         action: 'created',
       });
+
+      // Browser notification: task created
+      showBrowserNotification({
+        title: 'Nova Tarefa Criada',
+        body: `"${partial.title}" foi adicionada ao projeto.`,
+        url: '/dashboard',
+      });
+
       return id;
     },
     [logActivity]

@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import GlobalSearch from '@/components/GlobalSearch';
 import TaskEditModal from '@/components/TaskEditModal';
+import PWAInstallPrompt from '@/components/PWAInstallPrompt';
 
 export default function LayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -23,6 +24,7 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
       </main>
       <GlobalSearch onTaskSelect={(taskId) => setSearchTaskId(taskId)} />
       <TaskEditModal taskId={searchTaskId} onClose={() => setSearchTaskId(null)} />
+      <PWAInstallPrompt />
     </div>
   );
 }
