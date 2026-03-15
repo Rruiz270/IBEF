@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Source_Serif_4 } from "next/font/google";
 import { ProjectProvider } from "@/contexts/ProjectContext";
 import LayoutShell from "@/components/LayoutShell";
 import ServiceWorkerRegistrar from "@/components/ServiceWorkerRegistrar";
@@ -8,6 +8,12 @@ import "./globals.css";
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
+});
+
+const sourceSerif = Source_Serif_4({
+  variable: "--font-source-serif",
+  subsets: ["latin"],
+  style: ["normal", "italic"],
 });
 
 export const viewport: Viewport = {
@@ -37,7 +43,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className="dark">
       <body
-        className={`${inter.variable} font-sans antialiased bg-[#030B1A] min-h-screen text-text-primary`}
+        className={`${inter.variable} ${sourceSerif.variable} font-sans antialiased bg-[#030B1A] min-h-screen text-text-primary`}
       >
         <ServiceWorkerRegistrar />
         <ProjectProvider>
