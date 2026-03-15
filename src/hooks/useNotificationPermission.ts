@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { subscribeToPush } from '@/lib/notifications';
 
 type PermissionState = NotificationPermission | 'unsupported';
 
@@ -19,10 +20,15 @@ export function useNotificationPermission() {
     if (!('Notification' in window)) return 'unsupported';
     if (Notification.permission === 'granted') {
       setPermission('granted');
+      // Ensure push subscription is active
+      subscribeToPush();
       return 'granted';
     }
     const result = await Notification.requestPermission();
     setPermission(result);
+    if (result === 'granted') {
+      subscribeToPush();
+    }
     return result;
   }, []);
 

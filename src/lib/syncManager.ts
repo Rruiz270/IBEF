@@ -3,6 +3,8 @@
  * Client-side sync orchestration: offline queue, auto-retry, periodic poll.
  */
 
+import { getPushEndpoint } from '@/lib/notifications';
+
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -212,7 +214,10 @@ export class SyncManager {
       const res = await fetch('/api/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mutations: batch }),
+        body: JSON.stringify({
+          mutations: batch,
+          senderEndpoint: getPushEndpoint() ?? undefined,
+        }),
       });
 
       if (!res.ok) {
