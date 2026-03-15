@@ -1,855 +1,637 @@
 'use client';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
-import {
-  Target,
-  Eye,
-  Heart,
-  BookOpen,
-  Building2,
-  GraduationCap,
-  ArrowRight,
-  ChevronRight,
-  ExternalLink,
-  Briefcase,
-  Globe,
-  Sparkles,
-  HandshakeIcon,
-  Brain,
-  Users,
-  School,
-  BarChart3,
-  Shield,
-  Lightbulb,
-  Layers,
-  Monitor,
-  Search,
-  Route,
-  Zap,
-} from 'lucide-react';
+import Image from 'next/image';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { useRef } from 'react';
+import { ArrowRight, ExternalLink } from 'lucide-react';
+
+/* ============================================
+   Image URLs (Unsplash — free to use)
+   ============================================ */
+
+const IMAGES = {
+  hero: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1920&q=80&auto=format&fit=crop',
+  classroom: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=1200&q=80&auto=format&fit=crop',
+  teacher: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=1200&q=80&auto=format&fit=crop',
+  students: 'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=1200&q=80&auto=format&fit=crop',
+  technology: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=1200&q=80&auto=format&fit=crop',
+  data: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&q=80&auto=format&fit=crop',
+  collaboration: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&q=80&auto=format&fit=crop',
+  legacy: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=1920&q=80&auto=format&fit=crop',
+};
 
 /* ============================================
    Data
    ============================================ */
 
+const stats = [
+  { value: '1.000+', label: 'Escolas' },
+  { value: '50 mil', label: 'Docentes' },
+  { value: '550 mil', label: 'Alunos' },
+  { value: '1', label: 'Estado Parceiro' },
+];
+
 const valores = [
   {
     letter: 'E',
     title: 'Excelência Científica',
-    description: 'Cada projeto, publicação e solução busca o padrão de excelência que transcende o ordinário. O impacto real do conhecimento.',
+    description: 'Cada projeto e solução busca o padrão de excelência que transcende o ordinário.',
   },
   {
     letter: 'M',
     title: 'Impacto Mensurável',
-    description: 'Compromisso com resultados documentados, metodologias validadas e transparência algorítmica. Dados representam alunos.',
+    description: 'Resultados documentados, metodologias validadas e transparência algorítmica.',
   },
   {
     letter: 'I',
     title: 'Inovação com Propósito',
-    description: 'Tecnologia a serviço da educação pública. Cada decisão técnica serve a um objetivo pedagógico. IA é ferramenta, não fim.',
+    description: 'Tecnologia a serviço da educação. Cada decisão técnica serve a um objetivo pedagógico.',
   },
   {
     letter: 'C',
     title: 'Colaboração Institucional',
-    description: 'Articulação entre setor público, acadêmico e privado, orquestrando competências complementares para transformação em escala.',
-  },
-];
-
-const pilares = [
-  {
-    icon: Lightbulb,
-    title: 'Inovação',
-    subtitle: 'Orquestração e Ecossistema',
-    description:
-      'Capacidade de articular parcerias intersetoriais, unindo o setor público, o privado e o terceiro setor para solucionar desafios educacionais complexos.',
-    color: '#C2703E',
-  },
-  {
-    icon: Layers,
-    title: 'Tecnologia',
-    subtitle: 'Alicerce Escalável',
-    description:
-      'Infraestrutura de nuvem, IA preditiva e generativa, e engenharia de dados capaz de suportar redes com mais de 1.000 escolas, 50 mil docentes e 550 mil alunos.',
-    color: '#2E5A88',
-  },
-  {
-    icon: BookOpen,
-    title: 'Ciência',
-    subtitle: 'Metodologia Baseada em Evidências',
-    description:
-      'Produção de conhecimento científico, documentação de aprendizados e avaliação de impacto de intervenções em contextos educacionais.',
-    color: '#1A3A5C',
-  },
-];
-
-const ecossistema = [
-  {
-    icon: GraduationCap,
-    title: 'Eixo Discente',
-    subtitle: 'Centro',
-    description:
-      'Personalização do percurso, engajamento interativo e foco na redução do abandono escolar.',
-    color: '#C2703E',
-  },
-  {
-    icon: Users,
-    title: 'Eixo Docente',
-    subtitle: 'Empoderamento',
-    description:
-      'Empoderamento do professor como mediador, liberação de tempo burocrático e suporte com IA.',
-    color: '#2E5A88',
-  },
-  {
-    icon: Building2,
-    title: 'Eixo Institucional',
-    subtitle: 'Infraestrutura',
-    description:
-      'Simplificação administrativa e estruturação de infraestrutura para aprendizagem digital.',
-    color: '#1A3A5C',
-  },
-  {
-    icon: BarChart3,
-    title: 'Convergência Sistêmica',
-    subtitle: 'Anel Externo',
-    description:
-      'Repositório unificado de dados transformando registros administrativos e pedagógicos em inteligência acionável.',
-    color: '#64748B',
-  },
-];
-
-const jornadaDocente = [
-  {
-    icon: Monitor,
-    title: 'Simplificação Operacional',
-    description: 'Redução de até 30% do tempo em tarefas burocráticas através de interface unificada.',
-  },
-  {
-    icon: School,
-    title: 'Capacitação Pedagógica',
-    description: 'Trilhas formativas alinhadas à Escola de Formação.',
-  },
-  {
-    icon: BookOpen,
-    title: 'Planejamento Pedagógico',
-    description: 'Criação de aulas alinhadas à BNCC com suporte inteligente.',
-  },
-  {
-    icon: Zap,
-    title: 'Execução Digital',
-    description: 'Aulas em ambiente interativo com coleta de dados em tempo real.',
-  },
-  {
-    icon: Brain,
-    title: 'IA como Suporte',
-    description: 'Co-piloto de IA generativa para sugerir intervenções e roteiros adaptados à turma.',
-  },
-];
-
-const aprendizagemAluno = [
-  {
-    icon: Search,
-    title: 'Diagnóstico de Competências',
-    description: 'Identificação precisa de lacunas de aprendizagem em tempo real.',
-  },
-  {
-    icon: Route,
-    title: 'Percursos Adaptativos',
-    description:
-      'O motor de IA prescreve trilhas de recuperação estruturadas conforme o perfil individual do aluno.',
-  },
-  {
-    icon: Zap,
-    title: 'Engajamento Constante',
-    description:
-      'Retorno formativo imediato, mantendo o aluno no centro de seu próprio desenvolvimento educacional.',
-  },
-];
-
-const governanca = [
-  {
-    icon: Users,
-    title: 'Conselho Consultivo & Diretoria',
-    description:
-      'Governança estratégica pro bono, garantindo independência, ética e alinhamento inabalável aos interesses públicos.',
-  },
-  {
-    icon: BookOpen,
-    title: 'Coordenação Científica',
-    description:
-      'Supervisão rigorosa de metodologias, validando a eficácia pedagógica de todas as intervenções tecnológicas implantadas.',
-  },
-  {
-    icon: Shield,
-    title: 'Segurança e LGPD',
-    description:
-      'Proteção absoluta de dados de menores de idade, com arquitetura criptografada, DPO próprio e Relatórios de Impacto contínuos.',
+    description: 'Articulação entre setor público, acadêmico e privado para transformação em escala.',
   },
 ];
 
 const partners = [
-  {
-    name: 'Better EdTech',
-    description: 'Tecnologia Educacional e Inovação',
-    url: 'https://www.betteredtech.com.br/',
-  },
-  {
-    name: 'Jinso',
-    description: 'Desenvolvimento de Software',
-    url: null,
-  },
-  {
-    name: 'Sprix',
-    description: 'Tecnologia Educacional',
-    url: null,
-  },
-  {
-    name: 'MadeinWEB',
-    description: 'Desenvolvimento Web',
-    url: null,
-  },
-  {
-    name: 'Gestorial',
-    description: 'Gestão Administrativa e Contábil',
-    url: null,
-  },
-];
-
-const clientes = [
-  {
-    name: 'Estado de Santa Catarina',
-    detail: 'Secretaria de Estado da Educação (SED/SC)',
-    description:
-      'Encomenda Tecnológica para desenvolvimento de plataforma educacional com IA para a rede pública estadual — mais de 1.000 escolas, 50 mil docentes e 550 mil alunos.',
-  },
+  { name: 'Better EdTech', role: 'Tecnologia Educacional e Inovação', url: 'https://www.betteredtech.com.br/' },
+  { name: 'Jinso', role: 'Desenvolvimento de Software', url: null },
+  { name: 'Sprix', role: 'Tecnologia Educacional', url: null },
+  { name: 'MadeinWEB', role: 'Desenvolvimento Web', url: null },
+  { name: 'Gestorial', role: 'Gestão Administrativa e Contábil', url: null },
 ];
 
 /* ============================================
-   Animations
+   Animation helpers
    ============================================ */
 
-const fadeInUp = {
-  initial: { opacity: 0, y: 40 },
+const fadeIn = {
+  initial: { opacity: 0, y: 32 },
   whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: '-80px' },
-  transition: { duration: 0.6, ease: 'easeOut' as const },
-};
-
-const staggerContainer = {
-  whileInView: { transition: { staggerChildren: 0.1 } },
-  viewport: { once: true },
-};
-
-const staggerItem = {
-  initial: { opacity: 0, y: 30 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true },
-  transition: { duration: 0.5, ease: 'easeOut' as const },
+  viewport: { once: true, margin: '-100px' },
+  transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
 };
 
 /* ============================================
-   Landing Page Component
+   Parallax Hero component
+   ============================================ */
+
+function ParallaxHero() {
+  const ref = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ['start start', 'end start'],
+  });
+  const y = useTransform(scrollYProgress, [0, 1], [0, 200]);
+  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+
+  return (
+    <section ref={ref} className="relative h-screen overflow-hidden">
+      {/* Background image with parallax */}
+      <motion.div className="absolute inset-0" style={{ y }}>
+        <Image
+          src={IMAGES.hero}
+          alt="Estudantes em sala de aula"
+          fill
+          priority
+          className="object-cover"
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 bg-[#0A2463]/70" />
+      </motion.div>
+
+      {/* Content */}
+      <motion.div
+        className="relative z-10 h-full flex flex-col justify-end pb-20 sm:pb-28 px-6 sm:px-12 lg:px-20 max-w-7xl mx-auto"
+        style={{ opacity }}
+      >
+        <motion.p
+          className="text-[#00E5A0] text-sm sm:text-base font-medium tracking-[0.3em] uppercase mb-4"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.3, duration: 0.6 }}
+        >
+          Educação · Tecnologia · Inovação
+        </motion.p>
+
+        <motion.h1
+          className="text-5xl sm:text-7xl lg:text-8xl font-black text-white leading-[0.9] tracking-tight max-w-4xl"
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.8, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
+        >
+          Instituto
+          <br />
+          <span className="text-[#00B4D8]">i10</span>
+        </motion.h1>
+
+        <motion.p
+          className="mt-6 text-lg sm:text-xl text-white/70 max-w-xl leading-relaxed font-light"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.7, duration: 0.6 }}
+        >
+          Orquestrando o futuro da educação pública brasileira através de
+          pesquisa, inteligência artificial e parcerias estratégicas com governos.
+        </motion.p>
+
+        <motion.div
+          className="mt-10 flex flex-wrap gap-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.9, duration: 0.6 }}
+        >
+          <Link
+            href="/dashboard"
+            className="group inline-flex items-center gap-3 px-8 py-4 bg-white text-[#0A2463] font-semibold text-sm rounded-full
+                       hover:bg-[#00E5A0] hover:text-[#0A2463] transition-all duration-300"
+          >
+            Acessar Painel de Controle
+            <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </motion.div>
+
+        {/* Stats bar */}
+        <motion.div
+          className="mt-16 flex flex-wrap gap-8 sm:gap-16"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2, duration: 0.8 }}
+        >
+          {stats.map((s) => (
+            <div key={s.label}>
+              <p className="text-3xl sm:text-4xl font-black text-white">{s.value}</p>
+              <p className="text-sm text-white/50 mt-1">{s.label}</p>
+            </div>
+          ))}
+        </motion.div>
+      </motion.div>
+    </section>
+  );
+}
+
+/* ============================================
+   Landing Page
    ============================================ */
 
 export default function LandingPage() {
   return (
-    <div className="relative overflow-x-hidden bg-white">
+    <div className="overflow-x-hidden bg-white">
+      <ParallaxHero />
 
-      {/* ========== HERO ========== */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 overflow-hidden bg-white">
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full bg-[#00B4D8]/[0.05] blur-[120px]" />
-          <div className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full bg-[#0A2463]/[0.04] blur-[100px]" />
-          <div
-            className="absolute inset-0 opacity-[0.03]"
-            style={{
-              backgroundImage: 'radial-gradient(#0A2463 1px, transparent 1px)',
-              backgroundSize: '32px 32px',
-            }}
-          />
-        </div>
-
-        <motion.div
-          className="relative z-10 flex flex-col items-center text-center max-w-4xl mx-auto"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: 'easeOut' as const }}
-        >
-          <motion.div
-            className="mb-8 w-16 h-16 rounded-2xl bg-gradient-to-br from-[#0A2463] to-[#00B4D8] flex items-center justify-center shadow-lg"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-          >
-            <GraduationCap size={32} className="text-white" />
-          </motion.div>
-
-          <motion.h1
-            className="text-7xl sm:text-8xl md:text-9xl font-black tracking-tight leading-none text-[#0A2463]"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.7 }}
-          >
-            i10
-          </motion.h1>
-
-          <motion.p
-            className="mt-3 text-xl sm:text-2xl md:text-3xl text-[#0A2463]/80 font-semibold tracking-wide"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.45, duration: 0.6 }}
-          >
-            Instituto i10
-          </motion.p>
-
-          <motion.p
-            className="mt-2 text-base sm:text-lg md:text-xl text-[#00B4D8] font-medium tracking-widest"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5, duration: 0.6 }}
-          >
-            Educação · Tecnologia · Inovação
-          </motion.p>
-
-          <motion.p
-            className="mt-4 text-lg sm:text-xl md:text-2xl text-[#0A2463]/70 font-light tracking-wide"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.55, duration: 0.6 }}
-          >
-            Orquestrando o Futuro da Educação Pública
-          </motion.p>
-
-          <motion.p
-            className="mt-6 text-sm sm:text-base md:text-lg text-[#64748B] max-w-2xl leading-relaxed"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6, duration: 0.6 }}
-          >
-            Não somos apenas desenvolvedores de software — somos orquestradores
-            da transformação educacional. Nossa tecnologia não substitui o humano;
-            ela o liberta para focar no que realmente importa: a aprendizagem.
-          </motion.p>
-
-          <motion.div
-            className="mt-12"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8, duration: 0.6 }}
-          >
-            <Link
-              href="/dashboard"
-              className="group inline-flex items-center gap-2 px-8 py-3.5 rounded-xl font-semibold text-sm sm:text-base
-                         bg-[#0A2463] text-white
-                         hover:bg-[#0A2463]/90 hover:shadow-lg hover:shadow-[#0A2463]/20 transition-all duration-300"
-            >
-              Acessar Painel de Controle
-              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </motion.div>
-
-          <motion.div
-            className="absolute bottom-8 left-1/2 -translate-x-1/2"
-            animate={{ y: [0, 10, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' as const }}
-          >
-            <ChevronRight size={24} className="rotate-90 text-[#94A3B8]" />
-          </motion.div>
-        </motion.div>
-      </section>
-
-      {/* ========== O MANIFESTO ========== */}
-      <section className="relative py-24 sm:py-32 px-4 sm:px-6 bg-[#F8FAFC]">
-        <div className="max-w-4xl mx-auto">
-          <motion.div {...fadeInUp} className="text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#0A2463]/10 bg-[#0A2463]/5 mb-6">
-              <BookOpen size={14} className="text-[#0A2463]" />
-              <span className="text-xs text-[#0A2463] font-medium uppercase tracking-wider">Manifesto</span>
-            </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#0F172A] leading-tight">
+      {/* ========== MANIFESTO ========== */}
+      <section className="relative py-28 sm:py-40 px-6 sm:px-12 lg:px-20 bg-white">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <motion.div {...fadeIn}>
+            <p className="text-[#00B4D8] text-xs font-semibold tracking-[0.25em] uppercase mb-4">
               Quem Somos
-            </h2>
-            <p className="mt-8 text-[#64748B] text-base sm:text-lg leading-relaxed max-w-3xl mx-auto">
-              O Instituto i10 é uma Instituição Científica, Tecnológica e de Inovação (ICT)
-              Orquestradora, que atua na intersecção entre a pesquisa metodológica, o
-              desenvolvimento tecnológico e a efetividade das políticas públicas educacionais.
-              Como ICT Coordenadora e Orquestradora, articulamos competências do setor público,
-              acadêmico e privado para gerar transformação em escala.
             </p>
-            <p className="mt-6 text-[#64748B] text-base sm:text-lg leading-relaxed max-w-3xl mx-auto">
-              Transformar a educação pública brasileira através de pesquisa, desenvolvimento
-              e inovação em Inteligência Artificial, gerando impacto mensurável na qualidade
-              de ensino e na equidade de oportunidades. Operamos projetos de risco tecnológico
-              (Encomendas Tecnológicas) através do programa Educação do Futuro, nossa face
-              pública junto ao governo e à sociedade.
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ========== MISSÃO, VISÃO E VALORES ========== */}
-      <section className="relative py-24 sm:py-32 px-4 sm:px-6 bg-white">
-        <div className="max-w-6xl mx-auto">
-          <motion.div {...fadeInUp} className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#0F172A] leading-tight">
-              O Propósito Que Nos Move
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#0A2463] leading-[1.05] tracking-tight">
+              Não somos apenas desenvolvedores de software.
             </h2>
-          </motion.div>
-
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8"
-            {...staggerContainer}
-          >
-            <motion.div
-              {...staggerItem}
-              className="relative rounded-2xl bg-white border border-[#E2E8F0] p-8 shadow-sm hover:shadow-md hover:border-[#C2703E]/30 transition-all duration-300"
-            >
-              <div className="w-12 h-12 rounded-xl bg-[#C2703E]/10 flex items-center justify-center mb-5">
-                <Target size={24} className="text-[#C2703E]" />
-              </div>
-              <h3 className="text-xl font-bold text-[#0F172A] mb-3">Missão</h3>
-              <p className="text-sm sm:text-base text-[#64748B] leading-relaxed">
-                Transformar a educação pública brasileira através de pesquisa,
-                desenvolvimento e inovação em Inteligência Artificial, gerando
-                impacto mensurável na qualidade de ensino e na equidade de oportunidades.
+            <div className="mt-8 space-y-6 text-[#475569] text-base sm:text-lg leading-relaxed">
+              <p>
+                Somos orquestradores da transformação educacional. O Instituto i10 é uma
+                Instituição Científica, Tecnológica e de Inovação (ICT) que atua como
+                catalisador — articulando competências do setor público, acadêmico e
+                privado em projetos de inovação educacional de grande escala.
               </p>
-            </motion.div>
-
-            <motion.div
-              {...staggerItem}
-              className="relative rounded-2xl bg-white border border-[#E2E8F0] p-8 shadow-sm hover:shadow-md hover:border-[#2E5A88]/30 transition-all duration-300"
-            >
-              <div className="w-12 h-12 rounded-xl bg-[#2E5A88]/10 flex items-center justify-center mb-5">
-                <Eye size={24} className="text-[#2E5A88]" />
-              </div>
-              <h3 className="text-xl font-bold text-[#0F172A] mb-3">Visão</h3>
-              <p className="text-sm sm:text-base text-[#64748B] leading-relaxed">
-                Ser o centro de inteligência orquestrador que consolida uma
-                capacidade institucional permanente no Estado, transformando redes
-                de ensino em ecossistemas baseados em evidências.
+              <p>
+                Nossa tecnologia não substitui o humano. Ela o liberta das amarras
+                burocráticas para que possa focar no que realmente importa: a aprendizagem.
               </p>
-            </motion.div>
+            </div>
+          </motion.div>
+          <motion.div
+            {...fadeIn}
+            className="relative aspect-[4/3] rounded-2xl overflow-hidden"
+          >
+            <Image
+              src={IMAGES.collaboration}
+              alt="Equipe colaborando em projeto educacional"
+              fill
+              className="object-cover"
+              sizes="(max-width: 1024px) 100vw, 50vw"
+            />
+          </motion.div>
+        </div>
+      </section>
 
+      {/* ========== MISSÃO (full-bleed image) ========== */}
+      <section className="relative py-32 sm:py-44 px-6 overflow-hidden">
+        <Image
+          src={IMAGES.classroom}
+          alt="Sala de aula"
+          fill
+          className="object-cover"
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 bg-[#0A2463]/80" />
+        <div className="relative z-10 max-w-4xl mx-auto text-center">
+          <motion.p
+            {...fadeIn}
+            className="text-[#00E5A0] text-xs font-semibold tracking-[0.25em] uppercase mb-6"
+          >
+            Nossa Missão
+          </motion.p>
+          <motion.blockquote
+            {...fadeIn}
+            className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white leading-snug"
+          >
+            Transformar a educação pública brasileira através de pesquisa,
+            desenvolvimento e inovação em Inteligência Artificial, gerando
+            impacto mensurável na qualidade de ensino e na equidade de oportunidades.
+          </motion.blockquote>
+        </div>
+      </section>
+
+      {/* ========== VALORES EMIC ========== */}
+      <section className="relative py-28 sm:py-40 px-6 sm:px-12 lg:px-20 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <motion.div {...fadeIn} className="mb-20">
+            <p className="text-[#00B4D8] text-xs font-semibold tracking-[0.25em] uppercase mb-4">
+              Nossos Valores
+            </p>
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#0A2463] leading-[1.05] tracking-tight">
+              O que nos define.
+            </h2>
+          </motion.div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-0 border-t border-l border-[#E2E8F0]">
+            {valores.map((v, i) => (
+              <motion.div
+                key={v.letter}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                className="border-b border-r border-[#E2E8F0] p-8 sm:p-12 group hover:bg-[#F8FAFC] transition-colors duration-300"
+              >
+                <span className="text-6xl sm:text-7xl font-black text-[#0A2463]/[0.08] group-hover:text-[#00B4D8]/20 transition-colors duration-500 leading-none block mb-4">
+                  {v.letter}
+                </span>
+                <h3 className="text-xl sm:text-2xl font-bold text-[#0A2463] mb-3">{v.title}</h3>
+                <p className="text-[#64748B] leading-relaxed">{v.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ========== TRÊS PILARES (split layout) ========== */}
+      <section className="relative bg-[#0A2463] text-white">
+        {/* Pilar 1 — Ciência */}
+        <div className="grid grid-cols-1 lg:grid-cols-2">
+          <motion.div
+            {...fadeIn}
+            className="p-12 sm:p-20 flex flex-col justify-center"
+          >
+            <p className="text-[#00E5A0] text-xs font-semibold tracking-[0.25em] uppercase mb-4">
+              Pilar 01
+            </p>
+            <h3 className="text-3xl sm:text-4xl font-black leading-tight mb-6">
+              Ciência
+            </h3>
+            <p className="text-white/70 text-base sm:text-lg leading-relaxed max-w-lg">
+              Metodologia baseada em evidências. Produção de conhecimento científico,
+              documentação de aprendizados e avaliação de impacto de intervenções
+              em contextos educacionais reais.
+            </p>
+          </motion.div>
+          <div className="relative min-h-[400px] lg:min-h-0">
+            <Image
+              src={IMAGES.data}
+              alt="Análise de dados e pesquisa científica"
+              fill
+              className="object-cover"
+              sizes="(max-width: 1024px) 100vw, 50vw"
+            />
+          </div>
+        </div>
+
+        {/* Pilar 2 — Tecnologia */}
+        <div className="grid grid-cols-1 lg:grid-cols-2">
+          <div className="relative min-h-[400px] lg:min-h-0 order-2 lg:order-1">
+            <Image
+              src={IMAGES.technology}
+              alt="Infraestrutura tecnológica"
+              fill
+              className="object-cover"
+              sizes="(max-width: 1024px) 100vw, 50vw"
+            />
+          </div>
+          <motion.div
+            {...fadeIn}
+            className="p-12 sm:p-20 flex flex-col justify-center order-1 lg:order-2"
+          >
+            <p className="text-[#00B4D8] text-xs font-semibold tracking-[0.25em] uppercase mb-4">
+              Pilar 02
+            </p>
+            <h3 className="text-3xl sm:text-4xl font-black leading-tight mb-6">
+              Tecnologia
+            </h3>
+            <p className="text-white/70 text-base sm:text-lg leading-relaxed max-w-lg">
+              Alicerce escalável. Infraestrutura de nuvem, IA preditiva e generativa,
+              e engenharia de dados capaz de suportar redes com mais de 1.000 escolas,
+              50 mil docentes e 550 mil alunos.
+            </p>
+          </motion.div>
+        </div>
+
+        {/* Pilar 3 — Inovação */}
+        <div className="grid grid-cols-1 lg:grid-cols-2">
+          <motion.div
+            {...fadeIn}
+            className="p-12 sm:p-20 flex flex-col justify-center"
+          >
+            <p className="text-[#00E5A0] text-xs font-semibold tracking-[0.25em] uppercase mb-4">
+              Pilar 03
+            </p>
+            <h3 className="text-3xl sm:text-4xl font-black leading-tight mb-6">
+              Inovação
+            </h3>
+            <p className="text-white/70 text-base sm:text-lg leading-relaxed max-w-lg">
+              Orquestração e ecossistema. Capacidade de articular parcerias intersetoriais,
+              unindo o setor público, o privado e o terceiro setor para solucionar
+              desafios educacionais complexos.
+            </p>
+          </motion.div>
+          <div className="relative min-h-[400px] lg:min-h-0">
+            <Image
+              src={IMAGES.teacher}
+              alt="Professor em sala de aula inovadora"
+              fill
+              className="object-cover"
+              sizes="(max-width: 1024px) 100vw, 50vw"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ========== ECOSSISTEMA (professor + aluno side by side) ========== */}
+      <section className="relative py-28 sm:py-40 px-6 sm:px-12 lg:px-20 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <motion.div {...fadeIn} className="text-center mb-20">
+            <p className="text-[#00B4D8] text-xs font-semibold tracking-[0.25em] uppercase mb-4">
+              Ecossistema Integrado
+            </p>
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#0A2463] leading-[1.05] tracking-tight">
+              Quem transformamos.
+            </h2>
+          </motion.div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Professor */}
             <motion.div
-              {...staggerItem}
-              className="relative rounded-2xl bg-white border border-[#E2E8F0] p-8 shadow-sm hover:shadow-md hover:border-[#00E5A0]/30 transition-all duration-300"
+              {...fadeIn}
+              className="group relative rounded-2xl overflow-hidden bg-[#0A2463]"
             >
-              <div className="w-12 h-12 rounded-xl bg-[#00E5A0]/10 flex items-center justify-center mb-5">
-                <Heart size={24} className="text-[#00E5A0]" />
+              <div className="relative h-64 sm:h-80">
+                <Image
+                  src={IMAGES.teacher}
+                  alt="Professor utilizando tecnologia em sala de aula"
+                  fill
+                  className="object-cover opacity-60 group-hover:opacity-40 transition-opacity duration-500"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                />
               </div>
-              <h3 className="text-xl font-bold text-[#0F172A] mb-1">Valores</h3>
-              <p className="text-xs font-semibold text-[#00E5A0] tracking-wider mb-3">E · M · I · C</p>
-              <ul className="space-y-3">
-                {valores.map((valor) => (
-                  <li key={valor.title}>
-                    <span className="text-sm font-semibold text-[#0F172A]">
-                      <span className="text-[#00E5A0] font-bold mr-1">{valor.letter}</span>
-                      {valor.title}
-                    </span>
-                    <p className="text-sm text-[#64748B] mt-0.5">{valor.description}</p>
-                  </li>
-                ))}
-              </ul>
+              <div className="p-8 sm:p-10">
+                <p className="text-[#00B4D8] text-xs font-semibold tracking-[0.25em] uppercase mb-3">
+                  Eixo Docente
+                </p>
+                <h3 className="text-2xl sm:text-3xl font-black text-white mb-4">
+                  O professor como protagonista
+                </h3>
+                <p className="text-white/60 leading-relaxed">
+                  Redução de até 30% do tempo burocrático. Trilhas formativas,
+                  planejamento alinhado à BNCC e um co-piloto de IA generativa que
+                  sugere intervenções e roteiros adaptados a cada turma.
+                </p>
+              </div>
             </motion.div>
-          </motion.div>
-        </div>
-      </section>
 
-      {/* ========== OS TRÊS PILARES ========== */}
-      <section className="relative py-24 sm:py-32 px-4 sm:px-6 bg-[#F8FAFC]">
-        <div className="max-w-6xl mx-auto">
-          <motion.div {...fadeInUp} className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#0A2463]/10 bg-[#0A2463]/5 mb-6">
-              <Layers size={14} className="text-[#0A2463]" />
-              <span className="text-xs text-[#0A2463] font-medium uppercase tracking-wider">Fundamentos</span>
-            </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#0F172A] leading-tight">
-              Os Três Pilares
-            </h2>
-            <p className="mt-4 text-[#64748B] text-base sm:text-lg max-w-2xl mx-auto">
-              Nossa atuação se sustenta sobre três pilares que, juntos, garantem soluções robustas e de impacto real.
-            </p>
-          </motion.div>
-
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8"
-            {...staggerContainer}
-          >
-            {pilares.map((pilar) => {
-              const Icon = pilar.icon;
-              return (
-                <motion.div
-                  key={pilar.title}
-                  {...staggerItem}
-                  className="relative rounded-2xl bg-white border border-[#E2E8F0] p-8 shadow-sm hover:shadow-md transition-all duration-300"
-                  style={{ '--hover-color': pilar.color } as React.CSSProperties}
-                >
-                  <div
-                    className="w-12 h-12 rounded-xl flex items-center justify-center mb-5"
-                    style={{ backgroundColor: `${pilar.color}15` }}
-                  >
-                    <Icon size={24} style={{ color: pilar.color }} />
-                  </div>
-                  <h3 className="text-lg font-bold text-[#0F172A]">{pilar.title}</h3>
-                  <p className="text-xs font-medium uppercase tracking-wider mt-1 mb-3" style={{ color: pilar.color }}>
-                    {pilar.subtitle}
-                  </p>
-                  <p className="text-sm text-[#64748B] leading-relaxed">
-                    {pilar.description}
-                  </p>
-                </motion.div>
-              );
-            })}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ========== ECOSSISTEMA INTEGRADO ========== */}
-      <section className="relative py-24 sm:py-32 px-4 sm:px-6 bg-white">
-        <div className="max-w-6xl mx-auto">
-          <motion.div {...fadeInUp} className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#00B4D8]/15 bg-[#00B4D8]/5 mb-6">
-              <Globe size={14} className="text-[#00B4D8]" />
-              <span className="text-xs text-[#00B4D8] font-medium uppercase tracking-wider">Ecossistema</span>
-            </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#0F172A] leading-tight">
-              Visão Integrada
-            </h2>
-            <p className="mt-4 text-[#64748B] text-base sm:text-lg max-w-3xl mx-auto">
-              Um ecossistema completo que conecta alunos, professores, gestores e dados
-              em uma plataforma coesa de transformação educacional.
-            </p>
-          </motion.div>
-
-          <motion.div
-            className="grid grid-cols-1 sm:grid-cols-2 gap-6"
-            {...staggerContainer}
-          >
-            {ecossistema.map((item) => {
-              const Icon = item.icon;
-              return (
-                <motion.div
-                  key={item.title}
-                  {...staggerItem}
-                  className="rounded-2xl bg-white border border-[#E2E8F0] p-8 shadow-sm hover:shadow-md transition-all duration-300"
-                >
-                  <div className="flex items-center gap-3 mb-4">
-                    <div
-                      className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
-                      style={{ backgroundColor: `${item.color}15` }}
-                    >
-                      <Icon size={20} style={{ color: item.color }} />
-                    </div>
-                    <div>
-                      <h3 className="text-base font-bold text-[#0F172A]">{item.title}</h3>
-                      <p className="text-[11px] font-medium uppercase tracking-wider" style={{ color: item.color }}>
-                        {item.subtitle}
-                      </p>
-                    </div>
-                  </div>
-                  <p className="text-sm text-[#64748B] leading-relaxed">
-                    {item.description}
-                  </p>
-                </motion.div>
-              );
-            })}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ========== JORNADA DO PROFESSOR ========== */}
-      <section className="relative py-24 sm:py-32 px-4 sm:px-6 bg-[#F8FAFC]">
-        <div className="max-w-6xl mx-auto">
-          <motion.div {...fadeInUp} className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#2E5A88]/15 bg-[#2E5A88]/5 mb-6">
-              <Users size={14} className="text-[#2E5A88]" />
-              <span className="text-xs text-[#2E5A88] font-medium uppercase tracking-wider">Eixo Docente</span>
-            </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#0F172A] leading-tight">
-              A Jornada de Empoderamento
-            </h2>
-            <p className="mt-4 text-[#64748B] text-base sm:text-lg max-w-2xl mx-auto">
-              O sistema não substitui a mediação do professor — ele a potencializa.
-            </p>
-          </motion.div>
-
-          <motion.div
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4"
-            {...staggerContainer}
-          >
-            {jornadaDocente.map((step, index) => {
-              const Icon = step.icon;
-              return (
-                <motion.div
-                  key={step.title}
-                  {...staggerItem}
-                  className="relative rounded-2xl bg-white border border-[#E2E8F0] p-6 shadow-sm hover:shadow-md transition-all duration-300"
-                >
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="text-xs font-bold text-[#2E5A88]/40">{String(index + 1).padStart(2, '0')}</span>
-                    <div className="w-8 h-8 rounded-lg bg-[#2E5A88]/10 flex items-center justify-center">
-                      <Icon size={16} className="text-[#2E5A88]" />
-                    </div>
-                  </div>
-                  <h3 className="text-sm font-bold text-[#0F172A] mb-1.5">{step.title}</h3>
-                  <p className="text-xs text-[#64748B] leading-relaxed">{step.description}</p>
-                </motion.div>
-              );
-            })}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ========== APRENDIZAGEM DO ALUNO ========== */}
-      <section className="relative py-24 sm:py-32 px-4 sm:px-6 bg-white">
-        <div className="max-w-5xl mx-auto">
-          <motion.div {...fadeInUp} className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#C2703E]/15 bg-[#C2703E]/5 mb-6">
-              <GraduationCap size={14} className="text-[#C2703E]" />
-              <span className="text-xs text-[#C2703E] font-medium uppercase tracking-wider">Eixo Discente</span>
-            </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#0F172A] leading-tight">
-              Aprendizagem Personalizada
-            </h2>
-            <p className="mt-4 text-[#64748B] text-base sm:text-lg max-w-2xl mx-auto">
-              O aluno acessa um ambiente digital interativo, gerando dados sistemáticos
-              sobre seu desempenho que alimentam intervenções cada vez mais precisas.
-            </p>
-          </motion.div>
-
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-3 gap-6"
-            {...staggerContainer}
-          >
-            {aprendizagemAluno.map((item) => {
-              const Icon = item.icon;
-              return (
-                <motion.div
-                  key={item.title}
-                  {...staggerItem}
-                  className="rounded-2xl bg-white border border-[#E2E8F0] p-8 shadow-sm hover:shadow-md transition-all duration-300"
-                >
-                  <div className="w-12 h-12 rounded-xl bg-[#C2703E]/10 flex items-center justify-center mb-5">
-                    <Icon size={24} className="text-[#C2703E]" />
-                  </div>
-                  <h3 className="text-lg font-bold text-[#0F172A] mb-2">{item.title}</h3>
-                  <p className="text-sm text-[#64748B] leading-relaxed">{item.description}</p>
-                </motion.div>
-              );
-            })}
-          </motion.div>
+            {/* Aluno */}
+            <motion.div
+              {...fadeIn}
+              className="group relative rounded-2xl overflow-hidden bg-[#0A2463]"
+            >
+              <div className="relative h-64 sm:h-80">
+                <Image
+                  src={IMAGES.students}
+                  alt="Estudantes engajados na aprendizagem"
+                  fill
+                  className="object-cover opacity-60 group-hover:opacity-40 transition-opacity duration-500"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                />
+              </div>
+              <div className="p-8 sm:p-10">
+                <p className="text-[#00E5A0] text-xs font-semibold tracking-[0.25em] uppercase mb-3">
+                  Eixo Discente
+                </p>
+                <h3 className="text-2xl sm:text-3xl font-black text-white mb-4">
+                  Aprendizagem personalizada
+                </h3>
+                <p className="text-white/60 leading-relaxed">
+                  Diagnóstico de competências em tempo real, percursos adaptativos
+                  prescritos por IA e retorno formativo imediato — mantendo cada aluno
+                  no centro do seu próprio desenvolvimento.
+                </p>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
       {/* ========== GOVERNANÇA ========== */}
-      <section className="relative py-24 sm:py-32 px-4 sm:px-6 bg-[#F8FAFC]">
-        <div className="max-w-6xl mx-auto">
-          <motion.div {...fadeInUp} className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#0A2463]/10 bg-[#0A2463]/5 mb-6">
-              <Shield size={14} className="text-[#0A2463]" />
-              <span className="text-xs text-[#0A2463] font-medium uppercase tracking-wider">Governança</span>
-            </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#0F172A] leading-tight">
-              A Fundação da Confiança
+      <section className="relative py-28 sm:py-40 px-6 sm:px-12 lg:px-20 bg-[#F8FAFC]">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <motion.div {...fadeIn}>
+            <p className="text-[#00B4D8] text-xs font-semibold tracking-[0.25em] uppercase mb-4">
+              Governança e Transparência
+            </p>
+            <h2 className="text-4xl sm:text-5xl font-black text-[#0A2463] leading-[1.05] tracking-tight mb-8">
+              A fundação da confiança.
             </h2>
-            <p className="mt-4 text-[#64748B] text-base sm:text-lg max-w-2xl mx-auto">
-              Governança, transparência e proteção de dados como pilares inegociáveis.
+            <div className="space-y-8">
+              <div>
+                <h3 className="text-lg font-bold text-[#0A2463] mb-2">Conselho Consultivo & Diretoria</h3>
+                <p className="text-[#64748B] leading-relaxed">
+                  Governança estratégica pro bono, garantindo independência, ética e
+                  alinhamento inabalável aos interesses públicos.
+                </p>
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-[#0A2463] mb-2">Coordenação Científica</h3>
+                <p className="text-[#64748B] leading-relaxed">
+                  Supervisão rigorosa de metodologias, validando a eficácia pedagógica
+                  de todas as intervenções tecnológicas implantadas.
+                </p>
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-[#0A2463] mb-2">Segurança e LGPD</h3>
+                <p className="text-[#64748B] leading-relaxed">
+                  Proteção absoluta de dados de menores de idade, com arquitetura
+                  criptografada, DPO próprio e Relatórios de Impacto contínuos.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+          <motion.div
+            {...fadeIn}
+            className="relative aspect-square rounded-2xl overflow-hidden"
+          >
+            <Image
+              src={IMAGES.data}
+              alt="Dashboard de dados e governança"
+              fill
+              className="object-cover"
+              sizes="(max-width: 1024px) 100vw, 50vw"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0A2463]/60 to-transparent" />
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ========== CLIENTE ========== */}
+      <section className="relative py-28 sm:py-40 px-6 sm:px-12 lg:px-20 bg-white">
+        <div className="max-w-5xl mx-auto text-center">
+          <motion.div {...fadeIn}>
+            <p className="text-[#00B4D8] text-xs font-semibold tracking-[0.25em] uppercase mb-4">
+              Projeto Ativo
+            </p>
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#0A2463] leading-[1.05] tracking-tight mb-6">
+              Santa Catarina
+            </h2>
+            <p className="text-xl sm:text-2xl text-[#64748B] font-light max-w-3xl mx-auto leading-relaxed mb-12">
+              Encomenda Tecnológica com a Secretaria de Estado da Educação (SED/SC) para
+              desenvolvimento de plataforma educacional com IA para toda a rede pública estadual.
             </p>
           </motion.div>
 
           <motion.div
-            className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8"
-            {...staggerContainer}
+            {...fadeIn}
+            className="grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8"
           >
-            {governanca.map((item) => {
-              const Icon = item.icon;
-              return (
-                <motion.div
-                  key={item.title}
-                  {...staggerItem}
-                  className="rounded-2xl bg-white border border-[#E2E8F0] p-8 shadow-sm hover:shadow-md transition-all duration-300"
-                >
-                  <div className="w-12 h-12 rounded-xl bg-[#0A2463]/5 flex items-center justify-center mb-5">
-                    <Icon size={24} className="text-[#0A2463]" />
-                  </div>
-                  <h3 className="text-lg font-bold text-[#0F172A] mb-2">{item.title}</h3>
-                  <p className="text-sm text-[#64748B] leading-relaxed">{item.description}</p>
-                </motion.div>
-              );
-            })}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ========== CLIENTES ========== */}
-      <section className="relative py-24 sm:py-32 px-4 sm:px-6 bg-white">
-        <div className="max-w-4xl mx-auto">
-          <motion.div {...fadeInUp} className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#0A2463]/10 bg-[#0A2463]/5 mb-6">
-              <Building2 size={14} className="text-[#0A2463]" />
-              <span className="text-xs text-[#0A2463] font-medium uppercase tracking-wider">Clientes</span>
-            </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#0F172A]">
-              Nossos Clientes
-            </h2>
-            <p className="mt-4 text-[#64748B] text-base sm:text-lg max-w-2xl mx-auto">
-              Governos e instituições que confiam no Instituto i10 para transformar a educação.
-            </p>
-          </motion.div>
-
-          {clientes.map((cliente) => (
-            <motion.div
-              key={cliente.name}
-              {...fadeInUp}
-              className="rounded-2xl bg-gradient-to-br from-[#0A2463] to-[#0A2463]/90 p-8 sm:p-10 text-white shadow-xl"
-            >
-              <div className="flex items-start gap-4 mb-4">
-                <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
-                  <Building2 size={24} className="text-[#00B4D8]" />
-                </div>
-                <div>
-                  <h3 className="text-xl sm:text-2xl font-bold">{cliente.name}</h3>
-                  <p className="text-sm text-[#90E0EF] mt-0.5">{cliente.detail}</p>
-                </div>
+            {stats.map((s) => (
+              <div key={s.label} className="py-6">
+                <p className="text-4xl sm:text-5xl font-black text-[#0A2463]">{s.value}</p>
+                <p className="text-sm text-[#94A3B8] mt-2 font-medium">{s.label}</p>
               </div>
-              <p className="text-white/80 text-sm sm:text-base leading-relaxed">
-                {cliente.description}
-              </p>
-            </motion.div>
-          ))}
+            ))}
+          </motion.div>
         </div>
       </section>
 
-      {/* ========== EMPRESAS PARCEIRAS ========== */}
-      <section className="relative py-24 sm:py-32 px-4 sm:px-6 bg-[#F8FAFC]">
+      {/* ========== PARCEIROS ========== */}
+      <section className="relative py-20 sm:py-28 px-6 sm:px-12 lg:px-20 bg-[#F8FAFC] border-t border-[#E2E8F0]">
         <div className="max-w-6xl mx-auto">
-          <motion.div {...fadeInUp} className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#00B4D8]/15 bg-[#00B4D8]/5 mb-6">
-              <HandshakeIcon size={14} className="text-[#00B4D8]" />
-              <span className="text-xs text-[#00B4D8] font-medium uppercase tracking-wider">Parceiros</span>
-            </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#0F172A]">
+          <motion.div {...fadeIn} className="text-center mb-16">
+            <p className="text-[#00B4D8] text-xs font-semibold tracking-[0.25em] uppercase mb-4">
+              Parceiros
+            </p>
+            <h2 className="text-3xl sm:text-4xl font-black text-[#0A2463] tracking-tight">
               Empresas Parceiras
             </h2>
-            <p className="mt-4 text-[#64748B] text-base sm:text-lg max-w-2xl mx-auto">
-              Empresas que contribuem com expertise e tecnologia para o sucesso dos nossos projetos.
-            </p>
           </motion.div>
 
           <motion.div
-            className="grid grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6"
-            {...staggerContainer}
+            {...fadeIn}
+            className="flex flex-wrap items-center justify-center gap-6 sm:gap-8"
           >
-            {partners.map((partner) => {
-              const content = (
-                <>
-                  <div className="w-14 h-14 rounded-xl bg-[#F1F5F9] border border-[#E2E8F0]
-                                  flex items-center justify-center mb-4 group-hover:bg-[#00B4D8]/5 group-hover:border-[#00B4D8]/20 transition-colors">
-                    <Building2 size={24} className="text-[#0A2463] group-hover:text-[#00B4D8] transition-colors" />
+            {partners.map((p) => {
+              const inner = (
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-[#0A2463] flex items-center justify-center shrink-0">
+                    <span className="text-white font-bold text-sm">{p.name.charAt(0)}</span>
                   </div>
-                  <h3 className="text-sm sm:text-base font-bold text-[#0F172A]">{partner.name}</h3>
-                  <p className="mt-1 text-xs text-[#64748B]">{partner.description}</p>
-                  {partner.url && (
-                    <span className="mt-3 inline-flex items-center gap-1 text-xs text-[#00B4D8] font-medium">
-                      Visitar site
-                      <ExternalLink size={10} />
-                    </span>
-                  )}
-                </>
+                  <div className="text-left">
+                    <p className="text-sm font-bold text-[#0A2463]">{p.name}</p>
+                    <p className="text-xs text-[#94A3B8]">{p.role}</p>
+                  </div>
+                  {p.url && <ExternalLink size={12} className="text-[#00B4D8] ml-1 shrink-0" />}
+                </div>
               );
 
-              const className =
-                'group relative rounded-2xl bg-white border border-[#E2E8F0] p-6 hover:shadow-md hover:border-[#00B4D8]/30 transition-all duration-300 flex flex-col items-center text-center';
+              const cls =
+                'px-5 py-3 rounded-full bg-white border border-[#E2E8F0] hover:border-[#00B4D8]/40 hover:shadow-md transition-all duration-300';
 
-              return partner.url ? (
-                <motion.a
-                  key={partner.name}
-                  href={partner.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  {...staggerItem}
-                  className={className}
-                >
-                  {content}
-                </motion.a>
+              return p.url ? (
+                <a key={p.name} href={p.url} target="_blank" rel="noopener noreferrer" className={cls}>
+                  {inner}
+                </a>
               ) : (
-                <motion.div
-                  key={partner.name}
-                  {...staggerItem}
-                  className={className}
-                >
-                  {content}
-                </motion.div>
+                <div key={p.name} className={cls}>
+                  {inner}
+                </div>
               );
             })}
           </motion.div>
         </div>
       </section>
 
-      {/* ========== LEGADO ========== */}
-      <section className="relative py-24 sm:py-32 px-4 sm:px-6 bg-white">
-        <div className="max-w-4xl mx-auto">
-          <motion.div {...fadeInUp} className="text-center">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#0F172A] leading-tight mb-8">
-              O Nosso Verdadeiro Legado
-            </h2>
-            <p className="text-[#64748B] text-base sm:text-lg leading-relaxed max-w-3xl mx-auto">
-              O Instituto i10 não entrega apenas um artefato tecnológico — nós transferimos
-              capacidade institucional permanente. Ao final de nossos ciclos de
-              Encomenda Tecnológica, as redes de ensino alcançam autonomia plena para
-              operar, analisar e evoluir seus sistemas.
-            </p>
-            <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-6 text-left max-w-3xl mx-auto">
-              <div className="flex items-start gap-3">
-                <div className="w-2 h-2 rounded-full bg-[#C2703E] mt-2 shrink-0" />
-                <p className="text-sm text-[#64748B]">
-                  A sala de aula transformada em ambiente integrado de pesquisa e inovação.
-                </p>
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="w-2 h-2 rounded-full bg-[#2E5A88] mt-2 shrink-0" />
-                <p className="text-sm text-[#64748B]">
-                  Políticas públicas orientadas por dados em tempo real.
-                </p>
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="w-2 h-2 rounded-full bg-[#1A3A5C] mt-2 shrink-0" />
-                <p className="text-sm text-[#64748B]">
-                  Um Estado capacitado para orquestrar continuamente o futuro da educação.
-                </p>
-              </div>
-            </div>
-            <p className="mt-12 text-xl sm:text-2xl font-bold text-[#0A2463]">
-              Instituto i10 — A Inteligência a Serviço do Humano.
-            </p>
-          </motion.div>
+      {/* ========== LEGADO (full-bleed closing) ========== */}
+      <section className="relative py-36 sm:py-48 px-6 overflow-hidden">
+        <Image
+          src={IMAGES.legacy}
+          alt="Crianças em ambiente de aprendizagem"
+          fill
+          className="object-cover"
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 bg-[#0A2463]/80" />
+        <div className="relative z-10 max-w-4xl mx-auto text-center">
+          <motion.h2
+            {...fadeIn}
+            className="text-3xl sm:text-5xl lg:text-6xl font-black text-white leading-tight mb-8"
+          >
+            O nosso verdadeiro legado
+          </motion.h2>
+          <motion.p
+            {...fadeIn}
+            className="text-lg sm:text-xl text-white/70 leading-relaxed max-w-3xl mx-auto mb-12"
+          >
+            O Instituto i10 não entrega apenas um artefato tecnológico — nós transferimos
+            capacidade institucional permanente. Ao final de nossos ciclos, as redes de
+            ensino alcançam autonomia plena para operar, analisar e evoluir seus sistemas.
+          </motion.p>
+          <motion.p
+            {...fadeIn}
+            className="text-2xl sm:text-3xl font-bold text-[#00E5A0]"
+          >
+            A Inteligência a Serviço do Humano.
+          </motion.p>
         </div>
       </section>
 
       {/* ========== FOOTER ========== */}
-      <footer className="relative py-16 px-4 sm:px-6 bg-[#0A2463] text-white">
-        <div className="max-w-6xl mx-auto flex flex-col items-center text-center gap-6">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center">
-              <GraduationCap size={22} className="text-white" />
+      <footer className="relative py-16 px-6 sm:px-12 lg:px-20 bg-[#030B1A] text-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-8 mb-12">
+            <div>
+              <p className="text-2xl font-black tracking-tight">
+                Instituto <span className="text-[#00B4D8]">i10</span>
+              </p>
+              <p className="text-sm text-white/40 mt-1">Educação · Tecnologia · Inovação</p>
             </div>
-            <div className="text-left">
-              <p className="text-sm font-bold text-white">Instituto i10</p>
-              <p className="text-xs text-white/60">Educação · Tecnologia · Inovação</p>
-            </div>
+            <Link
+              href="/dashboard"
+              className="group inline-flex items-center gap-2 px-6 py-3 rounded-full border border-white/20 text-sm font-medium
+                         hover:bg-white hover:text-[#0A2463] transition-all duration-300"
+            >
+              Painel de Controle
+              <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+            </Link>
           </div>
 
-          <Link
-            href="/dashboard"
-            className="inline-flex items-center gap-2 text-sm text-[#00B4D8] hover:text-[#00E5A0] transition-colors font-medium"
-          >
-            Acessar Painel de Controle
-            <ArrowRight size={16} />
-          </Link>
+          <div className="h-px bg-white/10 mb-8" />
 
-          <div className="text-xs text-white/40 mt-4 space-y-1">
-            <p>Sede: Florianópolis, SC — Brasil</p>
-            <p>CNPJ: 05.124.602/0001-74</p>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs text-white/30">
+            <div className="flex flex-wrap gap-x-6 gap-y-1">
+              <span>Florianópolis, SC — Brasil</span>
+              <span>CNPJ: 05.124.602/0001-74</span>
+            </div>
             <p>&copy; 2026 Instituto i10. Todos os direitos reservados.</p>
           </div>
         </div>
