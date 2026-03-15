@@ -80,11 +80,13 @@ export async function subscribeToPush(): Promise<string | null> {
 
   try {
     const registration = await navigator.serviceWorker.ready;
+    console.log('[push] SW ready, checking existing subscription...');
 
     // Check for existing subscription first
     let subscription = await registration.pushManager.getSubscription();
 
     if (!subscription) {
+      console.log('[push] No existing subscription, creating new one...');
       const applicationServerKey = urlBase64ToUint8Array(vapidPublicKey);
       subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
@@ -96,12 +98,21 @@ export async function subscribeToPush(): Promise<string | null> {
     const endpoint = subJSON.endpoint!;
     const keys = subJSON.keys as { p256dh: string; auth: string };
 
+    console.log('[push] Subscription endpoint:', endpoint.substring(0, 60) + '...');
+
     // Send to server
-    await fetch('/api/push/subscribe', {
+    const res = await fetch('/api/push/subscribe', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ endpoint, keys }),
     });
+
+    if (!res.ok) {
+      console.error('[push] Server rejected subscription:', res.status, await res.text());
+      return null;
+    }
+
+    console.log('[push] Subscription saved to server');
 
     // Persist endpoint for senderEndpoint filtering
     localStorage.setItem(PUSH_ENDPOINT_KEY, endpoint);

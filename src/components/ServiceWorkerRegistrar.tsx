@@ -8,24 +8,30 @@ export default function ServiceWorkerRegistrar() {
     if (typeof window === 'undefined') return;
     if (!('serviceWorker' in navigator)) return;
 
+    let interval: ReturnType<typeof setInterval> | null = null;
+
     navigator.serviceWorker
       .register('/sw.js', { scope: '/' })
       .then((reg) => {
         // Check for SW updates periodically (every 60 minutes)
-        const interval = setInterval(() => {
+        interval = setInterval(() => {
           reg.update();
         }, 60 * 60 * 1000);
-
-        // Auto-subscribe to push if permission is already granted
-        if ('Notification' in window && Notification.permission === 'granted') {
-          subscribeToPush();
-        }
-
-        return () => clearInterval(interval);
       })
       .catch((err) => {
         console.warn('SW registration failed:', err);
       });
+
+    // Wait for SW to be fully active before subscribing to push
+    navigator.serviceWorker.ready.then(() => {
+      if ('Notification' in window && Notification.permission === 'granted') {
+        subscribeToPush();
+      }
+    });
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
   }, []);
 
   return null;

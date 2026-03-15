@@ -35,7 +35,7 @@ export async function saveSubscription(sub: {
   keys: { p256dh: string; auth: string };
 }) {
   // Use a hash of the endpoint as the id for idempotency
-  const id = await hashEndpoint(sub.endpoint);
+  const id = hashEndpoint(sub.endpoint);
 
   await sql`
     INSERT INTO push_subscriptions (id, endpoint, keys_p256dh, keys_auth)
@@ -123,15 +123,7 @@ export async function sendPushToAll(payload: PushPayload, excludeEndpoint?: stri
 // Helpers
 // ---------------------------------------------------------------------------
 
-async function hashEndpoint(endpoint: string): Promise<string> {
-  // Use a simple base64 of the endpoint as ID (truncated for PK)
-  if (typeof globalThis.crypto?.subtle !== 'undefined') {
-    const encoded = new TextEncoder().encode(endpoint);
-    const hash = await crypto.subtle.digest('SHA-256', encoded);
-    return Array.from(new Uint8Array(hash))
-      .map((b) => b.toString(16).padStart(2, '0'))
-      .join('');
-  }
-  // Fallback for environments without crypto.subtle
-  return Buffer.from(endpoint).toString('base64url').slice(0, 64);
+function hashEndpoint(endpoint: string): string {
+  const { createHash } = require('crypto') as typeof import('crypto');
+  return createHash('sha256').update(endpoint).digest('hex');
 }
