@@ -85,10 +85,10 @@ export default function JuridicoPage() {
           </div>
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-white">
-              Jur\u00eddico
+              Jurídico
             </h1>
             <p className="text-sm text-white/50 mt-0.5">
-              Assessoria jur\u00eddica, contratos e conformidade regulat\u00f3ria
+              Assessoria jurídica, contratos e conformidade regulatória
             </p>
           </div>
         </div>
@@ -111,7 +111,7 @@ export default function JuridicoPage() {
             <div className="flex items-center gap-2 mb-3">
               <FileWarning size={16} className="text-red-400" />
               <h2 className="text-sm font-bold text-red-400 uppercase tracking-wider">
-                Prazo Cr\u00edtico Iminente
+                Prazo Crítico Iminente
               </h2>
             </div>
             <CountdownCard
@@ -132,7 +132,7 @@ export default function JuridicoPage() {
         transition={{ delay: 0.2, duration: 0.5 }}
       >
         <h2 className="text-sm font-semibold text-white/70 uppercase tracking-wider mb-4">
-          Lideran\u00e7a do Departamento
+          Liderança do Departamento
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {leads.map((lead, idx) => (
@@ -194,7 +194,7 @@ export default function JuridicoPage() {
                       t.assigneeIds.includes(lead.id),
                     ).length
                   }{' '}
-                  tarefa(s) atribu\u00edda(s)
+                  tarefa(s) atribuída(s)
                 </span>
               </div>
             </motion.div>
@@ -210,7 +210,7 @@ export default function JuridicoPage() {
           transition={{ delay: 0.3, duration: 0.5 }}
         >
           <h2 className="text-sm font-semibold text-white/70 uppercase tracking-wider mb-4">
-            Marcos Jur\u00eddicos
+            Marcos Jurídicos
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {juridicoMilestones.map((milestone) => (
@@ -240,7 +240,7 @@ export default function JuridicoPage() {
       >
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-sm font-semibold text-white/70 uppercase tracking-wider">
-            Todas as Tarefas do Jur\u00eddico
+            Todas as Tarefas do Jurídico
           </h2>
           <span className="text-xs text-white/30">
             {juridicoTasks.length} tarefa(s)

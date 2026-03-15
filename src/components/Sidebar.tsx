@@ -35,9 +35,9 @@ const navItems: NavItem[] = [
   { label: 'Cronograma Master', href: '/timeline', icon: GitMerge },
   { label: 'Atividades', href: '/workstreams', icon: ListChecks },
   { label: 'Organograma', href: '/organograma', icon: Network },
-  { label: 'Contrata\u00e7\u00f5es & Hiring', href: '/contratacoes', icon: UserPlus },
+  { label: 'Contratações & Hiring', href: '/contratacoes', icon: UserPlus },
   { label: 'Santa Catarina', href: '/santa-catarina', icon: MapPin },
-  { label: 'Jur\u00eddico', href: '/juridico', icon: Scale },
+  { label: 'Jurídico', href: '/juridico', icon: Scale },
   { label: 'Associados', href: '/associados', icon: Users },
 ];
 
@@ -145,11 +145,16 @@ export default function Sidebar() {
               exit={{ opacity: 0, height: 0 }}
               className="overflow-hidden"
             >
-              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.03] border border-white/5 text-white/30 text-xs">
+              <button
+                onClick={() => {
+                  window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }));
+                }}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.03] border border-white/5 text-white/30 text-xs w-full hover:bg-white/[0.06] transition-colors cursor-pointer"
+              >
                 <Search size={14} />
-                <span className="flex-1">Buscar...</span>
+                <span className="flex-1 text-left">Buscar...</span>
                 <kbd className="px-1.5 py-0.5 rounded bg-white/10 text-[10px] text-white/40 font-mono">⌘K</kbd>
-              </div>
+              </button>
             </motion.div>
           )}
         </AnimatePresence>
@@ -174,7 +179,7 @@ export default function Sidebar() {
                   {badges.critical > 0 && (
                     <div className="flex items-center gap-1">
                       <Flame size={12} className="text-red-400" />
-                      <span className="text-[10px] font-bold text-red-400">{badges.critical} cr\u00edtica(s)</span>
+                      <span className="text-[10px] font-bold text-red-400">{badges.critical} crítica(s)</span>
                     </div>
                   )}
                 </div>
@@ -291,8 +296,8 @@ export default function Sidebar() {
             className="px-4 py-3 border-t border-white/10"
           >
             <p className="text-[10px] text-white/30 leading-relaxed">
-              Instituto i10 &mdash; Educa\u00e7\u00e3o<br />
-              · Tecnologia · Inova\u00e7\u00e3o
+              Instituto i10 &mdash; Educação<br />
+              · Tecnologia · Inovação
             </p>
           </motion.div>
         )}

@@ -93,12 +93,12 @@ const DEPT_ORDER: string[] = [
 ];
 
 const DEPT_SHORT_LABELS: Record<string, string> = {
-  juridico: 'Jur\u00eddico',
+  juridico: 'Jurídico',
   tecnologia: 'Tecnologia',
-  relacoes_publicas: 'Rela\u00e7\u00f5es P\u00fablicas',
-  operacoes_locais: 'Opera\u00e7\u00f5es',
+  relacoes_publicas: 'Relações Públicas',
+  operacoes_locais: 'Operações',
   santa_catarina: 'Santa Catarina',
-  pedagogico: 'Pedag\u00f3gico',
+  pedagogico: 'Pedagógico',
   administrativo_financeiro: 'Admin/Financeiro',
 };
 
@@ -112,28 +112,28 @@ const DEPT_ROW_PADDING = 8;
 // =============================================================================
 
 const STATUS_OPTIONS: { value: TaskStatus; label: string; color: string; bg: string }[] = [
-  { value: 'nao_iniciada', label: 'N\u00e3o Iniciada', color: '#94A3B8', bg: 'rgba(148,163,184,0.15)' },
+  { value: 'nao_iniciada', label: 'Não Iniciada', color: '#94A3B8', bg: 'rgba(148,163,184,0.15)' },
   { value: 'em_andamento', label: 'Em Andamento', color: '#00B4D8', bg: 'rgba(0,180,216,0.15)' },
-  { value: 'concluida', label: 'Conclu\u00edda', color: '#00E5A0', bg: 'rgba(0,229,160,0.15)' },
+  { value: 'concluida', label: 'Concluída', color: '#00E5A0', bg: 'rgba(0,229,160,0.15)' },
   { value: 'bloqueada', label: 'Bloqueada', color: '#F59E0B', bg: 'rgba(245,158,11,0.15)' },
   { value: 'atrasada', label: 'Atrasada', color: '#EF4444', bg: 'rgba(239,68,68,0.15)' },
   { value: 'cancelada', label: 'Cancelada', color: '#6B7280', bg: 'rgba(107,114,128,0.15)' },
 ];
 
 const PRIORITY_OPTIONS: { value: TaskPriority; label: string; color: string }[] = [
-  { value: 'critica', label: 'Cr\u00edtica', color: '#EF4444' },
+  { value: 'critica', label: 'Crítica', color: '#EF4444' },
   { value: 'alta', label: 'Alta', color: '#F59E0B' },
-  { value: 'media', label: 'M\u00e9dia', color: '#00B4D8' },
+  { value: 'media', label: 'Média', color: '#00B4D8' },
   { value: 'baixa', label: 'Baixa', color: '#94A3B8' },
 ];
 
 const DEPARTMENT_OPTIONS: { value: DepartmentId; label: string }[] = [
-  { value: 'juridico', label: 'Jur\u00eddico' },
+  { value: 'juridico', label: 'Jurídico' },
   { value: 'tecnologia', label: 'Tecnologia' },
-  { value: 'relacoes_publicas', label: 'Rela\u00e7\u00f5es P\u00fablicas' },
-  { value: 'operacoes_locais', label: 'Opera\u00e7\u00f5es Locais' },
+  { value: 'relacoes_publicas', label: 'Relações Públicas' },
+  { value: 'operacoes_locais', label: 'Operações Locais' },
   { value: 'santa_catarina', label: 'Santa Catarina' },
-  { value: 'pedagogico', label: 'Pedag\u00f3gico' },
+  { value: 'pedagogico', label: 'Pedagógico' },
   { value: 'administrativo_financeiro', label: 'Admin/Financeiro' },
 ];
 
@@ -480,7 +480,7 @@ function MilestonesRow({ selectedYear }: { selectedYear: number }) {
                     {milestone.isCritical && (
                       <div className="flex items-center gap-1 mt-1">
                         <AlertTriangle size={10} className="text-red-400" />
-                        <span className="text-[10px] text-red-400 font-medium">Caminho Cr{'\u00ed'}tico</span>
+                        <span className="text-[10px] text-red-400 font-medium">Caminho Crítico</span>
                       </div>
                     )}
                   </div>
@@ -788,7 +788,7 @@ function FilterPanel({
         {uniqueAssignees.length > 0 && (
           <div>
             <span className="text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-2 block">
-              Respons{'\u00e1'}vel
+              Responsável
             </span>
             <div className="flex flex-wrap gap-1.5">
               {uniqueAssignees.map((opt) => {
@@ -881,7 +881,7 @@ function AddTaskForm({
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="T\u00edtulo da tarefa..."
+          placeholder="Título da tarefa..."
           autoFocus
           className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#00B4D8]/50 focus:border-[#00B4D8]/30 transition"
         />
@@ -1119,7 +1119,7 @@ function TimelineGridRow({
                       <span className="text-[9px] text-white/40">{formatDateBR(task.dueDate)}</span>
                     )}
                     {isCritical && (
-                      <span className="text-[9px] text-red-400 font-medium">Cr{'\u00ed'}tica</span>
+                      <span className="text-[9px] text-red-400 font-medium">Crítica</span>
                     )}
                     <span className="text-[9px] font-medium" style={{ color: statusColor }}>
                       {statusOpt?.label}
@@ -1252,7 +1252,7 @@ export default function TimelinePage() {
                     Cronograma Master
                   </motion.h1>
                   <p className="text-xs sm:text-sm text-white/40">
-                    Encomenda Tecnol{'\u00f3'}gica ETEC - Santa Catarina
+                    Encomenda Tecnológica ETEC - Santa Catarina
                   </p>
                 </div>
               </div>
@@ -1555,7 +1555,7 @@ export default function TimelinePage() {
           <div className="flex items-center gap-3 ml-4">
             <div className="flex items-center gap-1">
               <div className="w-2.5 h-2.5 rotate-45 bg-red-500/80 border border-red-400" />
-              <span className="text-[10px] text-white/30">Cr{'\u00ed'}tico</span>
+              <span className="text-[10px] text-white/30">Crítico</span>
             </div>
             <div className="flex items-center gap-1">
               <div className="w-2.5 h-2.5 rotate-45 bg-[#00B4D8]/60 border border-[#00B4D8]" />
@@ -1690,7 +1690,7 @@ export default function TimelinePage() {
                   {phase.status === 'em_andamento'
                     ? 'Em andamento'
                     : phase.status === 'concluida'
-                    ? 'Conclu\u00edda'
+                    ? 'Concluída'
                     : phase.status === 'atrasada'
                     ? 'Atrasada'
                     : 'Planejada'}
@@ -1727,7 +1727,7 @@ export default function TimelinePage() {
 
               {phase.budgetBRL != null && (
                 <div className="mt-2 text-[10px] text-white/25">
-                  Or{'\u00e7'}amento: R$ {(phase.budgetBRL / 1000).toFixed(0)}k
+                  Orçamento: R$ {(phase.budgetBRL / 1000).toFixed(0)}k
                 </div>
               )}
             </div>
@@ -1761,7 +1761,7 @@ export default function TimelinePage() {
           ))}
           <div className="flex items-center gap-2">
             <div className="w-3 h-2 rounded-sm ring-1 ring-red-500/60 bg-white/10" />
-            <span className="text-[10px] sm:text-xs text-white/50">Prioridade Cr{'\u00ed'}tica</span>
+            <span className="text-[10px] sm:text-xs text-white/50">Prioridade Crítica</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-px h-4 bg-[#00E5A0]/40" />

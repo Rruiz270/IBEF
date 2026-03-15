@@ -162,7 +162,7 @@ export default function DashboardPage() {
       onClick: () => router.push('/workstreams?filter=todas'),
     },
     {
-      title: 'Conclu\u00eddas',
+      title: 'Concluídas',
       value: liveSummary.completed,
       icon: CheckCircle2,
       gradient: 'from-[#0A2463] via-[#0A2463] to-[#00E5A0]/20',
@@ -178,7 +178,7 @@ export default function DashboardPage() {
       onClick: () => router.push('/workstreams?filter=atrasada'),
     },
     {
-      title: 'Tarefas Cr\u00edticas',
+      title: 'Tarefas Críticas',
       value: liveSummary.critical,
       icon: Flame,
       gradient: 'from-[#0A2463] via-[#0A2463] to-red-900/30',
@@ -221,7 +221,7 @@ export default function DashboardPage() {
               transition={{ delay: 0.35, duration: 0.5 }}
               className="text-sm sm:text-base text-white/50 mt-1"
             >
-              Instituto i10 — Educa\u00e7\u00e3o do Futuro — Encomenda Tecnol\u00f3gica SC
+              Instituto i10 — Educação do Futuro — Encomenda Tecnológica SC
             </motion.p>
           </div>
 
@@ -271,7 +271,7 @@ export default function DashboardPage() {
               Prazos e Contagens Regressivas
             </h2>
             <p className="text-xs text-white/40">
-              Datas cr\u00edticas do projeto ETEC
+              Datas críticas do projeto ETEC
             </p>
           </div>
         </div>
@@ -322,7 +322,7 @@ export default function DashboardPage() {
               Progresso por Departamento
             </h2>
             <p className="text-xs text-white/40">
-              Acompanhamento das \u00e1reas do projeto
+              Acompanhamento das áreas do projeto
             </p>
           </div>
         </div>
@@ -355,7 +355,7 @@ export default function DashboardPage() {
               Progresso Geral do Projeto
             </h2>
             <p className="text-xs text-white/40">
-              Ponderado pelo or\u00e7amento de cada fase
+              Ponderado pelo orçamento de cada fase
             </p>
           </div>
           <motion.div

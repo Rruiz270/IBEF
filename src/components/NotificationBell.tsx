@@ -57,9 +57,9 @@ function timeAgo(timestamp: string): string {
   const diffHour = Math.floor(diffMin / 60);
   const diffDay = Math.floor(diffHour / 24);
 
-  if (diffDay > 0) return `${diffDay}d atr\u00e1s`;
-  if (diffHour > 0) return `${diffHour}h atr\u00e1s`;
-  if (diffMin > 0) return `${diffMin}min atr\u00e1s`;
+  if (diffDay > 0) return `${diffDay}d atrás`;
+  if (diffHour > 0) return `${diffHour}h atrás`;
+  if (diffMin > 0) return `${diffMin}min atrás`;
   return 'agora';
 }
 
@@ -115,7 +115,7 @@ export default function NotificationBell() {
       <button
         onClick={() => setIsOpen((prev) => !prev)}
         className="relative p-2 rounded-lg text-white/70 hover:text-white hover:bg-white/5 transition-colors"
-        aria-label="Notifica\u00e7\u00f5es"
+        aria-label="Notificações"
       >
         <Bell size={20} />
 
@@ -147,11 +147,11 @@ export default function NotificationBell() {
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
               <h3 className="text-sm font-semibold text-white">
-                Notifica\u00e7\u00f5es
+                Notificações
               </h3>
               {unreadCount > 0 && (
                 <span className="text-[11px] font-medium text-white/40">
-                  {unreadCount} n\u00e3o lida{unreadCount > 1 ? 's' : ''}
+                  {unreadCount} não lida{unreadCount > 1 ? 's' : ''}
                 </span>
               )}
             </div>
@@ -165,7 +165,7 @@ export default function NotificationBell() {
                     <CheckCircle2 size={24} className="text-[#00E5A0]" />
                   </div>
                   <p className="text-sm text-white/50 font-medium">
-                    Sem notifica\u00e7\u00f5es
+                    Sem notificações
                   </p>
                   <p className="text-xs text-white/30 mt-1">
                     Tudo em dia!
