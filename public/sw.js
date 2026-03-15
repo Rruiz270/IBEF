@@ -44,6 +44,9 @@ self.addEventListener('fetch', (event) => {
   // Only handle same-origin GET requests
   if (request.method !== 'GET' || url.origin !== self.location.origin) return;
 
+  // Never cache API routes — let them hit the network directly
+  if (url.pathname.startsWith('/api/')) return;
+
   // Strategy 1: Stale-while-revalidate for Next.js static assets (content-hashed)
   if (url.pathname.startsWith('/_next/static/')) {
     event.respondWith(

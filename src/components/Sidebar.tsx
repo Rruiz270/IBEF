@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { useProject } from '@/contexts/ProjectContext';
 import NotificationBell from './NotificationBell';
+import SyncIndicator from './SyncIndicator';
 
 interface NavItem {
   label: string;
@@ -255,6 +256,11 @@ export default function Sidebar() {
           );
         })}
       </nav>
+
+      {/* Sync indicator */}
+      <div className="px-3 py-2 border-t border-white/10">
+        <SyncIndicator collapsed={collapsed} />
+      </div>
 
       {/* Notification bell */}
       <div className="px-3 py-2 border-t border-white/10">

@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useCallback, useEffect, ReactNode, useMemo } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, ReactNode, useMemo, useRef } from 'react';
 import {
   tasks as initialTasks,
   hiring as initialHiring,
@@ -13,6 +13,7 @@ import type {
   Person, PersonRole, ActivityLogEntry,
 } from '../data/types';
 import { showBrowserNotification } from '../lib/notifications';
+import { getSyncManager, type SyncStatus, type SyncPullResponse, type SyncMutation } from '../lib/syncManager';
 
 // ---------------------------------------------------------------------------
 // Notification type
@@ -28,6 +29,12 @@ export interface Notification {
   timestamp: string;
   read: boolean;
 }
+
+// ---------------------------------------------------------------------------
+// Table name mapping
+// ---------------------------------------------------------------------------
+
+type SyncTable = 'tasks' | 'people' | 'hiring_positions' | 'associate_companies' | 'activity_log';
 
 // ---------------------------------------------------------------------------
 // Context interface
@@ -70,6 +77,10 @@ interface ProjectContextType {
   markNotificationRead: (id: string) => void;
   markAllNotificationsRead: () => void;
   unreadCount: number;
+
+  // Sync
+  syncStatus: SyncStatus;
+  triggerFullSync: () => void;
 }
 
 const ProjectContext = createContext<ProjectContextType | null>(null);
@@ -131,6 +142,13 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
     loadFromStorage('i10-notifications', [])
   );
 
+  // Sync status
+  const [syncStatus, setSyncStatus] = useState<SyncStatus>('synced');
+  const syncManagerRef = useRef(getSyncManager());
+
+  // Guard to avoid applying incoming pull data during a local mutation
+  const isPullingRef = useRef(false);
+
   // Persist all state
   useEffect(() => { localStorage.setItem('i10-tasks', JSON.stringify(tasks)); }, [tasks]);
   useEffect(() => { localStorage.setItem('i10-hiring', JSON.stringify(hiringPositions)); }, [hiringPositions]);
@@ -138,6 +156,132 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
   useEffect(() => { localStorage.setItem('i10-people', JSON.stringify(teamPeople)); }, [teamPeople]);
   useEffect(() => { localStorage.setItem('i10-activity-log', JSON.stringify(activityLog)); }, [activityLog]);
   useEffect(() => { localStorage.setItem('i10-notifications', JSON.stringify(notifications)); }, [notifications]);
+
+  // ---- Sync: apply incoming pull data ----
+  const applyPull = useCallback((data: SyncPullResponse) => {
+    isPullingRef.current = true;
+
+    // Tasks
+    if (data.tasks.length > 0) {
+      setTasks((prev) => {
+        let updated = [...prev];
+        for (const row of data.tasks) {
+          if (row.deleted) {
+            updated = updated.filter((t) => t.id !== row.id);
+          } else {
+            const taskData = row.data as unknown as Task;
+            const idx = updated.findIndex((t) => t.id === row.id);
+            if (idx >= 0) {
+              updated[idx] = { ...taskData, subtasks: Array.isArray(taskData.subtasks) ? taskData.subtasks : [] };
+            } else {
+              updated.push({ ...taskData, subtasks: Array.isArray(taskData.subtasks) ? taskData.subtasks : [] });
+            }
+          }
+        }
+        return updated;
+      });
+    }
+
+    // People
+    if (data.people.length > 0) {
+      setTeamPeople((prev) => {
+        let updated = [...prev];
+        for (const row of data.people) {
+          if (row.deleted) {
+            updated = updated.filter((p) => p.id !== row.id);
+          } else {
+            const personData = row.data as unknown as Person;
+            const idx = updated.findIndex((p) => p.id === row.id);
+            if (idx >= 0) {
+              updated[idx] = personData;
+            } else {
+              updated.push(personData);
+            }
+          }
+        }
+        return updated;
+      });
+    }
+
+    // Hiring
+    if (data.hiringPositions.length > 0) {
+      setHiringPositions((prev) => {
+        let updated = [...prev];
+        for (const row of data.hiringPositions) {
+          if (row.deleted) {
+            updated = updated.filter((h) => h.id !== row.id);
+          } else {
+            const hiringData = row.data as unknown as HiringPosition;
+            const idx = updated.findIndex((h) => h.id === row.id);
+            if (idx >= 0) {
+              updated[idx] = hiringData;
+            } else {
+              updated.push(hiringData);
+            }
+          }
+        }
+        return updated;
+      });
+    }
+
+    // Companies
+    if (data.associateCompanies.length > 0) {
+      setAssociateCompanies((prev) => {
+        let updated = [...prev];
+        for (const row of data.associateCompanies) {
+          if (row.deleted) {
+            updated = updated.filter((c) => c.id !== row.id);
+          } else {
+            const companyData = row.data as unknown as AssociateCompany;
+            const idx = updated.findIndex((c) => c.id === row.id);
+            if (idx >= 0) {
+              updated[idx] = companyData;
+            } else {
+              updated.push(companyData);
+            }
+          }
+        }
+        return updated;
+      });
+    }
+
+    // Activity log
+    if (data.activityLog.length > 0) {
+      setActivityLog((prev) => {
+        const existingIds = new Set(prev.map((e) => e.id));
+        const newEntries = data.activityLog
+          .filter((row) => !existingIds.has(row.id))
+          .map((row) => row.data as unknown as ActivityLogEntry);
+        return [...newEntries, ...prev].slice(0, 500);
+      });
+    }
+
+    isPullingRef.current = false;
+  }, []);
+
+  // ---- Sync: start manager ----
+  useEffect(() => {
+    const mgr = syncManagerRef.current;
+    mgr.setCallbacks(setSyncStatus, applyPull);
+    mgr.start();
+    return () => mgr.stop();
+  }, [applyPull]);
+
+  const triggerFullSync = useCallback(() => {
+    syncManagerRef.current.fullPull();
+  }, []);
+
+  // ---- Sync helper: enqueue mutation ----
+  const enqueueSync = useCallback((table: SyncTable, operation: 'upsert' | 'delete', id: string, data?: Record<string, unknown>) => {
+    const mutation: SyncMutation = {
+      table,
+      operation,
+      id,
+      data,
+      timestamp: new Date().toISOString(),
+    };
+    syncManagerRef.current.enqueue(mutation);
+  }, []);
 
   // ---- Activity log helper ----
   const logActivity = useCallback((entry: Omit<ActivityLogEntry, 'id' | 'timestamp'>) => {
@@ -147,7 +291,9 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       timestamp: new Date().toISOString(),
     };
     setActivityLog((prev) => [newEntry, ...prev].slice(0, 500)); // Keep last 500
-  }, []);
+    // Sync the activity log entry
+    enqueueSync('activity_log', 'upsert', newEntry.id, newEntry as unknown as Record<string, unknown>);
+  }, [enqueueSync]);
 
   // ---- Generate notifications from current state ----
   useEffect(() => {
@@ -203,15 +349,18 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       const existingIds = new Set(prev.map((n) => n.id));
 
       // Fire browser notifications only for genuinely new overdue/critical items
-      newNotifs.forEach((n) => {
-        if (!existingIds.has(n.id) && (n.type === 'overdue' || n.type === 'critical')) {
-          showBrowserNotification({
-            title: n.title,
-            body: n.message,
-            url: '/dashboard',
-          });
-        }
-      });
+      // (skip during pull to avoid notification spam on sync)
+      if (!isPullingRef.current) {
+        newNotifs.forEach((n) => {
+          if (!existingIds.has(n.id) && (n.type === 'overdue' || n.type === 'critical')) {
+            showBrowserNotification({
+              title: n.title,
+              body: n.message,
+              url: '/dashboard',
+            });
+          }
+        });
+      }
 
       return newNotifs.map((n) => ({
         ...n,
@@ -226,6 +375,9 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       const oldTask = prev.find((t) => t.id === taskId);
       const newTasks = prev.map((t) => (t.id === taskId ? { ...t, ...updates } : t));
       if (oldTask) {
+        const merged = { ...oldTask, ...updates };
+        enqueueSync('tasks', 'upsert', taskId, merged as unknown as Record<string, unknown>);
+
         const changedFields = Object.keys(updates) as (keyof Task)[];
         changedFields.forEach((field) => {
           if (field === 'subtasks') return;
@@ -264,7 +416,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       }
       return newTasks;
     });
-  }, [logActivity]);
+  }, [logActivity, enqueueSync]);
 
   const addTask = useCallback(
     (partial: { title: string; departmentId: DepartmentId; priority: TaskPriority; status: TaskStatus }): string => {
@@ -288,6 +440,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
         subtasks: [],
       };
       setTasks((prev) => [...prev, newTask]);
+      enqueueSync('tasks', 'upsert', id, newTask as unknown as Record<string, unknown>);
       logActivity({
         entityType: 'task',
         entityId: id,
@@ -304,7 +457,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 
       return id;
     },
-    [logActivity]
+    [logActivity, enqueueSync]
   );
 
   const deleteTask = useCallback((taskId: string) => {
@@ -318,32 +471,39 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
           action: 'deleted',
         });
       }
+      enqueueSync('tasks', 'delete', taskId);
       return prev.filter((t) => t.id !== taskId);
     });
-  }, [logActivity]);
+  }, [logActivity, enqueueSync]);
 
   const addSubtask = useCallback((taskId: string, title: string) => {
-    setTasks((prev) =>
-      prev.map((t) => {
+    setTasks((prev) => {
+      const updated = prev.map((t) => {
         if (t.id !== taskId) return t;
         const newSubtask: Subtask = { id: `sub-${Date.now()}`, title, completed: false };
         return { ...t, subtasks: [...(t.subtasks || []), newSubtask] };
-      })
-    );
-  }, []);
+      });
+      const task = updated.find((t) => t.id === taskId);
+      if (task) enqueueSync('tasks', 'upsert', taskId, task as unknown as Record<string, unknown>);
+      return updated;
+    });
+  }, [enqueueSync]);
 
   const removeSubtask = useCallback((taskId: string, subtaskId: string) => {
-    setTasks((prev) =>
-      prev.map((t) => {
+    setTasks((prev) => {
+      const updated = prev.map((t) => {
         if (t.id !== taskId) return t;
         return { ...t, subtasks: (t.subtasks || []).filter((s) => s.id !== subtaskId) };
-      })
-    );
-  }, []);
+      });
+      const task = updated.find((t) => t.id === taskId);
+      if (task) enqueueSync('tasks', 'upsert', taskId, task as unknown as Record<string, unknown>);
+      return updated;
+    });
+  }, [enqueueSync]);
 
   const toggleSubtask = useCallback((taskId: string, subtaskId: string) => {
-    setTasks((prev) =>
-      prev.map((t) => {
+    setTasks((prev) => {
+      const updated = prev.map((t) => {
         if (t.id !== taskId) return t;
         return {
           ...t,
@@ -351,9 +511,12 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
             s.id === subtaskId ? { ...s, completed: !s.completed } : s
           ),
         };
-      })
-    );
-  }, []);
+      });
+      const task = updated.find((t) => t.id === taskId);
+      if (task) enqueueSync('tasks', 'upsert', taskId, task as unknown as Record<string, unknown>);
+      return updated;
+    });
+  }, [enqueueSync]);
 
   const getTask = useCallback(
     (taskId: string) => tasks.find((t) => t.id === taskId),
@@ -375,9 +538,12 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
           newValue: updates.status ? updates.status : undefined,
         });
       }
-      return prev.map((h) => (h.id === id ? { ...h, ...updates } : h));
+      const newList = prev.map((h) => (h.id === id ? { ...h, ...updates } : h));
+      const merged = newList.find((h) => h.id === id);
+      if (merged) enqueueSync('hiring_positions', 'upsert', id, merged as unknown as Record<string, unknown>);
+      return newList;
     });
-  }, [logActivity]);
+  }, [logActivity, enqueueSync]);
 
   const addHiring = useCallback((partial: Omit<HiringPosition, 'id' | 'openedAt' | 'filledAt' | 'filledBy'>): string => {
     const id = `hiring-${Date.now()}`;
@@ -389,65 +555,79 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       filledBy: null,
     };
     setHiringPositions((prev) => [...prev, newPos]);
+    enqueueSync('hiring_positions', 'upsert', id, newPos as unknown as Record<string, unknown>);
     logActivity({ entityType: 'hiring', entityId: id, entityTitle: partial.title, action: 'created' });
     return id;
-  }, [logActivity]);
+  }, [logActivity, enqueueSync]);
 
   const deleteHiring = useCallback((id: string) => {
     setHiringPositions((prev) => {
       const h = prev.find((p) => p.id === id);
       if (h) logActivity({ entityType: 'hiring', entityId: id, entityTitle: h.title, action: 'deleted' });
+      enqueueSync('hiring_positions', 'delete', id);
       return prev.filter((p) => p.id !== id);
     });
-  }, [logActivity]);
+  }, [logActivity, enqueueSync]);
 
   // ---- Company CRUD ----
   const updateCompany = useCallback((id: string, updates: Partial<AssociateCompany>) => {
     setAssociateCompanies((prev) => {
       const old = prev.find((c) => c.id === id);
       if (old) logActivity({ entityType: 'company', entityId: id, entityTitle: old.name, action: 'updated' });
-      return prev.map((c) => (c.id === id ? { ...c, ...updates } : c));
+      const newList = prev.map((c) => (c.id === id ? { ...c, ...updates } : c));
+      const merged = newList.find((c) => c.id === id);
+      if (merged) enqueueSync('associate_companies', 'upsert', id, merged as unknown as Record<string, unknown>);
+      return newList;
     });
-  }, [logActivity]);
+  }, [logActivity, enqueueSync]);
 
   const addCompany = useCallback((partial: Omit<AssociateCompany, 'id'>): string => {
     const id = `company-${Date.now()}`;
-    setAssociateCompanies((prev) => [...prev, { ...partial, id }]);
+    const newCompany = { ...partial, id };
+    setAssociateCompanies((prev) => [...prev, newCompany]);
+    enqueueSync('associate_companies', 'upsert', id, newCompany as unknown as Record<string, unknown>);
     logActivity({ entityType: 'company', entityId: id, entityTitle: partial.name, action: 'created' });
     return id;
-  }, [logActivity]);
+  }, [logActivity, enqueueSync]);
 
   const deleteCompany = useCallback((id: string) => {
     setAssociateCompanies((prev) => {
       const c = prev.find((co) => co.id === id);
       if (c) logActivity({ entityType: 'company', entityId: id, entityTitle: c.name, action: 'deleted' });
+      enqueueSync('associate_companies', 'delete', id);
       return prev.filter((co) => co.id !== id);
     });
-  }, [logActivity]);
+  }, [logActivity, enqueueSync]);
 
   // ---- People CRUD ----
   const updatePerson = useCallback((id: string, updates: Partial<Person>) => {
     setTeamPeople((prev) => {
       const old = prev.find((p) => p.id === id);
       if (old) logActivity({ entityType: 'person', entityId: id, entityTitle: old.name, action: 'updated' });
-      return prev.map((p) => (p.id === id ? { ...p, ...updates } : p));
+      const newList = prev.map((p) => (p.id === id ? { ...p, ...updates } : p));
+      const merged = newList.find((p) => p.id === id);
+      if (merged) enqueueSync('people', 'upsert', id, merged as unknown as Record<string, unknown>);
+      return newList;
     });
-  }, [logActivity]);
+  }, [logActivity, enqueueSync]);
 
   const addPerson = useCallback((partial: Omit<Person, 'id'>): string => {
     const id = `person-${Date.now()}`;
-    setTeamPeople((prev) => [...prev, { ...partial, id }]);
+    const newPerson = { ...partial, id };
+    setTeamPeople((prev) => [...prev, newPerson]);
+    enqueueSync('people', 'upsert', id, newPerson as unknown as Record<string, unknown>);
     logActivity({ entityType: 'person', entityId: id, entityTitle: partial.name, action: 'created' });
     return id;
-  }, [logActivity]);
+  }, [logActivity, enqueueSync]);
 
   const deletePerson = useCallback((id: string) => {
     setTeamPeople((prev) => {
       const p = prev.find((pe) => pe.id === id);
       if (p) logActivity({ entityType: 'person', entityId: id, entityTitle: p.name, action: 'deleted' });
+      enqueueSync('people', 'delete', id);
       return prev.filter((pe) => pe.id !== id);
     });
-  }, [logActivity]);
+  }, [logActivity, enqueueSync]);
 
   // ---- Notifications ----
   const markNotificationRead = useCallback((id: string) => {
@@ -469,6 +649,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
         teamPeople, updatePerson, addPerson, deletePerson,
         activityLog,
         notifications, markNotificationRead, markAllNotificationsRead, unreadCount,
+        syncStatus, triggerFullSync,
       }}
     >
       {children}
