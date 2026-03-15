@@ -1,9 +1,24 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
-import { ArrowRight, ExternalLink, FlaskConical, Cpu, Lightbulb, ShieldCheck, GraduationCap, Lock } from 'lucide-react';
+import { ArrowRight, ExternalLink } from 'lucide-react';
+
+/* ============================================
+   Pexels images — Brazilian education context
+   ============================================ */
+
+const IMAGES = {
+  hero: 'https://images.pexels.com/photos/8613089/pexels-photo-8613089.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
+  classroom: 'https://images.pexels.com/photos/8613312/pexels-photo-8613312.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
+  students: 'https://images.pexels.com/photos/8612990/pexels-photo-8612990.jpeg?auto=compress&cs=tinysrgb&w=1200&h=800&fit=crop',
+  teacher: 'https://images.pexels.com/photos/5212345/pexels-photo-5212345.jpeg?auto=compress&cs=tinysrgb&w=1200&h=800&fit=crop',
+  technology: 'https://images.pexels.com/photos/5905709/pexels-photo-5905709.jpeg?auto=compress&cs=tinysrgb&w=1200&h=800&fit=crop',
+  legacy: 'https://images.pexels.com/photos/8613070/pexels-photo-8613070.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
+  science: 'https://images.pexels.com/photos/256395/pexels-photo-256395.jpeg?auto=compress&cs=tinysrgb&w=1200&h=800&fit=crop',
+};
 
 /* ============================================
    Data
@@ -39,6 +54,30 @@ const valores = [
   },
 ];
 
+const pillars = [
+  {
+    num: '01',
+    title: 'Ciência',
+    description: 'Metodologia baseada em evidências. Produção de conhecimento científico, documentação de aprendizados e avaliação de impacto de intervenções em contextos educacionais reais.',
+    image: IMAGES.science,
+    accent: '#00E5A0',
+  },
+  {
+    num: '02',
+    title: 'Tecnologia',
+    description: 'Alicerce escalável. Infraestrutura de nuvem, IA preditiva e generativa, e engenharia de dados capaz de suportar redes com mais de 1.000 escolas, 50 mil docentes e 550 mil alunos.',
+    image: IMAGES.technology,
+    accent: '#00B4D8',
+  },
+  {
+    num: '03',
+    title: 'Inovação',
+    description: 'Orquestração e ecossistema. Capacidade de articular parcerias intersetoriais, unindo o setor público, o privado e o terceiro setor para solucionar desafios educacionais complexos.',
+    image: IMAGES.teacher,
+    accent: '#00E5A0',
+  },
+];
+
 const partners = [
   { name: 'Better EdTech', role: 'Tecnologia Educacional e Inovação', url: 'https://www.betteredtech.com.br/' },
   { name: 'Jinso', role: 'Desenvolvimento de Software', url: null },
@@ -48,125 +87,132 @@ const partners = [
 ];
 
 /* ============================================
-   Animation helpers
+   Animation presets
    ============================================ */
 
-const fadeIn = {
-  initial: { opacity: 0, y: 32 },
+const ease = [0.35, 0.35, 0, 1] as [number, number, number, number];
+
+const fadeUp = {
+  initial: { opacity: 0, y: 60 },
   whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: '-100px' },
-  transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
+  viewport: { once: true, margin: '-80px' },
+  transition: { duration: 0.9, ease },
+};
+
+const fadeIn = {
+  initial: { opacity: 0 },
+  whileInView: { opacity: 1 },
+  viewport: { once: true, margin: '-80px' },
+  transition: { duration: 1.2, ease },
 };
 
 /* ============================================
-   Reusable: Gradient Divider
+   Hero — Cinematic full-bleed with parallax
    ============================================ */
 
-function GradientDivider() {
-  return <div className="gradient-divider" />;
-}
-
-/* ============================================
-   Reusable: Hex Mesh Overlay
-   ============================================ */
-
-function HexMeshOverlay({ className = '' }: { className?: string }) {
-  return (
-    <div
-      className={`absolute inset-0 hex-mesh pointer-events-none ${className}`}
-      aria-hidden="true"
-    />
-  );
-}
-
-/* ============================================
-   Parallax Hero component
-   ============================================ */
-
-function ParallaxHero() {
+function Hero() {
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ['start start', 'end start'],
   });
-  const y = useTransform(scrollYProgress, [0, 1], [0, 200]);
-  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  const imgY = useTransform(scrollYProgress, [0, 1], [0, 300]);
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+  const contentY = useTransform(scrollYProgress, [0, 0.6], [0, -80]);
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 1.15]);
 
   return (
-    <section ref={ref} className="relative h-screen overflow-hidden bg-[#0A2463]">
-      {/* Hex mesh background */}
-      <motion.div className="absolute inset-0" style={{ y }}>
-        <HexMeshOverlay />
-        {/* Radial glow accents */}
-        <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] rounded-full bg-[#00B4D8]/[0.06] blur-[120px]" />
-        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-[#00E5A0]/[0.04] blur-[100px]" />
+    <section ref={ref} className="relative h-[110vh] overflow-hidden">
+      {/* Background image with parallax + scale */}
+      <motion.div className="absolute inset-0" style={{ y: imgY, scale }}>
+        <Image
+          src={IMAGES.hero}
+          alt="Estudantes em ambiente de aprendizagem"
+          fill
+          priority
+          className="object-cover"
+          sizes="100vw"
+        />
+        {/* Brandbook: navy overlay 65-75% */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#030B1A]/60 via-[#0A2463]/70 to-[#030B1A]" />
       </motion.div>
+
+      {/* Noise texture */}
+      <div className="absolute inset-0 noise pointer-events-none" />
+
+      {/* Hex mesh — subtle tech texture */}
+      <div className="absolute inset-0 hex-mesh opacity-[0.04] pointer-events-none" />
 
       {/* Content */}
       <motion.div
-        className="relative z-10 h-full flex flex-col justify-end pb-20 sm:pb-28 px-6 sm:px-12 lg:px-20 max-w-7xl mx-auto"
-        style={{ opacity }}
+        className="relative z-10 h-full flex flex-col justify-center px-6 sm:px-12 lg:px-20 max-w-7xl mx-auto"
+        style={{ opacity: contentOpacity, y: contentY }}
       >
         <motion.p
-          className="text-[#00E5A0] text-sm sm:text-base font-medium tracking-[0.3em] uppercase mb-4"
-          initial={{ opacity: 0, x: -20 }}
+          className="text-[#00E5A0] text-xs sm:text-sm font-medium tracking-[0.4em] uppercase mb-8"
+          initial={{ opacity: 0, x: -30 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.3, duration: 0.6 }}
+          transition={{ delay: 0.5, duration: 0.8, ease }}
         >
           Educação · Tecnologia · Inovação
         </motion.p>
 
         <motion.h1
-          className="text-5xl sm:text-7xl lg:text-8xl font-black text-white leading-[0.9] tracking-tight max-w-4xl"
-          initial={{ opacity: 0, y: 40 }}
+          className="font-serif text-6xl sm:text-8xl lg:text-[9rem] font-light text-white leading-[0.85] tracking-tight"
+          initial={{ opacity: 0, y: 60 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.8, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
+          transition={{ delay: 0.6, duration: 1.2, ease }}
         >
           Instituto
           <br />
-          <span className="text-[#00B4D8] glow-text">i10</span>
+          <span className="text-[#00B4D8] glow-text font-normal">i10</span>
         </motion.h1>
 
         <motion.p
-          className="mt-6 text-lg sm:text-xl text-white/70 max-w-xl leading-relaxed font-light"
+          className="mt-8 text-base sm:text-lg text-white/60 max-w-lg leading-relaxed font-light tracking-wide"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.7, duration: 0.6 }}
+          transition={{ delay: 1.0, duration: 0.8 }}
         >
           Orquestrando o futuro da educação pública brasileira através de
           pesquisa, inteligência artificial e parcerias estratégicas com governos.
         </motion.p>
 
         <motion.div
-          className="mt-10 flex flex-wrap gap-4"
+          className="mt-12"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.9, duration: 0.6 }}
+          transition={{ delay: 1.3, duration: 0.6 }}
         >
           <Link
             href="/dashboard"
-            className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-[#00B4D8] to-[#00E5A0] text-[#0A2463] font-semibold text-sm rounded-full
-                       hover:shadow-[0_0_30px_rgba(0,180,216,0.4)] transition-all duration-300"
+            className="group inline-flex items-center gap-3 px-8 py-4 bg-[#00B4D8] text-[#030B1A] font-semibold text-sm tracking-wide uppercase
+                       hover:bg-[#00E5A0] transition-all duration-500 rounded-none"
           >
             Acessar Painel de Controle
-            <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+            <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform duration-300" />
           </Link>
         </motion.div>
+      </motion.div>
 
-        {/* Stats bar */}
-        <motion.div
-          className="mt-16 flex flex-wrap gap-8 sm:gap-16"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2, duration: 0.8 }}
-        >
-          {stats.map((s) => (
-            <div key={s.label}>
-              <p className="text-3xl sm:text-4xl font-black text-[#00B4D8]">{s.value}</p>
-              <p className="text-sm text-white/50 mt-1">{s.label}</p>
-            </div>
-          ))}
-        </motion.div>
+      {/* Stats — pinned to bottom */}
+      <motion.div
+        className="absolute bottom-0 left-0 right-0 z-10"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.6, duration: 1.0 }}
+      >
+        <div className="gradient-divider" />
+        <div className="bg-[#030B1A]/80 backdrop-blur-md py-8 px-6 sm:px-12 lg:px-20">
+          <div className="max-w-7xl mx-auto flex flex-wrap justify-between gap-8">
+            {stats.map((s) => (
+              <div key={s.label} className="text-center min-w-[100px]">
+                <p className="text-3xl sm:text-4xl font-serif font-light text-[#00B4D8]">{s.value}</p>
+                <p className="text-[10px] text-white/40 mt-1 tracking-[0.2em] uppercase">{s.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       </motion.div>
     </section>
   );
@@ -178,67 +224,74 @@ function ParallaxHero() {
 
 export default function LandingPage() {
   return (
-    <div className="overflow-x-hidden bg-[#0A2463]">
-      <ParallaxHero />
-      <GradientDivider />
+    <div className="overflow-x-hidden bg-[#030B1A]">
+      <Hero />
 
       {/* ========== MANIFESTO ========== */}
-      <section className="relative py-28 sm:py-40 px-6 sm:px-12 lg:px-20 bg-[#0A2463] overflow-hidden">
-        <HexMeshOverlay />
-        <div className="relative z-10 max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          <motion.div {...fadeIn}>
-            <p className="text-[#00B4D8] text-xs font-semibold tracking-[0.25em] uppercase mb-4">
+      <section className="relative py-32 sm:py-48 px-6 sm:px-12 lg:px-20 bg-[#030B1A] overflow-hidden">
+        <div className="absolute inset-0 noise pointer-events-none" />
+        {/* Subtle ambient glow */}
+        <div className="absolute top-1/2 left-0 w-[600px] h-[600px] -translate-y-1/2 -translate-x-1/2 bg-[#00B4D8]/[0.03] blur-[200px] rounded-full" />
+
+        <div className="relative z-10 max-w-6xl mx-auto">
+          <motion.div {...fadeUp} className="max-w-3xl">
+            <p className="text-[#00B4D8] text-xs font-medium tracking-[0.3em] uppercase mb-6">
               Quem Somos
             </p>
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.05] tracking-tight">
+            <h2 className="font-serif text-4xl sm:text-6xl lg:text-7xl font-light text-white leading-[1.05] tracking-tight">
               Não somos apenas desenvolvedores de software.
             </h2>
-            <div className="mt-8 space-y-6 text-white/70 text-base sm:text-lg leading-relaxed font-serif italic">
-              <p>
-                Somos orquestradores da transformação educacional. O Instituto i10 é uma
-                Instituição Científica, Tecnológica e de Inovação (ICT) que atua como
-                catalisador — articulando competências do setor público, acadêmico e
-                privado em projetos de inovação educacional de grande escala.
-              </p>
-              <p>
-                Nossa tecnologia não substitui o humano. Ela o liberta das amarras
-                burocráticas para que possa focar no que realmente importa: a aprendizagem.
-              </p>
-            </div>
           </motion.div>
-          <motion.div
-            {...fadeIn}
-            className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-[#061742] border border-[#142D5C]"
-          >
-            <HexMeshOverlay />
-            {/* Decorative glow */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-32 h-32 rounded-full bg-[#00B4D8]/10 blur-[60px]" />
-            </div>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-[#00B4D8]/20 text-9xl font-black select-none">i10</div>
-            </div>
-          </motion.div>
+
+          <div className="mt-16 sm:mt-24 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
+            <motion.div {...fadeUp} className="lg:col-span-5">
+              <div className="relative aspect-[3/4] overflow-hidden">
+                <Image
+                  src={IMAGES.classroom}
+                  alt="Sala de aula brasileira"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 42vw"
+                />
+                <div className="absolute inset-0 bg-[#0A2463]/65" />
+                <div className="absolute inset-0 hex-mesh opacity-[0.06] mix-blend-overlay" />
+              </div>
+            </motion.div>
+
+            <motion.div
+              {...fadeUp}
+              className="lg:col-span-7 flex flex-col justify-center"
+            >
+              <div className="space-y-8 text-white/70 text-lg sm:text-xl leading-relaxed font-serif">
+                <p>
+                  Somos orquestradores da transformação educacional. O Instituto i10 é uma
+                  Instituição Científica, Tecnológica e de Inovação (ICT) que atua como
+                  catalisador — articulando competências do setor público, acadêmico e
+                  privado em projetos de inovação educacional de grande escala.
+                </p>
+                <p>
+                  Nossa tecnologia não substitui o humano. Ela o liberta das amarras
+                  burocráticas para que possa focar no que realmente importa: a aprendizagem.
+                </p>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
-      <GradientDivider />
 
-      {/* ========== MISSÃO (full-bleed dark) ========== */}
-      <section className="relative py-32 sm:py-44 px-6 overflow-hidden bg-[#061742]">
-        <HexMeshOverlay />
-        <div className="absolute inset-0 bg-[#0A2463]/70" />
-        {/* Decorative radial glows */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[#00B4D8]/[0.04] blur-[120px] rounded-full" />
+      {/* ========== MISSÃO — Dramatic color inversion ========== */}
+      <section className="relative py-40 sm:py-56 px-6 overflow-hidden bg-[#00B4D8]">
+        <div className="absolute inset-0 noise pointer-events-none opacity-60" />
         <div className="relative z-10 max-w-4xl mx-auto text-center">
           <motion.p
             {...fadeIn}
-            className="text-[#00E5A0] text-xs font-semibold tracking-[0.25em] uppercase mb-6"
+            className="text-[#030B1A]/60 text-xs font-medium tracking-[0.3em] uppercase mb-8"
           >
             Nossa Missão
           </motion.p>
           <motion.blockquote
-            {...fadeIn}
-            className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white leading-snug font-serif italic"
+            {...fadeUp}
+            className="font-serif text-3xl sm:text-4xl lg:text-5xl font-light text-[#030B1A] leading-[1.2] italic"
           >
             Transformar a educação pública brasileira através de pesquisa,
             desenvolvimento e inovação em Inteligência Artificial, gerando
@@ -246,172 +299,143 @@ export default function LandingPage() {
           </motion.blockquote>
         </div>
       </section>
-      <GradientDivider />
 
       {/* ========== VALORES EMIC ========== */}
-      <section className="relative py-28 sm:py-40 px-6 sm:px-12 lg:px-20 bg-[#0A2463] overflow-hidden">
-        <HexMeshOverlay />
+      <section className="relative py-32 sm:py-48 px-6 sm:px-12 lg:px-20 bg-[#030B1A] overflow-hidden">
+        <div className="absolute inset-0 noise pointer-events-none" />
+        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] translate-x-1/4 translate-y-1/4 bg-[#00E5A0]/[0.03] blur-[180px] rounded-full" />
+
         <div className="relative z-10 max-w-6xl mx-auto">
-          <motion.div {...fadeIn} className="mb-20">
-            <p className="text-[#00B4D8] text-xs font-semibold tracking-[0.25em] uppercase mb-4">
+          <motion.div {...fadeUp} className="mb-24">
+            <p className="text-[#00E5A0] text-xs font-medium tracking-[0.3em] uppercase mb-6">
               Nossos Valores
             </p>
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.05] tracking-tight">
+            <h2 className="font-serif text-4xl sm:text-6xl lg:text-7xl font-light text-white leading-[1.05] tracking-tight">
               O que nos define.
             </h2>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-0 border-t border-l border-[#142D5C]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-white/[0.06]">
             {valores.map((v, i) => (
               <motion.div
                 key={v.letter}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="border-b border-r border-[#142D5C] p-8 sm:p-12 group hover:bg-[#061742] transition-colors duration-300"
+                transition={{ duration: 0.8, delay: i * 0.15, ease }}
+                className="group relative bg-[#030B1A] p-10 sm:p-14 hover:bg-[#0A2463]/30 transition-all duration-700"
               >
-                <span className="text-6xl sm:text-7xl font-black text-[#00B4D8]/[0.1] group-hover:text-[#00B4D8]/30 glow-hover transition-colors duration-500 leading-none block mb-4">
+                <span className="absolute top-6 right-8 font-serif text-[8rem] sm:text-[10rem] font-light leading-none text-white/[0.02] group-hover:text-[#00B4D8]/[0.08] transition-colors duration-700 select-none">
                   {v.letter}
                 </span>
-                <h3 className="text-xl sm:text-2xl font-bold text-white mb-3">{v.title}</h3>
-                <p className="text-white/60 leading-relaxed">{v.description}</p>
+                <div className="relative z-10">
+                  <span className="inline-block w-8 h-px bg-[#00B4D8] mb-8 group-hover:w-16 transition-all duration-500" />
+                  <h3 className="text-xl sm:text-2xl font-semibold text-white mb-4 tracking-tight">{v.title}</h3>
+                  <p className="text-white/50 leading-relaxed text-sm sm:text-base">{v.description}</p>
+                </div>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
-      <GradientDivider />
 
-      {/* ========== TRÊS PILARES (split layout) ========== */}
-      <section className="relative bg-[#0A2463] text-white overflow-hidden">
-        <HexMeshOverlay />
+      <div className="gradient-divider" />
 
-        {/* Pilar 1 — Ciência */}
-        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2">
-          <motion.div
-            {...fadeIn}
-            className="p-12 sm:p-20 flex flex-col justify-center"
-          >
-            <p className="text-[#00E5A0] text-xs font-semibold tracking-[0.25em] uppercase mb-4">
-              Pilar 01
-            </p>
-            <h3 className="text-3xl sm:text-4xl font-black leading-tight mb-6">
-              Ciência
-            </h3>
-            <p className="text-white/70 text-base sm:text-lg leading-relaxed max-w-lg">
-              Metodologia baseada em evidências. Produção de conhecimento científico,
-              documentação de aprendizados e avaliação de impacto de intervenções
-              em contextos educacionais reais.
-            </p>
-          </motion.div>
-          <div className="relative min-h-[400px] lg:min-h-0 bg-[#061742] border-l border-[#142D5C]">
-            <HexMeshOverlay />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="relative">
-                <div className="absolute inset-0 w-24 h-24 rounded-full bg-[#00E5A0]/10 blur-[40px]" />
-                <FlaskConical size={64} className="text-[#00E5A0]/40 relative z-10" />
-              </div>
+      {/* ========== TRÊS PILARES — Stacked immersive sections ========== */}
+      <section className="relative bg-[#030B1A]">
+        {pillars.map((pillar, i) => (
+          <div key={pillar.num} className="relative">
+            {/* Full-bleed image row */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[70vh]">
+              {/* Image side */}
+              <motion.div
+                {...fadeIn}
+                className={`relative min-h-[50vh] lg:min-h-0 overflow-hidden ${i % 2 === 1 ? 'lg:order-2' : ''}`}
+              >
+                <Image
+                  src={pillar.image}
+                  alt={pillar.title}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                />
+                <div className="absolute inset-0 bg-[#0A2463]/70" />
+                <div className="absolute inset-0 hex-mesh opacity-[0.05] mix-blend-overlay" />
+                {/* Giant number */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span
+                    className="font-serif text-[12rem] sm:text-[16rem] font-light leading-none select-none"
+                    style={{ color: `${pillar.accent}10` }}
+                  >
+                    {pillar.num}
+                  </span>
+                </div>
+              </motion.div>
+
+              {/* Content side */}
+              <motion.div
+                {...fadeUp}
+                className={`flex flex-col justify-center p-12 sm:p-16 lg:p-24 ${i % 2 === 1 ? 'lg:order-1' : ''}`}
+              >
+                <p
+                  className="text-xs font-medium tracking-[0.3em] uppercase mb-6"
+                  style={{ color: pillar.accent }}
+                >
+                  Pilar {pillar.num}
+                </p>
+                <h3 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-light text-white leading-tight mb-8">
+                  {pillar.title}
+                </h3>
+                <p className="text-white/50 text-base sm:text-lg leading-relaxed max-w-lg">
+                  {pillar.description}
+                </p>
+              </motion.div>
             </div>
           </div>
-        </div>
-
-        {/* Pilar 2 — Tecnologia */}
-        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2">
-          <div className="relative min-h-[400px] lg:min-h-0 order-2 lg:order-1 bg-[#061742] border-r border-[#142D5C]">
-            <HexMeshOverlay />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="relative">
-                <div className="absolute inset-0 w-24 h-24 rounded-full bg-[#00B4D8]/10 blur-[40px]" />
-                <Cpu size={64} className="text-[#00B4D8]/40 relative z-10" />
-              </div>
-            </div>
-          </div>
-          <motion.div
-            {...fadeIn}
-            className="p-12 sm:p-20 flex flex-col justify-center order-1 lg:order-2"
-          >
-            <p className="text-[#00B4D8] text-xs font-semibold tracking-[0.25em] uppercase mb-4">
-              Pilar 02
-            </p>
-            <h3 className="text-3xl sm:text-4xl font-black leading-tight mb-6">
-              Tecnologia
-            </h3>
-            <p className="text-white/70 text-base sm:text-lg leading-relaxed max-w-lg">
-              Alicerce escalável. Infraestrutura de nuvem, IA preditiva e generativa,
-              e engenharia de dados capaz de suportar redes com mais de 1.000 escolas,
-              50 mil docentes e 550 mil alunos.
-            </p>
-          </motion.div>
-        </div>
-
-        {/* Pilar 3 — Inovação */}
-        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2">
-          <motion.div
-            {...fadeIn}
-            className="p-12 sm:p-20 flex flex-col justify-center"
-          >
-            <p className="text-[#00E5A0] text-xs font-semibold tracking-[0.25em] uppercase mb-4">
-              Pilar 03
-            </p>
-            <h3 className="text-3xl sm:text-4xl font-black leading-tight mb-6">
-              Inovação
-            </h3>
-            <p className="text-white/70 text-base sm:text-lg leading-relaxed max-w-lg">
-              Orquestração e ecossistema. Capacidade de articular parcerias intersetoriais,
-              unindo o setor público, o privado e o terceiro setor para solucionar
-              desafios educacionais complexos.
-            </p>
-          </motion.div>
-          <div className="relative min-h-[400px] lg:min-h-0 bg-[#061742] border-l border-[#142D5C]">
-            <HexMeshOverlay />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="relative">
-                <div className="absolute inset-0 w-24 h-24 rounded-full bg-[#00E5A0]/10 blur-[40px]" />
-                <Lightbulb size={64} className="text-[#00E5A0]/40 relative z-10" />
-              </div>
-            </div>
-          </div>
-        </div>
+        ))}
       </section>
-      <GradientDivider />
 
-      {/* ========== ECOSSISTEMA (professor + aluno side by side) ========== */}
-      <section className="relative py-28 sm:py-40 px-6 sm:px-12 lg:px-20 bg-[#0A2463] overflow-hidden">
-        <HexMeshOverlay />
+      <div className="gradient-divider" />
+
+      {/* ========== ECOSSISTEMA ========== */}
+      <section className="relative py-32 sm:py-48 px-6 sm:px-12 lg:px-20 bg-[#030B1A] overflow-hidden">
+        <div className="absolute inset-0 noise pointer-events-none" />
+        <div className="absolute top-0 right-0 w-[800px] h-[400px] bg-[#00B4D8]/[0.02] blur-[200px] rounded-full" />
+
         <div className="relative z-10 max-w-6xl mx-auto">
-          <motion.div {...fadeIn} className="text-center mb-20">
-            <p className="text-[#00B4D8] text-xs font-semibold tracking-[0.25em] uppercase mb-4">
+          <motion.div {...fadeUp} className="text-center mb-24">
+            <p className="text-[#00B4D8] text-xs font-medium tracking-[0.3em] uppercase mb-6">
               Ecossistema Integrado
             </p>
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.05] tracking-tight">
+            <h2 className="font-serif text-4xl sm:text-6xl lg:text-7xl font-light text-white leading-[1.05] tracking-tight">
               Quem transformamos.
             </h2>
           </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Professor */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Professor card */}
             <motion.div
-              {...fadeIn}
-              className="group relative rounded-2xl overflow-hidden bg-[#061742] border border-[#142D5C] hover:border-[#00B4D8]/40 transition-all duration-500 hover:shadow-[0_0_30px_rgba(0,180,216,0.1)]"
+              {...fadeUp}
+              className="group relative overflow-hidden glass rounded-2xl hover:border-[#00B4D8]/20 transition-all duration-700"
             >
-              <div className="relative h-64 sm:h-80 bg-[#0A2463]">
-                <HexMeshOverlay />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="relative">
-                    <div className="absolute inset-0 w-20 h-20 rounded-full bg-[#00B4D8]/10 blur-[40px]" />
-                    <GraduationCap size={56} className="text-[#00B4D8]/30 relative z-10" />
-                  </div>
-                </div>
+              <div className="relative h-72 overflow-hidden">
+                <Image
+                  src={IMAGES.teacher}
+                  alt="Professor utilizando tecnologia em sala de aula"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#030B1A] via-[#0A2463]/60 to-transparent" />
               </div>
-              <div className="p-8 sm:p-10">
-                <p className="text-[#00B4D8] text-xs font-semibold tracking-[0.25em] uppercase mb-3">
+              <div className="relative p-8 sm:p-10 -mt-12 z-10">
+                <p className="text-[#00B4D8] text-xs font-medium tracking-[0.25em] uppercase mb-3">
                   Eixo Docente
                 </p>
-                <h3 className="text-2xl sm:text-3xl font-black text-white mb-4">
+                <h3 className="text-2xl sm:text-3xl font-serif font-light text-white mb-4">
                   O professor como protagonista
                 </h3>
-                <p className="text-white/60 leading-relaxed">
+                <p className="text-white/50 leading-relaxed text-sm">
                   Redução de até 30% do tempo burocrático. Trilhas formativas,
                   planejamento alinhado à BNCC e um co-piloto de IA generativa que
                   sugere intervenções e roteiros adaptados a cada turma.
@@ -419,28 +443,29 @@ export default function LandingPage() {
               </div>
             </motion.div>
 
-            {/* Aluno */}
+            {/* Aluno card */}
             <motion.div
-              {...fadeIn}
-              className="group relative rounded-2xl overflow-hidden bg-[#061742] border border-[#142D5C] hover:border-[#00E5A0]/40 transition-all duration-500 hover:shadow-[0_0_30px_rgba(0,229,160,0.1)]"
+              {...fadeUp}
+              className="group relative overflow-hidden glass rounded-2xl hover:border-[#00E5A0]/20 transition-all duration-700"
             >
-              <div className="relative h-64 sm:h-80 bg-[#0A2463]">
-                <HexMeshOverlay />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="relative">
-                    <div className="absolute inset-0 w-20 h-20 rounded-full bg-[#00E5A0]/10 blur-[40px]" />
-                    <Cpu size={56} className="text-[#00E5A0]/30 relative z-10" />
-                  </div>
-                </div>
+              <div className="relative h-72 overflow-hidden">
+                <Image
+                  src={IMAGES.students}
+                  alt="Estudantes engajados na aprendizagem"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#030B1A] via-[#0A2463]/60 to-transparent" />
               </div>
-              <div className="p-8 sm:p-10">
-                <p className="text-[#00E5A0] text-xs font-semibold tracking-[0.25em] uppercase mb-3">
+              <div className="relative p-8 sm:p-10 -mt-12 z-10">
+                <p className="text-[#00E5A0] text-xs font-medium tracking-[0.25em] uppercase mb-3">
                   Eixo Discente
                 </p>
-                <h3 className="text-2xl sm:text-3xl font-black text-white mb-4">
+                <h3 className="text-2xl sm:text-3xl font-serif font-light text-white mb-4">
                   Aprendizagem personalizada
                 </h3>
-                <p className="text-white/60 leading-relaxed">
+                <p className="text-white/50 leading-relaxed text-sm">
                   Diagnóstico de competências em tempo real, percursos adaptativos
                   prescritos por IA e retorno formativo imediato — mantendo cada aluno
                   no centro do seu próprio desenvolvimento.
@@ -450,127 +475,142 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-      <GradientDivider />
 
-      {/* ========== GOVERNANÇA ========== */}
-      <section className="relative py-28 sm:py-40 px-6 sm:px-12 lg:px-20 bg-[#061742] overflow-hidden">
-        <HexMeshOverlay />
-        <div className="relative z-10 max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          <motion.div {...fadeIn}>
-            <p className="text-[#00B4D8] text-xs font-semibold tracking-[0.25em] uppercase mb-4">
+      {/* ========== GOVERNANÇA — Inverted section ========== */}
+      <section className="relative py-32 sm:py-48 px-6 sm:px-12 lg:px-20 bg-[#F0EDEA] overflow-hidden">
+        <div className="absolute inset-0 noise pointer-events-none opacity-40" />
+        <div className="relative z-10 max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
+          <motion.div {...fadeUp} className="lg:col-span-7">
+            <p className="text-[#0A2463]/50 text-xs font-medium tracking-[0.3em] uppercase mb-6">
               Governança e Transparência
             </p>
-            <h2 className="text-4xl sm:text-5xl font-black text-white leading-[1.05] tracking-tight mb-8">
+            <h2 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-light text-[#0A2463] leading-[1.05] tracking-tight mb-12">
               A fundação da confiança.
             </h2>
-            <div className="space-y-8">
-              <div>
-                <h3 className="text-lg font-bold text-white mb-2">Conselho Consultivo & Diretoria</h3>
-                <p className="text-white/60 leading-relaxed">
-                  Governança estratégica pro bono, garantindo independência, ética e
-                  alinhamento inabalável aos interesses públicos.
-                </p>
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-white mb-2">Coordenação Científica</h3>
-                <p className="text-white/60 leading-relaxed">
-                  Supervisão rigorosa de metodologias, validando a eficácia pedagógica
-                  de todas as intervenções tecnológicas implantadas.
-                </p>
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-white mb-2">Segurança e LGPD</h3>
-                <p className="text-white/60 leading-relaxed">
-                  Proteção absoluta de dados de menores de idade, com arquitetura
-                  criptografada, DPO próprio e Relatórios de Impacto contínuos.
-                </p>
-              </div>
+            <div className="space-y-10">
+              {[
+                {
+                  title: 'Conselho Consultivo & Diretoria',
+                  text: 'Governança estratégica pro bono, garantindo independência, ética e alinhamento inabalável aos interesses públicos.',
+                },
+                {
+                  title: 'Coordenação Científica',
+                  text: 'Supervisão rigorosa de metodologias, validando a eficácia pedagógica de todas as intervenções tecnológicas implantadas.',
+                },
+                {
+                  title: 'Segurança e LGPD',
+                  text: 'Proteção absoluta de dados de menores de idade, com arquitetura criptografada, DPO próprio e Relatórios de Impacto contínuos.',
+                },
+              ].map((item, i) => (
+                <motion.div
+                  key={item.title}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: i * 0.15, ease }}
+                >
+                  <h3 className="text-lg font-semibold text-[#0A2463] mb-2">{item.title}</h3>
+                  <p className="text-[#0A2463]/50 leading-relaxed">{item.text}</p>
+                </motion.div>
+              ))}
             </div>
           </motion.div>
           <motion.div
-            {...fadeIn}
-            className="relative aspect-square rounded-2xl overflow-hidden bg-[#0A2463] border border-[#142D5C]"
+            {...fadeUp}
+            className="lg:col-span-5 flex items-center"
           >
-            <HexMeshOverlay />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="relative">
-                <div className="absolute -inset-8 rounded-full bg-[#00B4D8]/[0.08] blur-[50px]" />
-                <div className="relative z-10 flex flex-col items-center gap-6">
-                  <ShieldCheck size={72} className="text-[#00B4D8]/30" />
-                  <Lock size={40} className="text-[#00E5A0]/25" />
-                </div>
-              </div>
+            <div className="relative w-full aspect-[3/4] overflow-hidden">
+              <Image
+                src={IMAGES.technology}
+                alt="Dashboard de dados e governança"
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 42vw"
+              />
+              <div className="absolute inset-0 bg-[#0A2463]/60" />
+              <div className="absolute inset-0 hex-mesh opacity-[0.06] mix-blend-overlay" />
             </div>
           </motion.div>
         </div>
       </section>
-      <GradientDivider />
 
-      {/* ========== CLIENTE / SANTA CATARINA ========== */}
-      <section className="relative py-28 sm:py-40 px-6 sm:px-12 lg:px-20 bg-[#0A2463] overflow-hidden">
-        <HexMeshOverlay />
+      {/* ========== SANTA CATARINA ========== */}
+      <section className="relative py-32 sm:py-48 px-6 sm:px-12 lg:px-20 bg-[#0A2463] overflow-hidden">
+        <div className="absolute inset-0 noise pointer-events-none" />
+        <div className="absolute inset-0 hex-mesh opacity-[0.04] pointer-events-none" />
+        {/* Ambient glows */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#00B4D8]/[0.04] blur-[200px] rounded-full" />
+
         <div className="relative z-10 max-w-5xl mx-auto text-center">
-          <motion.div {...fadeIn}>
-            <p className="text-[#00B4D8] text-xs font-semibold tracking-[0.25em] uppercase mb-4">
+          <motion.div {...fadeUp}>
+            <p className="text-[#00B4D8] text-xs font-medium tracking-[0.3em] uppercase mb-6">
               Projeto Ativo
             </p>
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.05] tracking-tight mb-6">
+            <h2 className="font-serif text-5xl sm:text-7xl lg:text-8xl font-light text-white leading-[0.9] tracking-tight mb-8">
               Santa Catarina
             </h2>
-            <p className="text-xl sm:text-2xl text-white/60 font-light max-w-3xl mx-auto leading-relaxed mb-12">
+            <p className="text-lg sm:text-xl text-white/50 font-light max-w-3xl mx-auto leading-relaxed mb-20">
               Encomenda Tecnológica com a Secretaria de Estado da Educação (SED/SC) para
               desenvolvimento de plataforma educacional com IA para toda a rede pública estadual.
             </p>
           </motion.div>
 
           <motion.div
-            {...fadeIn}
-            className="grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8"
+            {...fadeUp}
+            className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-8"
           >
-            {stats.map((s) => (
-              <div key={s.label} className="py-6">
-                <p className="text-4xl sm:text-5xl font-black text-[#00B4D8] glow-text">{s.value}</p>
-                <p className="text-sm text-white/50 mt-2 font-medium">{s.label}</p>
-              </div>
+            {stats.map((s, i) => (
+              <motion.div
+                key={s.label}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: i * 0.1, ease }}
+                className="glass-light rounded-xl py-8 px-4"
+              >
+                <p className="text-4xl sm:text-5xl font-serif font-light text-[#00B4D8] glow-text">{s.value}</p>
+                <p className="text-[10px] text-white/40 mt-3 tracking-[0.2em] uppercase font-medium">{s.label}</p>
+              </motion.div>
             ))}
           </motion.div>
         </div>
       </section>
-      <GradientDivider />
+
+      <div className="gradient-divider" />
 
       {/* ========== PARCEIROS ========== */}
-      <section className="relative py-20 sm:py-28 px-6 sm:px-12 lg:px-20 bg-[#061742] overflow-hidden">
-        <HexMeshOverlay />
+      <section className="relative py-28 sm:py-40 px-6 sm:px-12 lg:px-20 bg-[#030B1A] overflow-hidden">
+        <div className="absolute inset-0 noise pointer-events-none" />
         <div className="relative z-10 max-w-6xl mx-auto">
-          <motion.div {...fadeIn} className="text-center mb-16">
-            <p className="text-[#00B4D8] text-xs font-semibold tracking-[0.25em] uppercase mb-4">
+          <motion.div {...fadeUp} className="text-center mb-20">
+            <p className="text-[#00B4D8] text-xs font-medium tracking-[0.3em] uppercase mb-6">
               Parceiros
             </p>
-            <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+            <h2 className="font-serif text-3xl sm:text-5xl font-light text-white tracking-tight">
               Empresas Parceiras
             </h2>
           </motion.div>
 
           <motion.div
-            {...fadeIn}
-            className="flex flex-wrap items-center justify-center gap-6 sm:gap-8"
+            {...fadeUp}
+            className="flex flex-wrap items-center justify-center gap-4 sm:gap-6"
           >
             {partners.map((p) => {
               const inner = (
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#0A2463] border border-[#142D5C] flex items-center justify-center shrink-0">
-                    <span className="text-[#00B4D8] font-bold text-sm">{p.name.charAt(0)}</span>
+                <div className="flex items-center gap-4">
+                  <div className="w-11 h-11 rounded-full bg-[#0A2463] flex items-center justify-center shrink-0">
+                    <span className="text-[#00B4D8] font-semibold text-sm">{p.name.charAt(0)}</span>
                   </div>
                   <div className="text-left">
-                    <p className="text-sm font-bold text-white">{p.name}</p>
-                    <p className="text-xs text-white/40">{p.role}</p>
+                    <p className="text-sm font-medium text-white">{p.name}</p>
+                    <p className="text-xs text-white/30">{p.role}</p>
                   </div>
-                  {p.url && <ExternalLink size={12} className="text-[#00B4D8] ml-1 shrink-0" />}
+                  {p.url && <ExternalLink size={12} className="text-[#00B4D8]/60 ml-1 shrink-0" />}
                 </div>
               );
 
               const cls =
-                'px-5 py-3 rounded-full bg-[#0A2463] border border-[#142D5C] hover:border-[#00B4D8]/40 hover:shadow-[0_0_20px_rgba(0,180,216,0.1)] transition-all duration-300';
+                'px-6 py-4 glass-light rounded-xl hover:border-[#00B4D8]/20 transition-all duration-500';
 
               return p.url ? (
                 <a key={p.name} href={p.url} target="_blank" rel="noopener noreferrer" className={cls}>
@@ -585,32 +625,37 @@ export default function LandingPage() {
           </motion.div>
         </div>
       </section>
-      <GradientDivider />
 
-      {/* ========== LEGADO (full-bleed closing) ========== */}
-      <section className="relative py-36 sm:py-48 px-6 overflow-hidden bg-[#061742]">
-        <HexMeshOverlay />
-        <div className="absolute inset-0 bg-[#0A2463]/75" />
-        {/* Decorative glows */}
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[1000px] h-[400px] bg-[#00B4D8]/[0.03] blur-[150px] rounded-full" />
+      {/* ========== LEGADO — Cinematic closing ========== */}
+      <section className="relative py-40 sm:py-56 px-6 overflow-hidden">
+        <Image
+          src={IMAGES.legacy}
+          alt="Crianças em ambiente de aprendizagem"
+          fill
+          className="object-cover"
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#030B1A] via-[#0A2463]/75 to-[#030B1A]/60" />
+        <div className="absolute inset-0 noise pointer-events-none" />
+
         <div className="relative z-10 max-w-4xl mx-auto text-center">
           <motion.h2
-            {...fadeIn}
-            className="text-3xl sm:text-5xl lg:text-6xl font-black text-white leading-tight mb-8"
+            {...fadeUp}
+            className="font-serif text-4xl sm:text-6xl lg:text-7xl font-light text-white leading-tight mb-10"
           >
             O nosso verdadeiro legado
           </motion.h2>
           <motion.p
-            {...fadeIn}
-            className="text-lg sm:text-xl text-white/70 leading-relaxed max-w-3xl mx-auto mb-12 font-serif italic"
+            {...fadeUp}
+            className="text-lg sm:text-xl text-white/60 leading-relaxed max-w-3xl mx-auto mb-14 font-serif italic"
           >
             O Instituto i10 não entrega apenas um artefato tecnológico — nós transferimos
             capacidade institucional permanente. Ao final de nossos ciclos, as redes de
             ensino alcançam autonomia plena para operar, analisar e evoluir seus sistemas.
           </motion.p>
           <motion.p
-            {...fadeIn}
-            className="text-2xl sm:text-3xl font-bold text-[#00E5A0] glow-text-green"
+            {...fadeUp}
+            className="text-2xl sm:text-3xl font-serif font-light text-[#00E5A0] glow-text-green"
           >
             A Inteligência a Serviço do Humano.
           </motion.p>
@@ -619,30 +664,30 @@ export default function LandingPage() {
 
       {/* ========== FOOTER ========== */}
       <footer className="relative bg-[#030B1A] text-white">
-        <GradientDivider />
-        <div className="py-16 px-6 sm:px-12 lg:px-20">
+        <div className="gradient-divider" />
+        <div className="py-20 px-6 sm:px-12 lg:px-20">
           <div className="max-w-6xl mx-auto">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-8 mb-12">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-8 mb-16">
               <div>
-                <p className="text-2xl font-black tracking-tight">
+                <p className="font-serif text-3xl font-light tracking-tight">
                   Instituto <span className="text-[#00B4D8] glow-text">i10</span>
                 </p>
-                <p className="text-sm text-white/40 mt-1">Educação · Tecnologia · Inovação</p>
+                <p className="text-xs text-white/30 mt-2 tracking-[0.2em] uppercase">Educação · Tecnologia · Inovação</p>
               </div>
               <Link
                 href="/dashboard"
-                className="group inline-flex items-center gap-2 px-6 py-3 rounded-full border border-white/20 text-sm font-medium
-                           hover:bg-gradient-to-r hover:from-[#00B4D8] hover:to-[#00E5A0] hover:text-[#0A2463] hover:border-transparent transition-all duration-300"
+                className="group inline-flex items-center gap-3 px-7 py-3 bg-transparent border border-white/10 text-xs font-medium tracking-[0.15em] uppercase
+                           hover:bg-[#00B4D8] hover:border-[#00B4D8] hover:text-[#030B1A] transition-all duration-500"
               >
                 Painel de Controle
-                <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform duration-300" />
               </Link>
             </div>
 
-            <div className="h-px bg-white/10 mb-8" />
+            <div className="h-px bg-white/[0.06] mb-10" />
 
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs text-white/30">
-              <div className="flex flex-wrap gap-x-6 gap-y-1">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-[11px] text-white/20 tracking-wide">
+              <div className="flex flex-wrap gap-x-8 gap-y-1">
                 <span>Florianópolis, SC — Brasil</span>
                 <span>CNPJ: 05.124.602/0001-74</span>
               </div>

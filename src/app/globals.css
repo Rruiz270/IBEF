@@ -145,6 +145,28 @@
   }
 }
 
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes grain-drift {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-5%, -10%); }
+  20% { transform: translate(-15%, 5%); }
+  30% { transform: translate(7%, -25%); }
+  40% { transform: translate(-5%, 25%); }
+  50% { transform: translate(-15%, 10%); }
+  60% { transform: translate(15%, 0%); }
+  70% { transform: translate(0%, 15%); }
+  80% { transform: translate(3%, 35%); }
+  90% { transform: translate(-10%, 10%); }
+}
+
 /* ============================================
    Estilos base do corpo
    ============================================ */
@@ -304,30 +326,52 @@ button {
   background-image: url('/hex-pattern.svg');
   background-repeat: repeat;
   background-size: 56px 100px;
-  opacity: 1;
 }
 
 /* Gradient divider bar (cyan→green brand signature) */
 .gradient-divider {
-  height: 4px;
+  height: 3px;
   width: 100%;
   background: linear-gradient(90deg, var(--i10-cyan), var(--i10-green-accent));
+  opacity: 0.8;
 }
 
 /* Cyan glow text-shadow */
 .glow-text {
-  text-shadow: 0 0 20px rgba(0, 180, 216, 0.6), 0 0 40px rgba(0, 180, 216, 0.3), 0 0 80px rgba(0, 180, 216, 0.15);
+  text-shadow: 0 0 20px rgba(0, 180, 216, 0.5), 0 0 60px rgba(0, 180, 216, 0.2);
 }
 
 /* Green glow text-shadow */
 .glow-text-green {
-  text-shadow: 0 0 20px rgba(0, 229, 160, 0.6), 0 0 40px rgba(0, 229, 160, 0.3);
+  text-shadow: 0 0 20px rgba(0, 229, 160, 0.5), 0 0 60px rgba(0, 229, 160, 0.2);
 }
 
-/* Cyan glow on hover for interactive elements */
-.glow-hover {
-  transition: text-shadow 0.3s ease;
+/* Film grain noise overlay — premium texture */
+.noise::before {
+  content: "";
+  position: absolute;
+  inset: -50%;
+  width: 200%;
+  height: 200%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+  pointer-events: none;
+  z-index: 1;
+  animation: grain-drift 8s steps(10) infinite;
 }
-.glow-hover:hover {
-  text-shadow: 0 0 20px rgba(0, 180, 216, 0.6), 0 0 40px rgba(0, 180, 216, 0.3);
+
+/* Glassmorphism card */
+.glass {
+  background: rgba(10, 36, 99, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.glass-light {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
