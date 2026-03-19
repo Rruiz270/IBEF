@@ -3,10 +3,9 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useProject } from '@/contexts/ProjectContext';
-import { parseVoiceCommand, type ParsedCommand, type VoiceIntent } from '@/lib/voiceCommandParser';
-import type { TaskStatus, DepartmentId, HiringStatus } from '@/data/types';
+import { parseVoiceCommand, type ParsedCommand } from '@/lib/voiceCommandParser';
+import type { Task, TaskStatus, DepartmentId, HiringStatus } from '@/data/types';
 
-// Explicitly reference the speech types
 /// <reference path="../types/speech.d.ts" />
 
 export type VoiceState = 'idle' | 'listening' | 'processing' | 'success' | 'error';
@@ -45,8 +44,7 @@ export function useVoiceCommands(): VoiceResult & {
   const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isSupported = typeof window !== 'undefined' && !!getSpeechRecognition();
 
-  // Reset state after delay
-  const scheduleReset = useCallback((ms = 3000) => {
+  const scheduleReset = useCallback((ms = 3500) => {
     if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
     resetTimerRef.current = setTimeout(() => {
       setState('idle');
@@ -57,7 +55,12 @@ export function useVoiceCommands(): VoiceResult & {
     }, ms);
   }, []);
 
-  // Execute parsed command
+  // Build a human-readable summary of what was filled
+  function buildSummary(fields: string[]): string {
+    if (fields.length === 0) return '';
+    return ' | ' + fields.join(', ');
+  }
+
   const executeCommand = useCallback(
     (cmd: ParsedCommand) => {
       try {
@@ -67,25 +70,79 @@ export function useVoiceCommands(): VoiceResult & {
               title: cmd.title || 'Nova Tarefa',
               departmentId: (cmd.departmentId || 'tecnologia') as DepartmentId,
               priority: cmd.priority || 'media',
-              status: 'nao_iniciada' as TaskStatus,
+              status: (cmd.status as TaskStatus) || 'nao_iniciada',
             });
-            return `Tarefa "${cmd.title}" criada com sucesso (${id})`;
+
+            // Fill additional fields via updateTask
+            const extras: Partial<Task> = {};
+            const filled: string[] = [];
+
+            if (cmd.dueDate) {
+              extras.dueDate = cmd.dueDate;
+              filled.push(`prazo: ${cmd.dueDate}`);
+            }
+            if (cmd.description) {
+              extras.description = cmd.description;
+            }
+            if (cmd.notes) {
+              extras.notes = cmd.notes;
+            }
+
+            // Track what was set
+            if (cmd.departmentId) filled.push(`dept: ${cmd.departmentId}`);
+            if (cmd.priority && cmd.priority !== 'media') filled.push(`prioridade: ${cmd.priority}`);
+            if (cmd.status && cmd.status !== 'nao_iniciada') filled.push(`status: ${cmd.status.replace('_', ' ')}`);
+
+            if (Object.keys(extras).length > 0) {
+              updateTask(id, extras);
+            }
+
+            return `Tarefa "${cmd.title}" criada${buildSummary(filled)}`;
           }
 
           case 'UPDATE_TASK_STATUS': {
             if (!cmd.matchedTaskId) return `Tarefa "${cmd.title}" nao encontrada`;
-            if (!cmd.status) return 'Status nao reconhecido';
-            updateTask(cmd.matchedTaskId, { status: cmd.status });
             const task = tasks.find((t) => t.id === cmd.matchedTaskId);
-            return `Tarefa "${task?.title}" atualizada para "${cmd.status.replace('_', ' ')}"`;
+            const updates: Partial<Task> = {};
+            const changed: string[] = [];
+
+            if (cmd.status) {
+              updates.status = cmd.status;
+              changed.push(`status → ${cmd.status.replace('_', ' ')}`);
+              // Auto-set progress to 100 if completing
+              if (cmd.status === 'concluida') {
+                updates.progress = 100;
+                updates.completedAt = new Date().toISOString().slice(0, 10);
+              }
+            }
+            if (cmd.priority) {
+              updates.priority = cmd.priority;
+              changed.push(`prioridade → ${cmd.priority}`);
+            }
+            if (cmd.dueDate) {
+              updates.dueDate = cmd.dueDate;
+              changed.push(`prazo → ${cmd.dueDate}`);
+            }
+
+            if (Object.keys(updates).length === 0) {
+              return 'Nenhuma alteracao detectada no comando';
+            }
+
+            updateTask(cmd.matchedTaskId, updates);
+            return `"${task?.title}" atualizada: ${changed.join(', ')}`;
           }
 
           case 'UPDATE_TASK_PROGRESS': {
             if (!cmd.matchedTaskId) return `Tarefa "${cmd.title}" nao encontrada`;
             if (cmd.progress === undefined) return 'Progresso nao reconhecido';
-            updateTask(cmd.matchedTaskId, { progress: cmd.progress });
+            const updates: Partial<Task> = { progress: cmd.progress };
+            if (cmd.progress === 100) {
+              updates.status = 'concluida';
+              updates.completedAt = new Date().toISOString().slice(0, 10);
+            }
+            updateTask(cmd.matchedTaskId, updates);
             const task = tasks.find((t) => t.id === cmd.matchedTaskId);
-            return `Progresso de "${task?.title}" atualizado para ${cmd.progress}%`;
+            return `"${task?.title}" → progresso ${cmd.progress}%`;
           }
 
           case 'DELETE_TASK': {
@@ -101,9 +158,13 @@ export function useVoiceCommands(): VoiceResult & {
               departmentId: (cmd.departmentId || 'tecnologia') as DepartmentId,
               priority: cmd.priority || 'media',
               status: 'aberta',
-              description: '',
+              description: cmd.description || `Criada por voz: "${cmd.raw}"`,
+              ...(cmd.dueDate ? { deadlineDate: cmd.dueDate } : {}),
             });
-            return `Vaga "${cmd.title}" criada com sucesso (${id})`;
+            const filled: string[] = [];
+            if (cmd.departmentId) filled.push(`dept: ${cmd.departmentId}`);
+            if (cmd.dueDate) filled.push(`deadline: ${cmd.dueDate}`);
+            return `Vaga "${cmd.title}" criada${buildSummary(filled)}`;
           }
 
           case 'UPDATE_HIRING_STATUS': {
@@ -111,7 +172,7 @@ export function useVoiceCommands(): VoiceResult & {
             if (!cmd.hiringStatus) return 'Status nao reconhecido';
             updateHiring(cmd.matchedHiringId, { status: cmd.hiringStatus as HiringStatus });
             const hiring = hiringPositions.find((h) => h.id === cmd.matchedHiringId);
-            return `Vaga "${hiring?.title}" atualizada para "${cmd.hiringStatus}"`;
+            return `Vaga "${hiring?.title}" → ${cmd.hiringStatus}`;
           }
 
           case 'ADD_SUBTASK': {
@@ -131,20 +192,30 @@ export function useVoiceCommands(): VoiceResult & {
           }
 
           default:
-            return 'Comando nao reconhecido. Tente novamente.';
+            return cmd.notes || 'Comando nao reconhecido. Tente: "Criar tarefa X no juridico com prioridade alta para amanha"';
         }
       } catch (err) {
-        return `Erro ao executar: ${err instanceof Error ? err.message : 'desconhecido'}`;
+        return `Erro: ${err instanceof Error ? err.message : 'desconhecido'}`;
       }
     },
     [tasks, hiringPositions, addTask, updateTask, deleteTask, addSubtask, addHiring, updateHiring, router],
   );
 
+  // Keep a ref to always-current values for the onend callback
+  const tasksRef = useRef(tasks);
+  const hiringRef = useRef(hiringPositions);
+  const executeRef = useRef(executeCommand);
+  useEffect(() => { tasksRef.current = tasks; }, [tasks]);
+  useEffect(() => { hiringRef.current = hiringPositions; }, [hiringPositions]);
+  useEffect(() => { executeRef.current = executeCommand; }, [executeCommand]);
+
+  // Store final transcript in a ref so onend can read it
+  const finalTranscriptRef = useRef('');
+
   const startListening = useCallback(() => {
     const SR = getSpeechRecognition();
     if (!SR) return;
 
-    // Clean up previous
     if (recognitionRef.current) {
       try { recognitionRef.current.abort(); } catch { /* ignore */ }
     }
@@ -156,6 +227,7 @@ export function useVoiceCommands(): VoiceResult & {
     recognition.interimResults = true;
     recognition.maxAlternatives = 1;
     recognitionRef.current = recognition;
+    finalTranscriptRef.current = '';
 
     setTranscript('');
     setInterimTranscript('');
@@ -174,43 +246,46 @@ export function useVoiceCommands(): VoiceResult & {
           interim += result[0].transcript;
         }
       }
-      if (final) setTranscript(final);
+      if (final) {
+        finalTranscriptRef.current = final;
+        setTranscript(final);
+      }
       setInterimTranscript(interim);
     };
 
     recognition.onend = () => {
-      // Process the final transcript
       setState('processing');
-      setTranscript((prev) => {
-        const finalText = prev || interimTranscript;
-        if (!finalText.trim()) {
-          setState('error');
-          setResultMessage('Nenhuma fala detectada');
-          scheduleReset();
-          return prev;
-        }
 
-        const cmd = parseVoiceCommand(finalText, tasks, hiringPositions);
-        setParsedCommand(cmd);
-        const msg = executeCommand(cmd);
-        setResultMessage(msg);
-
-        if (cmd.intent === 'UNKNOWN') {
-          setState('error');
-        } else {
-          setState('success');
-        }
+      const finalText = finalTranscriptRef.current;
+      if (!finalText.trim()) {
+        setState('error');
+        setResultMessage('Nenhuma fala detectada. Tente novamente.');
         scheduleReset();
-        return prev;
-      });
+        return;
+      }
+
+      setTranscript(finalText);
+      const cmd = parseVoiceCommand(finalText, tasksRef.current, hiringRef.current);
+      setParsedCommand(cmd);
+      const msg = executeRef.current(cmd);
+      setResultMessage(msg);
+
+      if (cmd.intent === 'UNKNOWN') {
+        setState('error');
+      } else {
+        setState('success');
+      }
+      scheduleReset(4000); // slightly longer to read the result
     };
 
     recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
       const msg = event.error === 'no-speech'
         ? 'Nenhuma fala detectada'
         : event.error === 'not-allowed'
-          ? 'Microfone nao permitido'
-          : `Erro: ${event.error}`;
+          ? 'Permissao de microfone negada. Verifique as configuracoes do navegador.'
+          : event.error === 'audio-capture'
+            ? 'Microfone nao encontrado'
+            : `Erro: ${event.error}`;
       setResultMessage(msg);
       setState('error');
       scheduleReset();
@@ -220,10 +295,10 @@ export function useVoiceCommands(): VoiceResult & {
       recognition.start();
     } catch {
       setState('error');
-      setResultMessage('Erro ao iniciar reconhecimento');
+      setResultMessage('Erro ao iniciar reconhecimento de voz');
       scheduleReset();
     }
-  }, [tasks, hiringPositions, executeCommand, scheduleReset, interimTranscript]);
+  }, [scheduleReset]);
 
   const stopListening = useCallback(() => {
     if (recognitionRef.current) {
@@ -231,7 +306,6 @@ export function useVoiceCommands(): VoiceResult & {
     }
   }, []);
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (recognitionRef.current) {
