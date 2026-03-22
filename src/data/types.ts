@@ -75,6 +75,18 @@ export interface Subtask {
   completed: boolean;
 }
 
+/** A file attachment linked to a task or hiring position */
+export interface FileAttachment {
+  id: string;
+  name: string;
+  size: number;        // bytes
+  type: string;        // MIME type
+  entityType: 'task' | 'hiring';
+  entityId: string;
+  departmentId: DepartmentId;
+  uploadedAt: string;  // ISO datetime
+}
+
 /** A single task within a department */
 export interface Task {
   id: string;
@@ -100,6 +112,7 @@ export interface Task {
   progress: number;
   tags: string[];
   subtasks: Subtask[];
+  attachmentIds?: string[];
 }
 
 /** An ETEC project phase */
@@ -198,6 +211,7 @@ export interface HiringPosition {
   filledBy: string | null;
   /** ISO date string - deadline for filling this position */
   deadlineDate?: string;
+  attachmentIds?: string[];
 }
 
 // ---------------------------------------------------------------------------

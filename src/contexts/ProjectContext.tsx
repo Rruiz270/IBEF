@@ -10,8 +10,9 @@ import {
 import type {
   Task, Subtask, TaskStatus, TaskPriority, DepartmentId,
   HiringPosition, HiringStatus, AssociateCompany, CompanyType,
-  Person, PersonRole, ActivityLogEntry,
+  Person, PersonRole, ActivityLogEntry, FileAttachment,
 } from '../data/types';
+import { saveFileBlob, deleteFileBlob } from '../lib/fileStorage';
 import { showBrowserNotification } from '../lib/notifications';
 import { getSyncManager, type SyncStatus, type SyncPullResponse, type SyncMutation } from '../lib/syncManager';
 
@@ -78,6 +79,13 @@ interface ProjectContextType {
   markAllNotificationsRead: () => void;
   unreadCount: number;
 
+  // File attachments
+  fileAttachments: FileAttachment[];
+  addFileAttachment: (meta: Omit<FileAttachment, 'id' | 'uploadedAt'>, blob: Blob) => Promise<string>;
+  removeFileAttachment: (id: string) => void;
+  getAttachmentsForEntity: (entityType: 'task' | 'hiring', entityId: string) => FileAttachment[];
+  getAttachmentsForDepartment: (departmentId: DepartmentId) => FileAttachment[];
+
   // Sync
   syncStatus: SyncStatus;
   triggerFullSync: () => void;
@@ -89,10 +97,18 @@ const ProjectContext = createContext<ProjectContextType | null>(null);
 // Helpers
 // ---------------------------------------------------------------------------
 
-function ensureSubtasks(taskList: Task[]): Task[] {
+function ensureMigration(taskList: Task[]): Task[] {
   return taskList.map((t) => ({
     ...t,
     subtasks: Array.isArray(t.subtasks) ? t.subtasks : [],
+    attachmentIds: Array.isArray(t.attachmentIds) ? t.attachmentIds : [],
+  }));
+}
+
+function ensureHiringMigration(list: HiringPosition[]): HiringPosition[] {
+  return list.map((h) => ({
+    ...h,
+    attachmentIds: Array.isArray(h.attachmentIds) ? h.attachmentIds : [],
   }));
 }
 
@@ -114,12 +130,17 @@ function loadFromStorage<T>(key: string, fallback: T): T {
 export function ProjectProvider({ children }: { children: ReactNode }) {
   // Tasks
   const [tasks, setTasks] = useState<Task[]>(() =>
-    ensureSubtasks(loadFromStorage('i10-tasks', initialTasks))
+    ensureMigration(loadFromStorage('i10-tasks', initialTasks))
   );
 
   // Hiring
   const [hiringPositions, setHiringPositions] = useState<HiringPosition[]>(() =>
-    loadFromStorage('i10-hiring', initialHiring)
+    ensureHiringMigration(loadFromStorage('i10-hiring', initialHiring))
+  );
+
+  // File attachments (metadata only; blobs in IndexedDB)
+  const [fileAttachments, setFileAttachments] = useState<FileAttachment[]>(() =>
+    loadFromStorage('i10-file-attachments', [])
   );
 
   // Companies
@@ -156,6 +177,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
   useEffect(() => { localStorage.setItem('i10-people', JSON.stringify(teamPeople)); }, [teamPeople]);
   useEffect(() => { localStorage.setItem('i10-activity-log', JSON.stringify(activityLog)); }, [activityLog]);
   useEffect(() => { localStorage.setItem('i10-notifications', JSON.stringify(notifications)); }, [notifications]);
+  useEffect(() => { localStorage.setItem('i10-file-attachments', JSON.stringify(fileAttachments)); }, [fileAttachments]);
 
   // ---- Sync: apply incoming pull data ----
   const applyPull = useCallback((data: SyncPullResponse) => {
@@ -438,6 +460,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
         progress: 0,
         tags: [],
         subtasks: [],
+        attachmentIds: [],
       };
       setTasks((prev) => [...prev, newTask]);
       enqueueSync('tasks', 'upsert', id, newTask as unknown as Record<string, unknown>);
@@ -461,6 +484,12 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
   );
 
   const deleteTask = useCallback((taskId: string) => {
+    // Clean up associated file attachments
+    setFileAttachments((prev) => {
+      const toRemove = prev.filter((f) => f.entityType === 'task' && f.entityId === taskId);
+      toRemove.forEach((f) => deleteFileBlob(f.id).catch(() => {}));
+      return prev.filter((f) => !(f.entityType === 'task' && f.entityId === taskId));
+    });
     setTasks((prev) => {
       const task = prev.find((t) => t.id === taskId);
       if (task) {
@@ -561,6 +590,12 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
   }, [logActivity, enqueueSync]);
 
   const deleteHiring = useCallback((id: string) => {
+    // Clean up associated file attachments
+    setFileAttachments((prev) => {
+      const toRemove = prev.filter((f) => f.entityType === 'hiring' && f.entityId === id);
+      toRemove.forEach((f) => deleteFileBlob(f.id).catch(() => {}));
+      return prev.filter((f) => !(f.entityType === 'hiring' && f.entityId === id));
+    });
     setHiringPositions((prev) => {
       const h = prev.find((p) => p.id === id);
       if (h) logActivity({ entityType: 'hiring', entityId: id, entityTitle: h.title, action: 'deleted' });
@@ -629,6 +664,53 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
     });
   }, [logActivity, enqueueSync]);
 
+  // ---- File attachments ----
+  const addFileAttachment = useCallback(async (meta: Omit<FileAttachment, 'id' | 'uploadedAt'>, blob: Blob): Promise<string> => {
+    const id = `file-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+    const attachment: FileAttachment = { ...meta, id, uploadedAt: new Date().toISOString() };
+    await saveFileBlob(id, blob);
+    setFileAttachments((prev) => [...prev, attachment]);
+    // Update parent entity's attachmentIds
+    if (meta.entityType === 'task') {
+      setTasks((prev) => prev.map((t) =>
+        t.id === meta.entityId ? { ...t, attachmentIds: [...(t.attachmentIds || []), id] } : t
+      ));
+    } else {
+      setHiringPositions((prev) => prev.map((h) =>
+        h.id === meta.entityId ? { ...h, attachmentIds: [...(h.attachmentIds || []), id] } : h
+      ));
+    }
+    return id;
+  }, []);
+
+  const removeFileAttachment = useCallback((id: string) => {
+    setFileAttachments((prev) => {
+      const attachment = prev.find((f) => f.id === id);
+      if (attachment) {
+        deleteFileBlob(id).catch(() => {});
+        // Remove from parent entity's attachmentIds
+        if (attachment.entityType === 'task') {
+          setTasks((p) => p.map((t) =>
+            t.id === attachment.entityId ? { ...t, attachmentIds: (t.attachmentIds || []).filter((a) => a !== id) } : t
+          ));
+        } else {
+          setHiringPositions((p) => p.map((h) =>
+            h.id === attachment.entityId ? { ...h, attachmentIds: (h.attachmentIds || []).filter((a) => a !== id) } : h
+          ));
+        }
+      }
+      return prev.filter((f) => f.id !== id);
+    });
+  }, []);
+
+  const getAttachmentsForEntity = useCallback((entityType: 'task' | 'hiring', entityId: string) => {
+    return fileAttachments.filter((f) => f.entityType === entityType && f.entityId === entityId);
+  }, [fileAttachments]);
+
+  const getAttachmentsForDepartment = useCallback((departmentId: DepartmentId) => {
+    return fileAttachments.filter((f) => f.departmentId === departmentId);
+  }, [fileAttachments]);
+
   // ---- Notifications ----
   const markNotificationRead = useCallback((id: string) => {
     setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
@@ -648,6 +730,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
         associateCompanies, updateCompany, addCompany, deleteCompany,
         teamPeople, updatePerson, addPerson, deletePerson,
         activityLog,
+        fileAttachments, addFileAttachment, removeFileAttachment, getAttachmentsForEntity, getAttachmentsForDepartment,
         notifications, markNotificationRead, markAllNotificationsRead, unreadCount,
         syncStatus, triggerFullSync,
       }}

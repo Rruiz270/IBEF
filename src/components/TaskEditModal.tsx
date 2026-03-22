@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { X, Plus, Trash2, CheckSquare, Square, Search, Tag } from 'lucide-react';
+import { X, Plus, Trash2, CheckSquare, Square, Search, Tag, Paperclip } from 'lucide-react';
 import { useProject } from '@/contexts/ProjectContext';
 import { people, departments } from '@/data/projectData';
 import type { TaskStatus, TaskPriority, DepartmentId } from '@/data/types';
+import FileUpload from './FileUpload';
 
 // ---------------------------------------------------------------------------
 // Mapas de labels (Português com acentos)
@@ -643,6 +644,26 @@ export default function TaskEditModal({ taskId, onClose }: TaskEditModalProps) {
               rows={4}
               className={`${inputClass} resize-y`}
               placeholder="Observações, contexto ou lembretes..."
+            />
+          </div>
+
+          {/* Arquivos e Documentos */}
+          <div>
+            <label className={labelClass}>
+              <span className="inline-flex items-center gap-1.5">
+                <Paperclip size={12} />
+                Arquivos e Documentos
+                {(currentTask.attachmentIds?.length ?? 0) > 0 && (
+                  <span className="px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700 text-[10px] font-bold">
+                    {currentTask.attachmentIds?.length}
+                  </span>
+                )}
+              </span>
+            </label>
+            <FileUpload
+              entityType="task"
+              entityId={currentTask.id}
+              departmentId={currentTask.departmentId}
             />
           </div>
 

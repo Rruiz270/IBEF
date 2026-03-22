@@ -13,6 +13,7 @@ import {
   Scale,
   Users,
   GitMerge,
+  FolderOpen,
   Menu,
   X,
   ChevronLeft,
@@ -40,6 +41,7 @@ const navItems: NavItem[] = [
   { label: 'Santa Catarina', href: '/santa-catarina', icon: MapPin },
   { label: 'Jurídico', href: '/juridico', icon: Scale },
   { label: 'Associados', href: '/associados', icon: Users },
+  { label: 'Documentos', href: '/documentos', icon: FolderOpen },
 ];
 
 function I10Logo({ collapsed }: { collapsed: boolean }) {

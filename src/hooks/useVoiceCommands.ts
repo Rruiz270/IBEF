@@ -159,6 +159,7 @@ export function useVoiceCommands(): VoiceResult & {
               priority: cmd.priority || 'media',
               status: 'aberta',
               description: cmd.description || `Criada por voz: "${cmd.raw}"`,
+              attachmentIds: [],
               ...(cmd.dueDate ? { deadlineDate: cmd.dueDate } : {}),
             });
             const filled: string[] = [];

@@ -20,6 +20,7 @@ import {
   Trash2,
   X,
   ExternalLink,
+  Paperclip,
 } from 'lucide-react';
 import { departments, daysUntil } from '../../data/projectData';
 import { useProject } from '../../contexts/ProjectContext';
@@ -31,6 +32,7 @@ import type {
   AssociateCompany,
   CompanyType,
 } from '../../data/types';
+import FileUpload from '../../components/FileUpload';
 
 // ---------------------------------------------------------------------------
 // Constantes de configuração
@@ -401,6 +403,7 @@ export default function ContratacoesPage() {
         status: hiringForm.status,
         priority: hiringForm.priority,
         deadlineDate: hiringForm.deadlineDate || undefined,
+        attachmentIds: [],
       });
     }
 
@@ -879,6 +882,23 @@ export default function ContratacoesPage() {
               className={`${inputClasses} resize-none`}
             />
           </div>
+
+          {/* Documentos - only when editing existing position */}
+          {hiringEditingId && (
+            <div>
+              <label className={labelClasses}>
+                <span className="inline-flex items-center gap-1.5">
+                  <Paperclip size={12} />
+                  Documentos (CVs, etc.)
+                </span>
+              </label>
+              <FileUpload
+                entityType="hiring"
+                entityId={hiringEditingId}
+                departmentId={hiringForm.departmentId}
+              />
+            </div>
+          )}
 
           {/* Ações */}
           <div className="flex items-center justify-end gap-3 pt-3 border-t border-white/5">

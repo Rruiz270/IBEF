@@ -955,13 +955,16 @@ function TimelineGridRow({
   index,
   allTasks,
   onTaskClick,
+  onTaskDoubleClick,
 }: {
   department: Department;
   selectedYear: number;
   index: number;
   allTasks: Task[];
   onTaskClick: (taskId: string, rect: { top: number; left: number; width: number; height: number }) => void;
+  onTaskDoubleClick: (taskId: string) => void;
 }) {
+  const clickTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const yearStart = `${selectedYear}-01-01`;
   const yearEnd = `${selectedYear}-12-31`;
   const quarters = YEAR_QUARTERS[selectedYear];
@@ -1076,13 +1079,25 @@ function TimelineGridRow({
               }}
               title={`${task.title} - ${task.progress}%`}
               onClick={(e) => {
+                if (clickTimerRef.current) {
+                  clearTimeout(clickTimerRef.current);
+                  clickTimerRef.current = null;
+                  return;
+                }
                 const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-                onTaskClick(task.id, {
-                  top: rect.top,
-                  left: rect.left,
-                  width: rect.width,
-                  height: rect.height,
-                });
+                const capturedRect = { top: rect.top, left: rect.left, width: rect.width, height: rect.height };
+                const capturedId = task.id;
+                clickTimerRef.current = setTimeout(() => {
+                  clickTimerRef.current = null;
+                  onTaskClick(capturedId, capturedRect);
+                }, 250);
+              }}
+              onDoubleClick={() => {
+                if (clickTimerRef.current) {
+                  clearTimeout(clickTimerRef.current);
+                  clickTimerRef.current = null;
+                }
+                onTaskDoubleClick(task.id);
               }}
             >
               {/* Progress fill */}
@@ -1216,6 +1231,12 @@ export default function TimelinePage() {
 
   // Handler for opening edit modal from popover
   const handleOpenEditModal = useCallback((taskId: string) => {
+    setEditingTaskId(taskId);
+  }, []);
+
+  // Handler for double-click on task bar — open edit modal directly
+  const handleTaskDoubleClick = useCallback((taskId: string) => {
+    setPopoverTask(null);
     setEditingTaskId(taskId);
   }, []);
 
@@ -1628,6 +1649,7 @@ export default function TimelinePage() {
               index={idx}
               allTasks={filteredTasks}
               onTaskClick={handleTaskBarClick}
+              onTaskDoubleClick={handleTaskDoubleClick}
             />
           ))}
 
