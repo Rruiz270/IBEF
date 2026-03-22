@@ -664,6 +664,7 @@ export default function TaskEditModal({ taskId, onClose }: TaskEditModalProps) {
               entityType="task"
               entityId={currentTask.id}
               departmentId={currentTask.departmentId}
+              light
             />
           </div>
 
