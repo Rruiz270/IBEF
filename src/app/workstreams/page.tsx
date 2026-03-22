@@ -31,11 +31,15 @@ import {
   Plus,
   LayoutGrid,
   List,
+  Paperclip,
+  FolderOpen,
 } from 'lucide-react';
 import { departments, people, milestones } from '../../data/projectData';
 import { useProject } from '../../contexts/ProjectContext';
 import TaskEditModal from '../../components/TaskEditModal';
 import KanbanBoard from '../../components/kanban/KanbanBoard';
+import FileUpload from '../../components/FileUpload';
+import { formatFileSize, getFileIcon, downloadFile } from '../../lib/fileStorage';
 import type { Task, Department, DepartmentId, TaskStatus, Person } from '../../data/types';
 
 // ---------------------------------------------------------------------------
@@ -202,6 +206,9 @@ function StatusStackedBar({ taskList }: { taskList: Task[] }) {
 
 function WorkstreamTaskCard({ task, allTasks, onEdit }: { task: Task; allTasks: Task[]; onEdit?: (taskId: string) => void }) {
   const [notesOpen, setNotesOpen] = useState(false);
+  const [filesOpen, setFilesOpen] = useState(false);
+  const { getAttachmentsForEntity } = useProject();
+  const taskAttachments = getAttachmentsForEntity('task', task.id);
   const status = STATUS_CONFIG[task.status];
   const priority = PRIORITY_CONFIG[task.priority];
   const days = daysRemaining(task.dueDate);
@@ -316,7 +323,7 @@ function WorkstreamTaskCard({ task, allTasks, onEdit }: { task: Task; allTasks: 
       {task.notes && (
         <div className="mt-3 border-t border-white/[0.04] pt-2">
           <button
-            onClick={() => setNotesOpen(!notesOpen)}
+            onClick={(e) => { e.stopPropagation(); setNotesOpen(!notesOpen); }}
             className="flex items-center gap-1 text-xs text-white/40 hover:text-white/60 transition-colors"
           >
             <StickyNote size={12} />
@@ -338,6 +345,42 @@ function WorkstreamTaskCard({ task, allTasks, onEdit }: { task: Task; allTasks: 
           </AnimatePresence>
         </div>
       )}
+
+      {/* Row 6: Files (collapsible) */}
+      <div className={`${task.notes ? '' : 'mt-3'} border-t border-white/[0.04] pt-2`}>
+        <button
+          onClick={(e) => { e.stopPropagation(); setFilesOpen(!filesOpen); }}
+          className="flex items-center gap-1 text-xs text-white/40 hover:text-white/60 transition-colors"
+        >
+          <Paperclip size={12} />
+          <span>Arquivos</span>
+          {taskAttachments.length > 0 && (
+            <span className="px-1.5 py-0.5 rounded-full bg-[#00B4D8]/15 text-[#00B4D8] text-[9px] font-bold">
+              {taskAttachments.length}
+            </span>
+          )}
+          {filesOpen ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+        </button>
+        <AnimatePresence>
+          {filesOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="overflow-hidden mt-2"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <FileUpload
+                entityType="task"
+                entityId={task.id}
+                departmentId={task.departmentId}
+                compact
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </motion.div>
   );
 }
@@ -368,6 +411,9 @@ function WorkstreamItem({
   onAddTask?: () => void;
 }) {
   const DeptIcon = ICON_MAP[dept.icon] || ListChecks;
+  const [deptFilesOpen, setDeptFilesOpen] = useState(false);
+  const { getAttachmentsForDepartment } = useProject();
+  const deptAttachments = getAttachmentsForDepartment(dept.id as DepartmentId);
 
   // Filter tasks
   const filteredTasks = useMemo(() => {
@@ -538,6 +584,81 @@ function WorkstreamItem({
                   Nenhuma tarefa encontrada com os filtros selecionados.
                 </p>
               )}
+
+              {/* Department files section */}
+              <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
+                <button
+                  onClick={() => setDeptFilesOpen(!deptFilesOpen)}
+                  className="w-full flex items-center gap-2 px-4 py-3 hover:bg-white/[0.03] transition-colors"
+                >
+                  <FolderOpen size={14} style={{ color: dept.color }} />
+                  <span className="text-xs font-medium text-white/60 flex-1 text-left">
+                    Documentos do Departamento
+                  </span>
+                  {deptAttachments.length > 0 && (
+                    <span className="px-1.5 py-0.5 rounded-full text-[9px] font-bold" style={{ backgroundColor: dept.color + '20', color: dept.color }}>
+                      {deptAttachments.length}
+                    </span>
+                  )}
+                  <motion.div
+                    animate={{ rotate: deptFilesOpen ? 180 : 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="text-white/30"
+                  >
+                    <ChevronDown size={14} />
+                  </motion.div>
+                </button>
+                <AnimatePresence>
+                  {deptFilesOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3, ease: 'easeInOut' }}
+                      className="overflow-hidden"
+                    >
+                      <div className="px-4 pb-4 pt-1 border-t border-white/[0.04]">
+                        {deptAttachments.length > 0 ? (
+                          <div className="space-y-1.5 mb-3">
+                            {deptAttachments.map((file) => (
+                              <div
+                                key={file.id}
+                                className="flex items-center gap-2 rounded-lg bg-white/[0.03] border border-white/5 px-3 py-2"
+                              >
+                                <span className="text-sm shrink-0" aria-hidden>
+                                  {getFileIcon(file.type, file.name)}
+                                </span>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-xs text-white/70 truncate">{file.name}</p>
+                                  <p className="text-[10px] text-white/30">
+                                    {formatFileSize(file.size)}
+                                    {' · '}
+                                    {file.entityType === 'task' ? 'Tarefa' : 'Vaga'}
+                                  </p>
+                                </div>
+                                <button
+                                  onClick={() => downloadFile(file.id, file.name)}
+                                  className="shrink-0 p-1.5 rounded-md hover:bg-white/10 text-white/30 hover:text-[#00B4D8] transition-colors"
+                                  title="Baixar"
+                                >
+                                  <ArrowUpRight size={14} />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-xs text-white/25 text-center py-3">
+                            Nenhum arquivo neste departamento ainda.
+                          </p>
+                        )}
+                        <p className="text-[10px] text-white/25 mt-1">
+                          Anexe arquivos diretamente em cada tarefa acima usando o botão &quot;Arquivos&quot;.
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
 
               {/* Add new task button */}
               {onAddTask && (

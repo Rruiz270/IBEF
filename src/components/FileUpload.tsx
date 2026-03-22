@@ -10,9 +10,11 @@ interface FileUploadProps {
   entityType: 'task' | 'hiring';
   entityId: string;
   departmentId: DepartmentId;
+  /** Compact mode shows a smaller drop zone */
+  compact?: boolean;
 }
 
-export default function FileUpload({ entityType, entityId, departmentId }: FileUploadProps) {
+export default function FileUpload({ entityType, entityId, departmentId, compact }: FileUploadProps) {
   const { getAttachmentsForEntity, addFileAttachment, removeFileAttachment } = useProject();
   const [dragOver, setDragOver] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -67,20 +69,23 @@ export default function FileUpload({ entityType, entityId, departmentId }: FileU
         onDragLeave={handleDragLeave}
         onClick={() => inputRef.current?.click()}
         className={`
-          relative flex flex-col items-center justify-center gap-2 p-4 rounded-lg border-2 border-dashed cursor-pointer transition-colors
+          relative flex items-center justify-center cursor-pointer transition-colors border-2 border-dashed rounded-lg
+          ${compact ? 'flex-row gap-2 px-3 py-2' : 'flex-col gap-2 p-4'}
           ${dragOver
             ? 'border-[#00B4D8] bg-[#00B4D8]/10'
             : 'border-white/15 bg-white/[0.02] hover:border-white/25 hover:bg-white/[0.04]'
           }
         `}
       >
-        <Upload size={20} className={dragOver ? 'text-[#00B4D8]' : 'text-white/30'} />
-        <p className="text-xs text-white/40 text-center">
-          {uploading ? 'Enviando...' : 'Arraste arquivos ou clique para selecionar'}
+        <Upload size={compact ? 14 : 20} className={dragOver ? 'text-[#00B4D8]' : 'text-white/30'} />
+        <p className={`text-white/40 text-center ${compact ? 'text-[10px]' : 'text-xs'}`}>
+          {uploading ? 'Enviando...' : compact ? 'Arraste ou clique para anexar' : 'Arraste arquivos ou clique para selecionar'}
         </p>
-        <p className="text-[10px] text-white/25">
-          PDF, DOC, XLS, PNG, JPG, CSV, TXT, ZIP &middot; Max 10MB
-        </p>
+        {!compact && (
+          <p className="text-[10px] text-white/25">
+            PDF, DOC, XLS, PNG, JPG, CSV, TXT, ZIP &middot; Max 10MB
+          </p>
+        )}
         <input
           ref={inputRef}
           type="file"
