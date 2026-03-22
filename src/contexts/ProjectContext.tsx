@@ -680,28 +680,81 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
         h.id === meta.entityId ? { ...h, attachmentIds: [...(h.attachmentIds || []), id] } : h
       ));
     }
+    // Resolve entity title for notification
+    const entityTitle = meta.entityType === 'task'
+      ? tasks.find((t) => t.id === meta.entityId)?.title ?? 'Tarefa'
+      : hiringPositions.find((h) => h.id === meta.entityId)?.title ?? 'Vaga';
+    logActivity({
+      entityType: meta.entityType === 'task' ? 'task' : 'hiring',
+      entityId: meta.entityId,
+      entityTitle,
+      action: 'updated',
+      field: 'arquivo',
+      newValue: meta.name,
+    });
+    setNotifications((prev) => [{
+      id: `notif-file-add-${id}`,
+      type: 'info' as const,
+      title: 'Documento Anexado',
+      message: `"${meta.name}" anexado a ${entityTitle}`,
+      entityId: meta.entityId,
+      entityType: meta.entityType === 'task' ? 'task' : 'hiring',
+      timestamp: new Date().toISOString(),
+      read: false,
+    }, ...prev]);
+    showBrowserNotification({
+      title: 'Documento Anexado',
+      body: `"${meta.name}" foi anexado a "${entityTitle}".`,
+      url: '/documentos',
+    });
     return id;
-  }, []);
+  }, [tasks, hiringPositions, logActivity]);
 
   const removeFileAttachment = useCallback((id: string) => {
-    setFileAttachments((prev) => {
-      const attachment = prev.find((f) => f.id === id);
-      if (attachment) {
-        deleteFileBlob(id).catch(() => {});
-        // Remove from parent entity's attachmentIds
-        if (attachment.entityType === 'task') {
-          setTasks((p) => p.map((t) =>
-            t.id === attachment.entityId ? { ...t, attachmentIds: (t.attachmentIds || []).filter((a) => a !== id) } : t
-          ));
-        } else {
-          setHiringPositions((p) => p.map((h) =>
-            h.id === attachment.entityId ? { ...h, attachmentIds: (h.attachmentIds || []).filter((a) => a !== id) } : h
-          ));
-        }
+    // Find attachment info before removing
+    const attachment = fileAttachments.find((f) => f.id === id);
+    if (attachment) {
+      deleteFileBlob(id).catch(() => {});
+      // Remove from parent entity's attachmentIds
+      if (attachment.entityType === 'task') {
+        setTasks((p) => p.map((t) =>
+          t.id === attachment.entityId ? { ...t, attachmentIds: (t.attachmentIds || []).filter((a) => a !== id) } : t
+        ));
+      } else {
+        setHiringPositions((p) => p.map((h) =>
+          h.id === attachment.entityId ? { ...h, attachmentIds: (h.attachmentIds || []).filter((a) => a !== id) } : h
+        ));
       }
-      return prev.filter((f) => f.id !== id);
-    });
-  }, []);
+      // Notification
+      const entityTitle = attachment.entityType === 'task'
+        ? tasks.find((t) => t.id === attachment.entityId)?.title ?? 'Tarefa'
+        : hiringPositions.find((h) => h.id === attachment.entityId)?.title ?? 'Vaga';
+      logActivity({
+        entityType: attachment.entityType === 'task' ? 'task' : 'hiring',
+        entityId: attachment.entityId,
+        entityTitle,
+        action: 'updated',
+        field: 'arquivo removido',
+        newValue: attachment.name,
+      });
+      setNotifications((prev) => [{
+        id: `notif-file-rm-${id}`,
+        type: 'info' as const,
+        title: 'Documento Removido',
+        message: `"${attachment.name}" removido de ${entityTitle}`,
+        entityId: attachment.entityId,
+        entityType: attachment.entityType === 'task' ? 'task' : 'hiring',
+        timestamp: new Date().toISOString(),
+        read: false,
+      }, ...prev]);
+      showBrowserNotification({
+        title: 'Documento Removido',
+        body: `"${attachment.name}" foi removido de "${entityTitle}".`,
+        url: '/documentos',
+      });
+    }
+    setFileAttachments((prev) => prev.filter((f) => f.id !== id));
+  }, [fileAttachments, tasks, hiringPositions, logActivity]);
 
   const getAttachmentsForEntity = useCallback((entityType: 'task' | 'hiring', entityId: string) => {
     return fileAttachments.filter((f) => f.entityType === entityType && f.entityId === entityId);
