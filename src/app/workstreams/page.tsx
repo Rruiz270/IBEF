@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback, useEffect, Suspense } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -213,6 +213,7 @@ function WorkstreamTaskCard({ task, allTasks, onEdit }: { task: Task; allTasks: 
   const priority = PRIORITY_CONFIG[task.priority];
   const days = daysRemaining(task.dueDate);
   const StatusIcon = status.icon;
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const depTitles = task.dependencies
     .map((depId) => allTasks.find((t) => t.id === depId)?.title ?? depId)
@@ -224,19 +225,43 @@ function WorkstreamTaskCard({ task, allTasks, onEdit }: { task: Task; allTasks: 
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
-      onClick={() => onEdit?.(task.id)}
-      className={`bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 hover:bg-white/[0.05] transition-colors ${onEdit ? 'cursor-pointer' : ''}`}
+      className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 hover:bg-white/[0.05] transition-colors"
     >
       {/* Row 1: Title + Status + Priority */}
       <div className="flex flex-wrap items-start justify-between gap-2 mb-3">
-        <h4 className="text-sm font-semibold text-white flex-1 min-w-0">{task.title}</h4>
+        <h4
+          className={`text-sm font-semibold text-white flex-1 min-w-0 ${onEdit ? 'cursor-pointer hover:text-[#00B4D8] transition-colors' : ''}`}
+          onClick={() => onEdit?.(task.id)}
+        >
+          {task.title}
+        </h4>
         <div className="flex items-center gap-2 shrink-0">
+          {/* Attach button */}
+          <button
+            onClick={(e) => { e.stopPropagation(); setFilesOpen(!filesOpen); }}
+            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium transition-colors ${
+              filesOpen || taskAttachments.length > 0
+                ? 'bg-amber-500/15 text-amber-400 hover:bg-amber-500/25'
+                : 'bg-white/[0.06] text-white/40 hover:bg-white/10 hover:text-white/60'
+            }`}
+          >
+            <Paperclip size={10} />
+            Anexar
+            {taskAttachments.length > 0 && (
+              <span className="px-1 rounded-full bg-amber-500/20 text-amber-300 text-[9px] font-bold">
+                {taskAttachments.length}
+              </span>
+            )}
+          </button>
           {/* Edit badge */}
           {onEdit && (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#00B4D8]/10 text-[#00B4D8] text-[10px] font-medium">
+            <button
+              onClick={() => onEdit(task.id)}
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#00B4D8]/10 text-[#00B4D8] text-[10px] font-medium hover:bg-[#00B4D8]/20 transition-colors"
+            >
               <Pencil size={10} />
               Editar
-            </span>
+            </button>
           )}
           {/* Priority dots */}
           <div className="flex items-center gap-0.5" title={`Prioridade: ${priority.label}`}>
@@ -346,41 +371,33 @@ function WorkstreamTaskCard({ task, allTasks, onEdit }: { task: Task; allTasks: 
         </div>
       )}
 
-      {/* Row 6: Files (collapsible) */}
-      <div className={`${task.notes ? '' : 'mt-3'} border-t border-white/[0.04] pt-2`}>
-        <button
-          onClick={(e) => { e.stopPropagation(); setFilesOpen(!filesOpen); }}
-          className="flex items-center gap-1 text-xs text-white/40 hover:text-white/60 transition-colors"
-        >
-          <Paperclip size={12} />
-          <span>Arquivos</span>
-          {taskAttachments.length > 0 && (
-            <span className="px-1.5 py-0.5 rounded-full bg-[#00B4D8]/15 text-[#00B4D8] text-[9px] font-bold">
-              {taskAttachments.length}
-            </span>
-          )}
-          {filesOpen ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
-        </button>
-        <AnimatePresence>
-          {filesOpen && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="overflow-hidden mt-2"
-              onClick={(e) => e.stopPropagation()}
-            >
+      {/* Row 6: File upload area (expanded via Anexar button) */}
+      <AnimatePresence>
+        {filesOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25, ease: 'easeInOut' }}
+            className="overflow-hidden"
+          >
+            <div className="mt-3 border-t border-white/[0.06] pt-3" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center gap-2 mb-2">
+                <Paperclip size={12} className="text-amber-400" />
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-white/40">
+                  Arquivos da Tarefa
+                </span>
+              </div>
               <FileUpload
                 entityType="task"
                 entityId={task.id}
                 departmentId={task.departmentId}
                 compact
               />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
@@ -652,7 +669,7 @@ function WorkstreamItem({
                           </p>
                         )}
                         <p className="text-[10px] text-white/25 mt-1">
-                          Anexe arquivos diretamente em cada tarefa acima usando o botão &quot;Arquivos&quot;.
+                          Clique em &quot;Anexar&quot; em cada tarefa acima para adicionar arquivos.
                         </p>
                       </div>
                     </motion.div>
