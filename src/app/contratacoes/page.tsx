@@ -21,6 +21,7 @@ import {
   X,
   ExternalLink,
   Paperclip,
+  UserCheck,
 } from 'lucide-react';
 import { departments, daysUntil } from '../../data/projectData';
 import { useProject } from '../../contexts/ProjectContext';
@@ -153,6 +154,7 @@ interface HiringFormData {
   status: HiringStatus;
   priority: TaskPriority;
   deadlineDate: string;
+  candidateNotes: string;
 }
 
 interface CompanyFormData {
@@ -171,6 +173,7 @@ const defaultHiringForm: HiringFormData = {
   status: 'aberta',
   priority: 'media',
   deadlineDate: '',
+  candidateNotes: '',
 };
 
 const defaultCompanyForm: CompanyFormData = {
@@ -378,6 +381,7 @@ export default function ContratacoesPage() {
       status: pos.status,
       priority: pos.priority,
       deadlineDate: pos.deadlineDate ?? '',
+      candidateNotes: pos.candidateNotes ?? '',
     });
     setHiringEditingId(pos.id);
     setHiringModalOpen(true);
@@ -394,6 +398,7 @@ export default function ContratacoesPage() {
         status: hiringForm.status,
         priority: hiringForm.priority,
         deadlineDate: hiringForm.deadlineDate || undefined,
+        candidateNotes: hiringForm.candidateNotes.trim(),
       });
     } else {
       addHiring({
@@ -404,6 +409,7 @@ export default function ContratacoesPage() {
         priority: hiringForm.priority,
         deadlineDate: hiringForm.deadlineDate || undefined,
         attachmentIds: [],
+        candidateNotes: hiringForm.candidateNotes.trim(),
       });
     }
 
@@ -570,7 +576,8 @@ export default function ContratacoesPage() {
                 key={position.id}
                 variants={itemVariants}
                 whileHover={{ y: -3, transition: { duration: 0.2 } }}
-                className="relative group rounded-xl overflow-hidden bg-[#0A2463]/60 border border-white/5 hover:border-white/10 hover:shadow-lg transition-all duration-200"
+                onClick={() => openEditHiring(position)}
+                className="relative group rounded-xl overflow-hidden bg-[#0A2463]/60 border border-white/5 hover:border-white/10 hover:shadow-lg transition-all duration-200 cursor-pointer"
               >
                 {/* Barra de acento superior com cor do departamento */}
                 <div className="h-1" style={{ backgroundColor: deptColor }} />
@@ -578,14 +585,14 @@ export default function ContratacoesPage() {
                 {/* Botões de ação (visíveis no hover) */}
                 <div className="absolute top-3 right-3 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
                   <button
-                    onClick={() => openEditHiring(position)}
+                    onClick={(e) => { e.stopPropagation(); openEditHiring(position); }}
                     className="w-7 h-7 rounded-lg bg-white/10 hover:bg-[#00B4D8]/30 flex items-center justify-center transition-colors"
                     title="Editar vaga"
                   >
                     <Pencil size={13} className="text-white/70" />
                   </button>
                   <button
-                    onClick={() => setDeleteTarget({ type: 'hiring', id: position.id, name: position.title })}
+                    onClick={(e) => { e.stopPropagation(); setDeleteTarget({ type: 'hiring', id: position.id, name: position.title }); }}
                     className="w-7 h-7 rounded-lg bg-white/10 hover:bg-red-500/30 flex items-center justify-center transition-colors"
                     title="Excluir vaga"
                   >
@@ -625,6 +632,16 @@ export default function ContratacoesPage() {
                     {position.description}
                   </p>
 
+                  {/* Candidato potencial */}
+                  {position.candidateNotes && (
+                    <div className="flex items-start gap-1.5 px-2 py-1.5 rounded-lg bg-emerald-500/5 border border-emerald-500/10">
+                      <UserCheck size={12} className="text-emerald-400 shrink-0 mt-0.5" />
+                      <p className="text-[10px] text-emerald-300/70 leading-relaxed line-clamp-2">
+                        {position.candidateNotes}
+                      </p>
+                    </div>
+                  )}
+
                   {/* Prazo para Contratar e Contagem Regressiva */}
                   <div className="pt-2 border-t border-white/5 space-y-2">
                     {/* Data de abertura */}
@@ -663,6 +680,22 @@ export default function ContratacoesPage() {
                             : `Atrasado por ${Math.abs(deadlineDays)} dia${Math.abs(deadlineDays) !== 1 ? 's' : ''}`}
                       </div>
                     )}
+                  </div>
+
+                  {/* Indicador de documentos e CTA */}
+                  <div className="pt-2 border-t border-white/5 flex items-center justify-between">
+                    <div className="flex items-center gap-1.5">
+                      <Paperclip size={12} className="text-white/25" />
+                      <span className="text-[10px] text-white/35">
+                        {(position.attachmentIds?.length ?? 0) > 0
+                          ? `${position.attachmentIds!.length} documento${position.attachmentIds!.length !== 1 ? 's' : ''}`
+                          : 'Nenhum documento'
+                        }
+                      </span>
+                    </div>
+                    <span className="text-[10px] text-[#00B4D8]/60 font-medium group-hover:text-[#00B4D8] transition-colors">
+                      Clique para editar &rarr;
+                    </span>
                   </div>
                 </div>
               </motion.div>
@@ -883,13 +916,30 @@ export default function ContratacoesPage() {
             />
           </div>
 
+          {/* Candidato Potencial */}
+          <div>
+            <label className={labelClasses}>
+              <span className="inline-flex items-center gap-1.5">
+                <UserCheck size={12} />
+                Candidato Potencial / Observações
+              </span>
+            </label>
+            <textarea
+              value={hiringForm.candidateNotes}
+              onChange={(e) => setHiringForm((f) => ({ ...f, candidateNotes: e.target.value }))}
+              placeholder="Nome do candidato, qualificações, status da entrevista, potencial..."
+              rows={3}
+              className={`${inputClasses} resize-none`}
+            />
+          </div>
+
           {/* Documentos - only when editing existing position */}
           {hiringEditingId && (
             <div>
               <label className={labelClasses}>
                 <span className="inline-flex items-center gap-1.5">
                   <Paperclip size={12} />
-                  Documentos (CVs, etc.)
+                  Documentos (CVs, Portfólios, etc.)
                 </span>
               </label>
               <FileUpload

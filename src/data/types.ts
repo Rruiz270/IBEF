@@ -212,6 +212,8 @@ export interface HiringPosition {
   /** ISO date string - deadline for filling this position */
   deadlineDate?: string;
   attachmentIds?: string[];
+  /** Free-text notes about potential candidates */
+  candidateNotes?: string;
 }
 
 // ---------------------------------------------------------------------------
