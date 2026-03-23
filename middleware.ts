@@ -1,11 +1,15 @@
-import { NextRequest, NextResponse } from "next/server";
-import { auth } from "./auth";
+import NextAuth from "next-auth";
+import { authConfig } from "./auth.config";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+
+// Use edge-compatible config for middleware (no DB/bcrypt)
+const { auth } = NextAuth(authConfig);
 
 const API_SECRET = process.env.API_SECRET;
-
 const PUBLIC_PATHS = ["/", "/login"];
 
-export default async function middleware(req: NextRequest) {
+export default auth((req: NextRequest & { auth: unknown }) => {
   const { pathname } = req.nextUrl;
 
   // Always allow NextAuth internal routes
@@ -27,21 +31,20 @@ export default async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // Public paths: allow through
+  // Public paths
   if (PUBLIC_PATHS.includes(pathname)) {
     return NextResponse.next();
   }
 
-  // Protected paths: check session
-  const session = await auth();
-  if (!session) {
+  // Protected: require session
+  if (!(req as { auth: unknown }).auth) {
     const loginUrl = new URL("/login", req.url);
     loginUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
   return NextResponse.next();
-}
+});
 
 export const config = {
   matcher: [

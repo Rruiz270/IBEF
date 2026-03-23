@@ -1,8 +1,11 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { sql } from "@vercel/postgres";
+import bcrypt from "bcryptjs";
+import { authConfig } from "./auth.config";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   providers: [
     Credentials({
       credentials: {
@@ -21,8 +24,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const user = result.rows[0];
         if (!user) return null;
 
-        // Use dynamic import to avoid Edge runtime issues with bcryptjs
-        const bcrypt = await import("bcryptjs");
         const valid = await bcrypt.compare(
           credentials.password as string,
           user.password_hash
@@ -39,29 +40,4 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
-  callbacks: {
-    jwt({ token, user }) {
-      if (user) {
-        token.role = (user as { role?: string }).role;
-        token.departmentId = (user as { departmentId?: string | null }).departmentId;
-      }
-      return token;
-    },
-    session({ session, token }) {
-      if (session.user) {
-        session.user.role = token.role as string | undefined;
-        session.user.departmentId = token.departmentId as string | null | undefined;
-        session.user.id = token.sub ?? "";
-      }
-      return session;
-    },
-  },
-  pages: {
-    signIn: "/login",
-  },
-  session: {
-    strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60,
-  },
-  trustHost: true,
 });
