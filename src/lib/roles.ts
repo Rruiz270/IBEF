@@ -29,7 +29,7 @@ export function canAccessPage(role: string | undefined, page: string): boolean {
   if (alwaysAllowed.some((p) => page.startsWith(p))) return true;
 
   if (page.startsWith("/juridico")) return role === "juridico";
-  if (page.startsWith("/santa-catarina")) return role === "santa_catarina";
+  if (page.startsWith("/santa-catarina")) return role === "juridico";
 
   return false;
 }

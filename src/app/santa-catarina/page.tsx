@@ -150,7 +150,7 @@ export default function SantaCatarinaPage() {
   useEffect(() => {
     if (status === 'loading') return;
     const role = session?.user?.role;
-    if (!session || (!isAdmin(role) && role !== 'santa_catarina')) {
+    if (!session || (!isAdmin(role) && role !== 'juridico')) {
       router.replace('/dashboard');
     }
   }, [session, status, router]);
