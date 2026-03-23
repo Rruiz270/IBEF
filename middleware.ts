@@ -1,18 +1,14 @@
-import NextAuth from "next-auth";
-import { authConfig } from "./auth.config";
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-
-// Use edge-compatible config for middleware (no DB/bcrypt)
-const { auth } = NextAuth(authConfig);
+import { NextRequest, NextResponse } from "next/server";
 
 const API_SECRET = process.env.API_SECRET;
-const PUBLIC_PATHS = ["/", "/login"];
 
-export default auth((req: NextRequest & { auth: unknown }) => {
+// Routes that don't need protection
+const PUBLIC_PATHS = ["/", "/login", "/api/auth"];
+
+export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // Always allow NextAuth internal routes
+  // Always allow NextAuth routes
   if (pathname.startsWith("/api/auth")) {
     return NextResponse.next();
   }
@@ -31,20 +27,24 @@ export default auth((req: NextRequest & { auth: unknown }) => {
     return NextResponse.next();
   }
 
-  // Public paths
-  if (PUBLIC_PATHS.includes(pathname) || pathname === "/" || pathname.startsWith("/login")) {
+  // Public paths — allow through
+  if (pathname === "/" || pathname.startsWith("/login")) {
     return NextResponse.next();
   }
 
-  // Protected: require session
-  if (!(req as { auth: unknown }).auth) {
+  // For protected routes: check for session token cookie
+  const sessionToken =
+    req.cookies.get("next-auth.session-token") ??
+    req.cookies.get("__Secure-next-auth.session-token");
+
+  if (!sessionToken) {
     const loginUrl = new URL("/login", req.url);
     loginUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
   return NextResponse.next();
-});
+}
 
 export const config = {
   matcher: [
