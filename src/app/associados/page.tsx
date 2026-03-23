@@ -1199,7 +1199,7 @@ export default function AssociadosPage() {
               Associados
             </h1>
             <p className="text-sm text-white/50 mt-0.5">
-              Empresas e pessoas associadas ao Instituto i10
+              Empresas e pessoas associadas ao Instituto i10 — Ecossistema ETEC
             </p>
           </div>
         </div>

@@ -127,7 +127,7 @@ export const people: Person[] = [
     id: 'pessoa-bruno-almeida',
     name: 'Bruno Almeida',
     role: 'fundador',
-    title: 'Gerência de Tecnologia',
+    title: 'Diretor de Tecnologia',
     departmentIds: ['tecnologia'],
     email: null,
     notes:
@@ -394,12 +394,12 @@ export const tasks: Task[] = [
     id: 'task-jur-01',
     title: 'Registrar Estatuto do Instituto i10',
     description:
-      'Finalizar e protocolar o estatuto social do Instituto i10 no cartório competente. Prazo crítico: quarta-feira 18/03/2026. Necessário para existência jurídica da organização.',
+      'Finalizar e protocolar o estatuto social do Instituto i10 no cartório competente. Prazo crítico: quinta-feira 26/03/2026. Necessário para existência jurídica da organização.',
     status: 'em_andamento',
     priority: 'critica',
     departmentId: 'juridico',
     assigneeIds: ['pessoa-mercia', 'pessoa-emerson'],
-    dueDate: '2026-03-18',
+    dueDate: '2026-03-26',
     createdAt: '2026-03-01',
     completedAt: null,
     phaseId: 'phase-0',
@@ -1095,7 +1095,7 @@ export const tasks: Task[] = [
     priority: 'critica',
     departmentId: 'santa_catarina',
     assigneeIds: [],
-    dueDate: '2026-07-15',
+    dueDate: '2026-04-30',
     createdAt: '2026-03-01',
     completedAt: null,
     phaseId: 'phase-1',
@@ -1492,8 +1492,8 @@ export const milestones: Milestone[] = [
     id: 'marco-01',
     title: 'Registro do Estatuto do Instituto i10',
     description:
-      'Registro formal do estatuto social do Instituto i10 em cartório. Prazo crítico e inegociável - sem este registro, a organização não existe juridicamente.',
-    targetDate: '2026-03-18',
+      'Dar entrada do estatuto social do Instituto i10 no cartório. Prazo crítico e inegociável — sem este registro, a organização não existe juridicamente.',
+    targetDate: '2026-03-26',
     status: 'em_andamento',
     phaseId: 'phase-0',
     isCritical: true,
@@ -1526,7 +1526,7 @@ export const milestones: Milestone[] = [
     title: 'Assinatura do Contrato ETEC',
     description:
       'Assinatura formal do contrato de Encomenda Tecnológica entre o Estado de Santa Catarina e o Instituto i10 / consórcio ICT.',
-    targetDate: '2026-07-15',
+    targetDate: '2026-04-30',
     status: 'pendente',
     phaseId: 'phase-0',
     isCritical: true,
@@ -1757,11 +1757,11 @@ export const countdowns: CountdownTarget[] = [
   },
   {
     id: 'countdown-contrato-etec',
-    label: 'Assinatura Contrato ETEC (fallback)',
-    targetDate: '2026-07-15',
+    label: 'Assinatura Contrato ETEC',
+    targetDate: '2026-04-30',
     isCritical: true,
     context:
-      'Prazo máximo para assinatura do contrato ETEC com o Estado de SC. Marco formal do projeto.',
+      'Meta de assinatura do contrato ETEC com o Estado de SC em 30 de abril de 2026. Marco formal do projeto.',
   },
   {
     id: 'countdown-poc-inicio',

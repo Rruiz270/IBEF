@@ -44,7 +44,7 @@ const itemVariants: Variants = {
 // Constants
 // =============================================================================
 
-const ETEC_CONTRACT_DATE = '2026-07-15';
+const ETEC_CONTRACT_DATE = '2026-04-30';
 
 const YEAR_QUARTERS: Record<number, { label: string; start: string; end: string }[]> = {
   2026: [

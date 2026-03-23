@@ -88,7 +88,7 @@ export default function JuridicoPage() {
               Jurídico
             </h1>
             <p className="text-sm text-white/50 mt-0.5">
-              Assessoria jurídica, contratos e conformidade regulatória
+              Assessoria jurídica, contratos e conformidade regulatória — Lei 13.243/2016, Decreto 9.283/2018, Lei 14.133/2021
             </p>
           </div>
         </div>
@@ -115,11 +115,11 @@ export default function JuridicoPage() {
               </h2>
             </div>
             <CountdownCard
-              targetDate="2026-03-18"
-              title="Registro do Estatuto do Instituto i10"
-              subtitle="Prazo CRÍTICO - Quarta-feira 18/03/2026. Sem registro, o Instituto i10 não existe juridicamente. Bloqueia todas as demais ações."
+              targetDate="2026-03-26"
+              title="Entrada do Estatuto no Cartório"
+              subtitle="Prazo CRÍTICO — Quinta-feira 26/03/2026. Sem entrada no cartório, o Instituto i10 não existe juridicamente. Bloqueia CNPJ, assembleia e contratos."
               urgency="critical"
-              totalDays={18}
+              totalDays={26}
             />
           </div>
         </div>

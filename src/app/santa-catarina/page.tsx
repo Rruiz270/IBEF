@@ -209,7 +209,7 @@ export default function SantaCatarinaPage() {
             </h1>
             <p className="text-sm text-white/50 mt-0.5">
               Acompanhamento das ações da Secretaria de Educação de SC para
-              viabilizar a Encomenda Tecnológica
+              viabilizar a Encomenda Tecnológica — 37 CREs, 1.038 escolas, 550 mil alunos
             </p>
           </div>
         </div>

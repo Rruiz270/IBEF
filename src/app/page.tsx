@@ -25,7 +25,7 @@ const IMAGES = {
    ============================================ */
 
 const stats = [
-  { value: '1.000+', label: 'Escolas' },
+  { value: '1.038', label: 'Escolas' },
   { value: '50 mil', label: 'Docentes' },
   { value: '550 mil', label: 'Alunos' },
   { value: '1', label: 'Estado Parceiro' },
@@ -65,7 +65,7 @@ const pillars = [
   {
     num: '02',
     title: 'Tecnologia',
-    description: 'Alicerce escalável. Infraestrutura de nuvem, IA preditiva e generativa, e engenharia de dados capaz de suportar redes com mais de 1.000 escolas, 50 mil docentes e 550 mil alunos.',
+    description: 'Alicerce escalável. Infraestrutura de nuvem, IA preditiva e generativa, e engenharia de dados capaz de suportar redes com 1.038 escolas, 50 mil docentes e 550 mil alunos em 37 CREs.',
     image: IMAGES.technology,
     accent: '#00B4D8',
   },
@@ -696,7 +696,7 @@ export default function LandingPage() {
 
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-[11px] text-white/20 tracking-wide">
               <div className="flex flex-wrap gap-x-8 gap-y-1">
-                <span>Florianópolis, SC — Brasil</span>
+                <span>Sapiens Park, Florianópolis, SC — Brasil</span>
                 <span>CNPJ: 05.124.602/0001-74</span>
               </div>
               <p>&copy; 2026 Instituto i10. Todos os direitos reservados.</p>

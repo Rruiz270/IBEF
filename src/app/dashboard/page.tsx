@@ -245,7 +245,7 @@ export default function DashboardPage() {
         <div className="relative flex items-center justify-between flex-wrap gap-2">
           <div className="flex items-center gap-3">
             <Building2 size={16} className="text-white/90" />
-            <span className="text-sm font-bold text-white tracking-wide">Projeto Educacao do Futuro</span>
+            <span className="text-sm font-bold text-white tracking-wide">Projeto Educação do Futuro</span>
             <span className="text-xs text-white/60">&bull;</span>
             <span className="text-xs font-medium text-white/80">ETEC</span>
             <span className="text-xs text-white/60">&bull;</span>
