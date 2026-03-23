@@ -6,8 +6,29 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import { pullSince, pushMutations, type SyncMutation } from '@/lib/db';
 import { sendPushToAll } from '@/lib/pushService';
+
+// ---------------------------------------------------------------------------
+// Zod schemas
+// ---------------------------------------------------------------------------
+
+const MutationSchema = z.object({
+  table: z.enum(['tasks', 'people', 'hiring_positions', 'associate_companies', 'activity_log']),
+  operation: z.enum(['upsert', 'delete']),
+  id: z.string().min(1).max(200),
+  data: z.record(z.string(), z.unknown()).optional(),
+  timestamp: z.string().datetime({ message: 'timestamp must be a valid ISO datetime' }),
+});
+
+const PushBodySchema = z.object({
+  mutations: z.array(MutationSchema).min(1, 'At least one mutation is required').max(500),
+  senderEndpoint: z.string().url().optional(),
+});
+
+/** Accept any valid ISO 8601 datetime string */
+const isoDatetimeRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})$/;
 
 // ---------------------------------------------------------------------------
 // GET — Pull
@@ -16,6 +37,17 @@ import { sendPushToAll } from '@/lib/pushService';
 export async function GET(request: NextRequest) {
   try {
     const since = request.nextUrl.searchParams.get('since') ?? undefined;
+
+    // Validate `since` param if provided
+    if (since !== undefined) {
+      if (!isoDatetimeRegex.test(since)) {
+        return NextResponse.json(
+          { error: 'Invalid "since" parameter — must be a valid ISO 8601 datetime string (e.g. 2024-01-01T00:00:00.000Z)' },
+          { status: 400 },
+        );
+      }
+    }
+
     const data = await pullSince(since);
     return NextResponse.json({
       ...data,
@@ -37,17 +69,18 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const mutations: SyncMutation[] = body.mutations;
-    const senderEndpoint: string | undefined = body.senderEndpoint;
 
-    if (!Array.isArray(mutations) || mutations.length === 0) {
+    // Validate request body with Zod
+    const parsed = PushBodySchema.safeParse(body);
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: 'No mutations provided' },
+        { error: 'Validation failed', details: parsed.error.flatten().fieldErrors },
         { status: 400 },
       );
     }
 
-    const results = await pushMutations(mutations);
+    const { mutations, senderEndpoint } = parsed.data;
+    const results = await pushMutations(mutations as SyncMutation[]);
 
     // Send push notification to other devices (fire-and-forget)
     const successCount = results.filter((r) => r.ok).length;

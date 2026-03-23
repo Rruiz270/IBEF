@@ -34,6 +34,20 @@ type StatusCallback = (status: SyncStatus) => void;
 type PullCallback = (data: SyncPullResponse) => void;
 
 // ---------------------------------------------------------------------------
+// API key helper — read from NEXT_PUBLIC_API_KEY env var at runtime
+// ---------------------------------------------------------------------------
+
+function getApiKey(): string | undefined {
+  return process.env.NEXT_PUBLIC_API_KEY ?? undefined;
+}
+
+function authHeaders(): Record<string, string> {
+  const key = getApiKey();
+  if (key) return { 'x-api-key': key };
+  return {};
+}
+
+// ---------------------------------------------------------------------------
 // Queue persistence
 // ---------------------------------------------------------------------------
 
@@ -168,7 +182,9 @@ export class SyncManager {
     try {
       const since = full ? undefined : getLastSync();
       const url = since ? `/api/sync?since=${encodeURIComponent(since)}` : '/api/sync';
-      const res = await fetch(url);
+      const res = await fetch(url, {
+        headers: { ...authHeaders() },
+      });
 
       if (!res.ok) {
         throw new Error(`Pull failed: ${res.status}`);
@@ -213,7 +229,10 @@ export class SyncManager {
     try {
       const res = await fetch('/api/sync', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...authHeaders(),
+        },
         body: JSON.stringify({
           mutations: batch,
           senderEndpoint: getPushEndpoint() ?? undefined,
@@ -235,14 +254,4 @@ export class SyncManager {
       this.flushing = false;
     }
   }
-}
-
-// Singleton
-let _instance: SyncManager | null = null;
-
-export function getSyncManager(): SyncManager {
-  if (!_instance) {
-    _instance = new SyncManager();
-  }
-  return _instance;
 }

@@ -14,7 +14,8 @@ import type {
 } from '../data/types';
 import { saveFileBlob, deleteFileBlob } from '../lib/fileStorage';
 import { showBrowserNotification } from '../lib/notifications';
-import { getSyncManager, type SyncStatus, type SyncPullResponse, type SyncMutation } from '../lib/syncManager';
+import { newId } from '../lib/ids';
+import { SyncManager, type SyncStatus, type SyncPullResponse, type SyncMutation } from '../lib/syncManager';
 
 // ---------------------------------------------------------------------------
 // Notification type
@@ -36,6 +37,33 @@ export interface Notification {
 // ---------------------------------------------------------------------------
 
 type SyncTable = 'tasks' | 'people' | 'hiring_positions' | 'associate_companies' | 'activity_log';
+
+// ---------------------------------------------------------------------------
+// Fired-notifications persistence (for dedup)
+// ---------------------------------------------------------------------------
+
+const FIRED_NOTIFS_KEY = 'i10-fired-notifs';
+const FIRED_NOTIFS_CAP = 1000;
+
+function loadFiredNotifs(): Set<string> {
+  if (typeof window === 'undefined') return new Set();
+  try {
+    const raw = localStorage.getItem(FIRED_NOTIFS_KEY);
+    if (raw) {
+      const arr: unknown = JSON.parse(raw);
+      if (Array.isArray(arr)) return new Set(arr as string[]);
+    }
+  } catch { /* ignore */ }
+  return new Set();
+}
+
+function persistFiredNotifs(set: Set<string>) {
+  if (typeof window === 'undefined') return;
+  // Cap at FIRED_NOTIFS_CAP entries — keep the most recent ones
+  const arr = [...set];
+  const trimmed = arr.length > FIRED_NOTIFS_CAP ? arr.slice(arr.length - FIRED_NOTIFS_CAP) : arr;
+  localStorage.setItem(FIRED_NOTIFS_KEY, JSON.stringify(trimmed));
+}
 
 // ---------------------------------------------------------------------------
 // Context interface
@@ -89,6 +117,9 @@ interface ProjectContextType {
   // Sync
   syncStatus: SyncStatus;
   triggerFullSync: () => void;
+
+  // Bootstrap
+  bootstrapped: boolean;
 }
 
 const ProjectContext = createContext<ProjectContextType | null>(null);
@@ -165,10 +196,24 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 
   // Sync status
   const [syncStatus, setSyncStatus] = useState<SyncStatus>('synced');
-  const syncManagerRef = useRef(getSyncManager());
+
+  // SyncManager — scoped to the React tree via useRef (no module singleton)
+  const syncManagerRef = useRef<SyncManager | null>(null);
+  if (!syncManagerRef.current) {
+    syncManagerRef.current = new SyncManager();
+  }
 
   // Guard to avoid applying incoming pull data during a local mutation
   const isPullingRef = useRef(false);
+
+  // Fired notifications dedup set
+  const firedNotifsRef = useRef<Set<string>>(loadFiredNotifs());
+
+  // Bootstrap guard — first-load full-pull
+  const [bootstrapped, setBootstrapped] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    return !!localStorage.getItem('i10-last-sync');
+  });
 
   // Persist all state
   useEffect(() => { localStorage.setItem('i10-tasks', JSON.stringify(tasks)); }, [tasks]);
@@ -281,16 +326,36 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
     isPullingRef.current = false;
   }, []);
 
-  // ---- Sync: start manager ----
+  // ---- Sync: start manager + bootstrap guard ----
   useEffect(() => {
-    const mgr = syncManagerRef.current;
-    mgr.setCallbacks(setSyncStatus, applyPull);
+    const mgr = syncManagerRef.current!;
+    const needsFullPull = !localStorage.getItem('i10-last-sync');
+
+    mgr.setCallbacks(setSyncStatus, (data) => {
+      applyPull(data);
+      // After the first pull completes, mark as bootstrapped
+      if (!bootstrapped) {
+        setBootstrapped(true);
+      }
+    });
+
+    if (needsFullPull) {
+      // First-time user: do a full pull before considering bootstrapped
+      mgr.fullPull().then(() => {
+        setBootstrapped(true);
+      }).catch(() => {
+        // Even on error, let the app render with seed data
+        setBootstrapped(true);
+      });
+    }
+
     mgr.start();
     return () => mgr.stop();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [applyPull]);
 
   const triggerFullSync = useCallback(() => {
-    syncManagerRef.current.fullPull();
+    syncManagerRef.current!.fullPull();
   }, []);
 
   // ---- Sync helper: enqueue mutation ----
@@ -302,20 +367,33 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       data,
       timestamp: new Date().toISOString(),
     };
-    syncManagerRef.current.enqueue(mutation);
+    syncManagerRef.current!.enqueue(mutation);
   }, []);
 
   // ---- Activity log helper ----
   const logActivity = useCallback((entry: Omit<ActivityLogEntry, 'id' | 'timestamp'>) => {
     const newEntry: ActivityLogEntry = {
       ...entry,
-      id: `log-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      id: newId('log'),
       timestamp: new Date().toISOString(),
     };
     setActivityLog((prev) => [newEntry, ...prev].slice(0, 500)); // Keep last 500
     // Sync the activity log entry
     enqueueSync('activity_log', 'upsert', newEntry.id, newEntry as unknown as Record<string, unknown>);
   }, [enqueueSync]);
+
+  // ---- Helper: fire a browser notification with dedup ----
+  const fireBrowserNotification = useCallback((notifId: string, payload: { title: string; body: string; url: string }) => {
+    if (firedNotifsRef.current.has(notifId)) return;
+    firedNotifsRef.current.add(notifId);
+    // Cap the set
+    if (firedNotifsRef.current.size > FIRED_NOTIFS_CAP) {
+      const arr = [...firedNotifsRef.current];
+      firedNotifsRef.current = new Set(arr.slice(arr.length - FIRED_NOTIFS_CAP));
+    }
+    persistFiredNotifs(firedNotifsRef.current);
+    showBrowserNotification(payload);
+  }, []);
 
   // ---- Generate notifications from current state ----
   useEffect(() => {
@@ -368,14 +446,14 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
     // Merge: keep read state from existing notifications, fire browser notifications for new ones
     setNotifications((prev) => {
       const readMap = new Map(prev.map((n) => [n.id, n.read]));
-      const existingIds = new Set(prev.map((n) => n.id));
 
       // Fire browser notifications only for genuinely new overdue/critical items
       // (skip during pull to avoid notification spam on sync)
+      // Also skip if already fired (dedup via firedNotifsRef)
       if (!isPullingRef.current) {
         newNotifs.forEach((n) => {
-          if (!existingIds.has(n.id) && (n.type === 'overdue' || n.type === 'critical')) {
-            showBrowserNotification({
+          if ((n.type === 'overdue' || n.type === 'critical')) {
+            fireBrowserNotification(n.id, {
               title: n.title,
               body: n.message,
               url: '/dashboard',
@@ -389,7 +467,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
         read: readMap.get(n.id) ?? false,
       }));
     });
-  }, [tasks]);
+  }, [tasks, fireBrowserNotification]);
 
   // ---- Task CRUD ----
   const updateTask = useCallback((taskId: string, updates: Partial<Task>) => {
@@ -420,7 +498,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 
         // Browser notification: task completed
         if (updates.status === 'concluida' && oldTask.status !== 'concluida') {
-          showBrowserNotification({
+          fireBrowserNotification(`notif-completed-${taskId}`, {
             title: 'Tarefa Concluída',
             body: `"${oldTask.title}" foi marcada como concluída.`,
             url: '/dashboard',
@@ -429,7 +507,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 
         // Browser notification: task became critical
         if (updates.priority === 'critica' && oldTask.priority !== 'critica') {
-          showBrowserNotification({
+          fireBrowserNotification(`notif-became-critical-${taskId}`, {
             title: 'Prioridade Crítica',
             body: `"${oldTask.title}" foi marcada como prioridade crítica.`,
             url: '/dashboard',
@@ -438,11 +516,11 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       }
       return newTasks;
     });
-  }, [logActivity, enqueueSync]);
+  }, [logActivity, enqueueSync, fireBrowserNotification]);
 
   const addTask = useCallback(
     (partial: { title: string; departmentId: DepartmentId; priority: TaskPriority; status: TaskStatus }): string => {
-      const id = `task-${Date.now()}`;
+      const id = newId('task');
       const newTask: Task = {
         id,
         title: partial.title,
@@ -472,7 +550,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       });
 
       // Browser notification: task created
-      showBrowserNotification({
+      fireBrowserNotification(`notif-created-${id}`, {
         title: 'Nova Tarefa Criada',
         body: `"${partial.title}" foi adicionada ao projeto.`,
         url: '/dashboard',
@@ -480,7 +558,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 
       return id;
     },
-    [logActivity, enqueueSync]
+    [logActivity, enqueueSync, fireBrowserNotification]
   );
 
   const deleteTask = useCallback((taskId: string) => {
@@ -509,7 +587,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
     setTasks((prev) => {
       const updated = prev.map((t) => {
         if (t.id !== taskId) return t;
-        const newSubtask: Subtask = { id: `sub-${Date.now()}`, title, completed: false };
+        const newSubtask: Subtask = { id: newId('sub'), title, completed: false };
         return { ...t, subtasks: [...(t.subtasks || []), newSubtask] };
       });
       const task = updated.find((t) => t.id === taskId);
@@ -575,7 +653,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
   }, [logActivity, enqueueSync]);
 
   const addHiring = useCallback((partial: Omit<HiringPosition, 'id' | 'openedAt' | 'filledAt' | 'filledBy'>): string => {
-    const id = `hiring-${Date.now()}`;
+    const id = newId('hiring');
     const newPos: HiringPosition = {
       ...partial,
       id,
@@ -617,7 +695,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
   }, [logActivity, enqueueSync]);
 
   const addCompany = useCallback((partial: Omit<AssociateCompany, 'id'>): string => {
-    const id = `company-${Date.now()}`;
+    const id = newId('company');
     const newCompany = { ...partial, id };
     setAssociateCompanies((prev) => [...prev, newCompany]);
     enqueueSync('associate_companies', 'upsert', id, newCompany as unknown as Record<string, unknown>);
@@ -647,7 +725,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
   }, [logActivity, enqueueSync]);
 
   const addPerson = useCallback((partial: Omit<Person, 'id'>): string => {
-    const id = `person-${Date.now()}`;
+    const id = newId('person');
     const newPerson = { ...partial, id };
     setTeamPeople((prev) => [...prev, newPerson]);
     enqueueSync('people', 'upsert', id, newPerson as unknown as Record<string, unknown>);
@@ -666,7 +744,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 
   // ---- File attachments ----
   const addFileAttachment = useCallback(async (meta: Omit<FileAttachment, 'id' | 'uploadedAt'>, blob: Blob): Promise<string> => {
-    const id = `file-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+    const id = newId('file');
     const attachment: FileAttachment = { ...meta, id, uploadedAt: new Date().toISOString() };
     await saveFileBlob(id, blob);
     setFileAttachments((prev) => [...prev, attachment]);
@@ -702,13 +780,13 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       timestamp: new Date().toISOString(),
       read: false,
     }, ...prev]);
-    showBrowserNotification({
+    fireBrowserNotification(`notif-file-add-${id}`, {
       title: 'Documento Anexado',
       body: `"${meta.name}" foi anexado a "${entityTitle}".`,
       url: '/documentos',
     });
     return id;
-  }, [tasks, hiringPositions, logActivity]);
+  }, [tasks, hiringPositions, logActivity, fireBrowserNotification]);
 
   const removeFileAttachment = useCallback((id: string) => {
     // Find attachment info before removing
@@ -747,14 +825,14 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
         timestamp: new Date().toISOString(),
         read: false,
       }, ...prev]);
-      showBrowserNotification({
+      fireBrowserNotification(`notif-file-rm-${id}`, {
         title: 'Documento Removido',
         body: `"${attachment.name}" foi removido de "${entityTitle}".`,
         url: '/documentos',
       });
     }
     setFileAttachments((prev) => prev.filter((f) => f.id !== id));
-  }, [fileAttachments, tasks, hiringPositions, logActivity]);
+  }, [fileAttachments, tasks, hiringPositions, logActivity, fireBrowserNotification]);
 
   const getAttachmentsForEntity = useCallback((entityType: 'task' | 'hiring', entityId: string) => {
     return fileAttachments.filter((f) => f.entityType === entityType && f.entityId === entityId);
@@ -786,6 +864,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
         fileAttachments, addFileAttachment, removeFileAttachment, getAttachmentsForEntity, getAttachmentsForDepartment,
         notifications, markNotificationRead, markAllNotificationsRead, unreadCount,
         syncStatus, triggerFullSync,
+        bootstrapped,
       }}
     >
       {children}
