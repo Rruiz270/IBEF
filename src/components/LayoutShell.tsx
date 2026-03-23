@@ -12,7 +12,7 @@ import { useProject } from '@/contexts/ProjectContext';
 
 export default function LayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isLanding = pathname === '/';
+  const isLanding = pathname === '/' || pathname === '/login';
   const [searchTaskId, setSearchTaskId] = useState<string | null>(null);
   const { bootstrapped } = useProject();
 

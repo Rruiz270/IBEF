@@ -3,6 +3,7 @@ import { Inter, Source_Serif_4 } from "next/font/google";
 import { ProjectProvider } from "@/contexts/ProjectContext";
 import LayoutShell from "@/components/LayoutShell";
 import ServiceWorkerRegistrar from "@/components/ServiceWorkerRegistrar";
+import SessionProvider from "@/components/SessionProvider";
 import "./globals.css";
 
 const inter = Inter({
@@ -46,9 +47,11 @@ export default function RootLayout({
         className={`${inter.variable} ${sourceSerif.variable} font-sans antialiased bg-[#030B1A] min-h-screen text-text-primary`}
       >
         <ServiceWorkerRegistrar />
-        <ProjectProvider>
-          <LayoutShell>{children}</LayoutShell>
-        </ProjectProvider>
+        <SessionProvider>
+          <ProjectProvider>
+            <LayoutShell>{children}</LayoutShell>
+          </ProjectProvider>
+        </SessionProvider>
       </body>
     </html>
   );

@@ -21,7 +21,10 @@ import {
   AlertTriangle,
   Flame,
   FileText,
+  LogOut,
+  User,
 } from 'lucide-react';
+import { useSession, signOut } from 'next-auth/react';
 import { useProject } from '@/contexts/ProjectContext';
 import NotificationBell from './NotificationBell';
 import SyncIndicator from './SyncIndicator';
@@ -85,11 +88,24 @@ function I10Logo({ collapsed }: { collapsed: boolean }) {
   );
 }
 
+const ROLE_LABELS: Record<string, string> = {
+  admin: 'Administrador',
+  juridico: 'Jurídico',
+  tecnologia: 'Tecnologia',
+  santa_catarina: 'Santa Catarina',
+  pedagogico: 'Pedagógico',
+  operacoes_locais: 'Operações',
+  relacoes_publicas: 'Relações Públicas',
+  administrativo_financeiro: 'Adm. Financeiro',
+  viewer: 'Visualizador',
+};
+
 export default function Sidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { tasks, unreadCount } = useProject();
+  const { data: session } = useSession();
 
   const toggleCollapsed = useCallback(() => setCollapsed((c) => !c), []);
   const toggleMobile = useCallback(() => setMobileOpen((m) => !m), []);
@@ -270,6 +286,46 @@ export default function Sidebar() {
       <div className="px-3 py-2 border-t border-white/10">
         <NotificationBell />
       </div>
+
+      {/* Logged-in user info */}
+      {session?.user && (
+        <div className="px-3 py-2 border-t border-white/10">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-full bg-[#00B4D8]/20 border border-[#00B4D8]/30 flex items-center justify-center shrink-0">
+              <User size={14} className="text-[#00B4D8]" />
+            </div>
+            <AnimatePresence>
+              {!collapsed && (
+                <motion.div
+                  initial={{ opacity: 0, width: 0 }}
+                  animate={{ opacity: 1, width: 'auto' }}
+                  exit={{ opacity: 0, width: 0 }}
+                  className="flex-1 overflow-hidden min-w-0"
+                >
+                  <p className="text-xs font-medium text-white truncate">{session.user.name}</p>
+                  <p className="text-[10px] text-white/40 truncate">
+                    {ROLE_LABELS[session.user.role ?? ''] ?? session.user.role}
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+            <AnimatePresence>
+              {!collapsed && (
+                <motion.button
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={() => signOut({ callbackUrl: '/login' })}
+                  className="p-1.5 rounded-lg text-white/40 hover:text-red-400 hover:bg-red-500/10 transition-colors shrink-0"
+                  title="Sair"
+                >
+                  <LogOut size={14} />
+                </motion.button>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+      )}
 
       {/* Collapse button (desktop only) */}
       <div className="hidden lg:block px-2 py-2 border-t border-white/10">

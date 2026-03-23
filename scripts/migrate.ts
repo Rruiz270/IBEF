@@ -78,6 +78,26 @@ async function migrate() {
   await sql`CREATE INDEX IF NOT EXISTS idx_companies_updated ON associate_companies(updated_at)`;
   await sql`CREATE INDEX IF NOT EXISTS idx_activity_updated ON activity_log(updated_at)`;
 
+  // Users table for authentication
+  console.log('Creating users table...');
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS users (
+      id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::TEXT,
+      email TEXT UNIQUE NOT NULL,
+      password_hash TEXT NOT NULL,
+      name TEXT NOT NULL,
+      role TEXT NOT NULL DEFAULT 'viewer',
+      department_id TEXT,
+      active BOOLEAN NOT NULL DEFAULT TRUE,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `;
+
+  await sql`CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_users_role ON users(role)`;
+
   console.log('Migration complete.');
 }
 
