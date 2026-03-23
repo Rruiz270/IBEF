@@ -32,7 +32,7 @@ export default auth((req: NextRequest & { auth: unknown }) => {
   }
 
   // Public paths
-  if (PUBLIC_PATHS.includes(pathname)) {
+  if (PUBLIC_PATHS.includes(pathname) || pathname === "/" || pathname.startsWith("/login")) {
     return NextResponse.next();
   }
 
