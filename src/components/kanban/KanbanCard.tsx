@@ -2,7 +2,7 @@
 
 import { memo, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, GripVertical } from 'lucide-react';
+import { Calendar, GripVertical, Tag } from 'lucide-react';
 import type { Task, TaskStatus } from '@/data/types';
 
 const KANBAN_STATUSES: { key: TaskStatus; color: string }[] = [
@@ -18,6 +18,23 @@ const PRIORITY_COLORS: Record<string, string> = {
   alta: '#F59E0B',
   media: '#3B82F6',
   baixa: '#6B7280',
+};
+
+const DEPARTMENT_COLORS: Record<string, string> = {
+  juridico: '#6366F1',
+  tecnologia: '#10B981',
+  relacoes_publicas: '#F59E0B',
+  operacoes_locais: '#EF4444',
+  santa_catarina: '#8B5CF6',
+  pedagogico: '#EC4899',
+  administrativo_financeiro: '#14B8A6',
+};
+
+const PRIORITY_LABELS: Record<string, string> = {
+  critica: 'Crítica',
+  alta: 'Alta',
+  media: 'Média',
+  baixa: 'Baixa',
 };
 
 function daysRemaining(dueDate: string | null): number | null {
@@ -66,19 +83,27 @@ function KanbanCard({ task, onEdit, onStatusChange, onDragStart, onDragEnd }: Ka
       onDragStart={() => onDragStart(task.id)}
       onDragEnd={onDragEnd}
       onClick={() => onEdit(task.id)}
-      className="group relative rounded-lg bg-white/[0.04] border border-white/[0.08] cursor-pointer hover:bg-white/[0.07] transition-colors overflow-hidden"
+      className="group relative rounded-xl bg-white/[0.04] border border-white/[0.08] cursor-pointer hover:bg-white/[0.07] hover:shadow-lg hover:shadow-black/20 transition-all duration-200 overflow-hidden"
       whileHover={{ scale: 1.01 }}
     >
-      {/* Priority color left bar */}
-      <div className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-lg" style={{ backgroundColor: priorityColor }} />
+      {/* Department + Priority color strips */}
+      <div className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-xl" style={{ backgroundColor: DEPARTMENT_COLORS[task.departmentId] ?? '#6B7280' }} />
+      <div className="absolute left-[3px] top-0 bottom-0 w-[2px]" style={{ backgroundColor: priorityColor, opacity: 0.6 }} />
 
-      <div className="pl-3 pr-2.5 py-2.5">
+      <div className="pl-4 pr-2.5 py-2.5">
         {/* Title row */}
         <div className="flex items-start gap-1.5 mb-1.5">
           <GripVertical size={11} className="text-white/15 mt-0.5 shrink-0 cursor-grab opacity-0 group-hover:opacity-100 transition-opacity" />
           <h5 className="text-[11px] font-medium text-white/90 leading-snug flex-1 line-clamp-2">
             {task.title}
           </h5>
+          {/* Priority badge */}
+          <span
+            className="shrink-0 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-wide"
+            style={{ backgroundColor: `${priorityColor}20`, color: priorityColor }}
+          >
+            {PRIORITY_LABELS[task.priority] ?? task.priority}
+          </span>
         </div>
 
         {/* Due date chip + assignee dots */}

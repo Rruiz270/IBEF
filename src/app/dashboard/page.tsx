@@ -13,6 +13,12 @@ import {
   TrendingUp,
   Download,
   History,
+  MapPin,
+  FileText,
+  ArrowUpRight,
+  ArrowDownRight,
+  Clock,
+  Building2,
 } from 'lucide-react';
 
 import {
@@ -23,6 +29,7 @@ import {
   daysUntil,
   computeOverallProgress,
   people as projectPeople,
+  tasks as projectTasks,
 } from '@/data/projectData';
 
 import { useProject } from '@/contexts/ProjectContext';
@@ -228,6 +235,61 @@ export default function DashboardPage() {
 
   return (
     <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8">
+      {/* PROJECT HEADER STRIP */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="relative overflow-hidden rounded-2xl px-5 py-3 bg-gradient-to-r from-[#0066FF] via-[#00B4D8] to-[#00E5A0]"
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent" />
+        <div className="relative flex items-center justify-between flex-wrap gap-2">
+          <div className="flex items-center gap-3">
+            <Building2 size={16} className="text-white/90" />
+            <span className="text-sm font-bold text-white tracking-wide">Projeto Educacao do Futuro</span>
+            <span className="text-xs text-white/60">&bull;</span>
+            <span className="text-xs font-medium text-white/80">ETEC</span>
+            <span className="text-xs text-white/60">&bull;</span>
+            <span className="text-xs font-medium text-white/80">SED/SC</span>
+            <span className="text-xs text-white/60">&bull;</span>
+            <span className="text-xs font-bold text-white/90">R$ 4,65M</span>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* CRITICAL DEADLINE BANNER */}
+      {(() => {
+        const now = new Date();
+        const criticalSoon = tasks.find((t) => {
+          if (!t.dueDate || t.status === 'concluida' || t.status === 'cancelada') return false;
+          const d = daysUntil(t.dueDate);
+          return d >= 0 && d <= 7 && (t.priority === 'critica' || t.priority === 'alta');
+        });
+        if (!criticalSoon) return null;
+        const d = daysUntil(criticalSoon.dueDate!);
+        return (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="relative overflow-hidden rounded-xl px-4 py-3 bg-red-500/10 border border-red-500/30"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-red-500/20 flex items-center justify-center shrink-0">
+                <Clock size={16} className="text-red-400" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-bold text-red-400 uppercase tracking-wider">
+                  Prazo Critico em {d} {d === 1 ? 'dia' : 'dias'}
+                </p>
+                <p className="text-sm text-white/80 truncate mt-0.5">{criticalSoon.title}</p>
+              </div>
+              <span className="text-xs text-red-400/70 shrink-0">
+                {new Date(criticalSoon.dueDate!).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}
+              </span>
+            </div>
+          </motion.div>
+        );
+      })()}
+
       {/* ================================================================= */}
       {/* HEADER                                                            */}
       {/* ================================================================= */}
@@ -289,6 +351,66 @@ export default function DashboardPage() {
           <SummaryCard key={card.title} {...card} />
         ))}
       </motion.section>
+
+      {/* ETEC SIGNING COUNTDOWN */}
+      <motion.section
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+      >
+        {(() => {
+          const etecDate = '2026-04-30';
+          const d = daysUntil(etecDate);
+          const isUrgent = d < 14;
+          return (
+            <div className={`relative overflow-hidden rounded-2xl p-6 border-2 ${isUrgent ? 'border-red-500/50 shadow-[0_0_30px_rgba(239,68,68,0.15)]' : 'border-[#00B4D8]/30'} bg-gradient-to-br from-[#061742] via-[#0A2463] to-[#061742]`}>
+              {isUrgent && (
+                <div className="absolute inset-0 rounded-2xl animate-pulse" style={{ boxShadow: '0 0 20px rgba(239,68,68,0.1) inset' }} />
+              )}
+              <div className="relative flex flex-col sm:flex-row items-center gap-4">
+                <div className="flex-1 text-center sm:text-left">
+                  <p className="text-xs font-bold uppercase tracking-wider text-[#F5A623]">
+                    Assinatura do Contrato ETEC — SED/SC
+                  </p>
+                  <p className="text-sm text-white/50 mt-1">
+                    Meta: 30 de abril de 2026 &bull; Lei 13.243/2016 &bull; Decreto 9.283/2018
+                  </p>
+                </div>
+                <div className="text-center">
+                  <motion.p
+                    initial={{ scale: 0.5, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.5, type: 'spring', stiffness: 200 }}
+                    className={`text-5xl sm:text-6xl font-black tabular-nums ${isUrgent ? 'text-red-400' : 'bg-gradient-to-r from-[#00B4D8] to-[#00E5A0] bg-clip-text text-transparent'}`}
+                  >
+                    {d}
+                  </motion.p>
+                  <p className={`text-xs font-bold uppercase tracking-widest mt-1 ${isUrgent ? 'text-red-400/70' : 'text-white/40'}`}>
+                    {d === 1 ? 'dia' : 'dias'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
+      </motion.section>
+
+      {/* OFFICE LOCATION */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.35 }}
+        className="rounded-xl p-4 bg-gradient-to-r from-[#0A2463]/80 to-[#061742]/80 border border-white/5 flex items-center gap-3"
+      >
+        <div className="w-10 h-10 rounded-lg bg-[#00E5A0]/10 flex items-center justify-center shrink-0">
+          <MapPin size={18} className="text-[#00E5A0]" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-white/80">Sapiens Park — Escritorio i10</p>
+          <p className="text-xs text-white/40 mt-0.5">Av. Luiz Boiteux Piazza, 1302 &bull; Canasvieiras, Florianopolis/SC</p>
+        </div>
+        <span className="hidden sm:inline-block px-2 py-1 rounded-full bg-[#00E5A0]/10 text-[10px] font-bold text-[#00E5A0]">Operacional</span>
+      </motion.div>
 
       {/* ================================================================= */}
       {/* ATENÇÃO REQUERIDA                                                 */}

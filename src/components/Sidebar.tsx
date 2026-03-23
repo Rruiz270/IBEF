@@ -20,6 +20,7 @@ import {
   Search,
   AlertTriangle,
   Flame,
+  FileText,
 } from 'lucide-react';
 import { useProject } from '@/contexts/ProjectContext';
 import NotificationBell from './NotificationBell';
@@ -40,6 +41,7 @@ const navItems: NavItem[] = [
   { label: 'Contratações & Hiring', href: '/contratacoes', icon: UserPlus },
   { label: 'Santa Catarina', href: '/santa-catarina', icon: MapPin },
   { label: 'Jurídico', href: '/juridico', icon: Scale },
+  { label: 'Documentos ETEC', href: '/etec', icon: FileText },
   { label: 'Associados', href: '/associados', icon: Users },
   { label: 'Documentos', href: '/documentos', icon: FolderOpen },
 ];
@@ -130,8 +132,8 @@ export default function Sidebar() {
               transition={{ duration: 0.2 }}
               className="overflow-hidden whitespace-nowrap"
             >
-              <h1 className="text-sm font-bold text-white leading-tight">i10</h1>
-              <p className="text-xs text-[#90E0EF] leading-tight">Project Control</p>
+              <h1 className="text-sm font-bold text-white leading-tight">Instituto i10</h1>
+              <p className="text-[10px] text-[#90E0EF]/70 leading-tight">Sapiens Park, Florianópolis/SC</p>
             </motion.div>
           )}
         </AnimatePresence>
@@ -205,7 +207,7 @@ export default function Sidebar() {
                   relative flex items-center gap-3 px-3 py-2.5 rounded-lg
                   transition-colors duration-200 group
                   ${active
-                    ? 'bg-[#00B4D8]/15 text-[#00B4D8]'
+                    ? 'bg-gradient-to-r from-[#00B4D8]/20 to-[#00B4D8]/5 text-[#00B4D8]'
                     : 'text-white/70 hover:bg-white/5 hover:text-white'
                   }
                 `}
@@ -215,7 +217,7 @@ export default function Sidebar() {
                 {active && (
                   <motion.div
                     layoutId="activeIndicator"
-                    className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-6 bg-[#00B4D8] rounded-full"
+                    className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-7 bg-gradient-to-b from-[#00B4D8] to-[#00E5A0] rounded-full"
                     transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                   />
                 )}
@@ -304,8 +306,10 @@ export default function Sidebar() {
             className="px-4 py-3 border-t border-white/10"
           >
             <p className="text-[10px] text-white/30 leading-relaxed">
-              Instituto i10 &mdash; Educação<br />
-              · Tecnologia · Inovação
+              ETEC &middot; SED/SC &middot; 2026-2028
+            </p>
+            <p className="text-[9px] text-white/20 mt-0.5">
+              Instituto i10 &mdash; Educação &middot; Tecnologia &middot; Inovação
             </p>
           </motion.div>
         )}

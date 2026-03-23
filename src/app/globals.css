@@ -397,3 +397,53 @@ button {
     box-shadow: 0 0 0 0 rgba(0, 180, 216, 0);
   }
 }
+
+/* ============================================
+   i10 Brand Extended Palette
+   ============================================ */
+
+:root {
+  --i10-blue: #0066FF;
+  --i10-gold: #F5A623;
+  --i10-bg-dark: #0A0F1E;
+}
+
+/* Animated gradient for hero sections */
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.hero-gradient {
+  background: linear-gradient(-45deg, #0066FF, #00B4D8, #00E5A0, #F5A623);
+  background-size: 400% 400%;
+  animation: gradient-shift 12s ease infinite;
+}
+
+/* Skeleton loader */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.03) 25%,
+    rgba(255, 255, 255, 0.06) 50%,
+    rgba(255, 255, 255, 0.03) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
+  border-radius: 8px;
+}
+
+/* Pulsing red border for urgent elements */
+@keyframes pulse-red {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0);
+  }
+}
+
+.pulse-urgent {
+  animation: pulse-red 2s ease-in-out infinite;
+}

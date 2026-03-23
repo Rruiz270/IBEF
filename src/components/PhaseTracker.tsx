@@ -342,16 +342,22 @@ function PhaseCard({
                   </div>
                 )}
 
-                {/* Dates and budget */}
-                <div className="mt-3 flex gap-4 text-[10px] text-white/30 flex-wrap">
-                  <span>Inicio: {phase.startDate}</span>
-                  <span>Fim: {phase.endDate}</span>
+                {/* Dates, budget and deliverables count */}
+                <div className="mt-3 flex items-center gap-3 text-[10px] flex-wrap">
+                  <span className="text-white/30">{phase.startDate} → {phase.endDate}</span>
                   {phase.budgetBRL != null && (
-                    <span>
-                      Orcamento: R${' '}
-                      {phase.budgetBRL.toLocaleString('pt-BR')}
+                    <span className="px-1.5 py-0.5 rounded bg-[#F5A623]/10 text-[#F5A623] font-bold">
+                      R$ {phase.budgetBRL >= 1000000
+                        ? `${(phase.budgetBRL / 1000000).toFixed(1)}M`
+                        : phase.budgetBRL >= 1000
+                          ? `${(phase.budgetBRL / 1000).toFixed(0)}k`
+                          : phase.budgetBRL.toLocaleString('pt-BR')
+                      }
                     </span>
                   )}
+                  <span className="text-white/20">
+                    {phase.deliverables.length} entregas
+                  </span>
                 </div>
               </div>
             </div>
@@ -395,6 +401,53 @@ export default function PhaseTracker({
           <p className="text-[10px] text-white/40 uppercase tracking-wider">
             Progresso geral
           </p>
+        </div>
+      </div>
+
+      {/* Horizontal phase timeline bar */}
+      <div className="mb-4">
+        <div className="flex rounded-full overflow-hidden h-2 bg-white/5">
+          {phases.map((phase, i) => {
+            const totalBudget = phases.reduce((s, p) => s + (p.budgetBRL ?? 0), 0);
+            const width = totalBudget > 0 && phase.budgetBRL
+              ? (phase.budgetBRL / totalBudget) * 100
+              : 100 / phases.length;
+            return (
+              <motion.div
+                key={phase.id}
+                initial={{ width: 0 }}
+                animate={{ width: `${width}%` }}
+                transition={{ duration: 1, delay: i * 0.15, ease: 'easeOut' }}
+                className={`h-full ${
+                  phase.status === 'concluida'
+                    ? 'bg-[#00E5A0]'
+                    : phase.status === 'em_andamento'
+                      ? 'bg-[#00B4D8]'
+                      : phase.status === 'atrasada'
+                        ? 'bg-red-400'
+                        : 'bg-white/10'
+                } ${i > 0 ? 'border-l border-[#061742]' : ''}`}
+                title={`Fase ${phase.number}: ${phase.title}`}
+              />
+            );
+          })}
+        </div>
+        <div className="flex mt-1">
+          {phases.map((phase) => {
+            const totalBudget = phases.reduce((s, p) => s + (p.budgetBRL ?? 0), 0);
+            const width = totalBudget > 0 && phase.budgetBRL
+              ? (phase.budgetBRL / totalBudget) * 100
+              : 100 / phases.length;
+            return (
+              <div key={phase.id} style={{ width: `${width}%` }} className="text-center">
+                <span className={`text-[9px] font-medium ${
+                  phase.status === 'em_andamento' ? 'text-[#00B4D8]' : 'text-white/30'
+                }`}>
+                  F{phase.number}
+                </span>
+              </div>
+            );
+          })}
         </div>
       </div>
 
