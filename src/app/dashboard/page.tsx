@@ -32,6 +32,7 @@ import {
   tasks as projectTasks,
 } from '@/data/projectData';
 
+import { useSession } from 'next-auth/react';
 import { useProject } from '@/contexts/ProjectContext';
 import TaskEditModal from '@/components/TaskEditModal';
 
@@ -138,8 +139,10 @@ function SummaryCard({ title, value, icon: Icon, gradient, index, onClick }: Sum
 
 export default function DashboardPage() {
   const { tasks, activityLog, teamPeople: people } = useProject();
+  const { data: session } = useSession();
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const router = useRouter();
+  const userName = session?.user?.name?.split(' ')[0] ?? '';
 
   const summary = useMemo(() => getDashboardSummary(), []);
   const overallProgress = useMemo(() => computeOverallProgress(), []);
@@ -255,6 +258,19 @@ export default function DashboardPage() {
           </div>
         </div>
       </motion.div>
+
+      {/* PERSONALIZED GREETING */}
+      {userName && (
+        <motion.div
+          initial={{ opacity: 0, y: -5 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <h2 className="text-xl sm:text-2xl font-bold text-white">
+            Olá, {userName}!
+          </h2>
+        </motion.div>
+      )}
 
       {/* CRITICAL DEADLINE BANNER */}
       {(() => {

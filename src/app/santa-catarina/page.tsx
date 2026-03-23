@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
   Building2,
@@ -16,8 +17,10 @@ import {
   PenTool,
   TrendingUp,
 } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import { departments, milestones, people } from '../../data/projectData';
 import { useProject } from '../../contexts/ProjectContext';
+import { isAdmin } from '../../lib/roles';
 import TaskEditModal from '../../components/TaskEditModal';
 import type { Person } from '../../data/types';
 import TaskCard from '../../components/TaskCard';
@@ -139,7 +142,18 @@ function statusColor(status: string): string {
 
 export default function SantaCatarinaPage() {
   const { tasks } = useProject();
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+
+  // Access guard: only admin or santa_catarina role
+  useEffect(() => {
+    if (status === 'loading') return;
+    const role = session?.user?.role;
+    if (!session || (!isAdmin(role) && role !== 'santa_catarina')) {
+      router.replace('/dashboard');
+    }
+  }, [session, status, router]);
 
   // Build people map
   const peopleMap = useMemo<Record<string, Person>>(() => {

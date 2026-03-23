@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
   Scale,
@@ -9,8 +10,10 @@ import {
   ShieldCheck,
   FileWarning,
 } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import { people, milestones } from '../../data/projectData';
 import { useProject } from '../../contexts/ProjectContext';
+import { isAdmin } from '../../lib/roles';
 import TaskEditModal from '../../components/TaskEditModal';
 import type { Person } from '../../data/types';
 import TaskCard from '../../components/TaskCard';
@@ -39,7 +42,18 @@ const itemVariants = {
 
 export default function JuridicoPage() {
   const { tasks } = useProject();
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+
+  // Access guard: only admin or juridico role
+  useEffect(() => {
+    if (status === 'loading') return;
+    const role = session?.user?.role;
+    if (!session || (!isAdmin(role) && role !== 'juridico')) {
+      router.replace('/dashboard');
+    }
+  }, [session, status, router]);
 
   // Build people map
   const peopleMap = useMemo<Record<string, Person>>(() => {

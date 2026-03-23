@@ -34,8 +34,10 @@ import {
   Paperclip,
   FolderOpen,
 } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import { departments, people, milestones } from '../../data/projectData';
 import { useProject } from '../../contexts/ProjectContext';
+import { isAdmin } from '../../lib/roles';
 import TaskEditModal from '../../components/TaskEditModal';
 import KanbanBoard from '../../components/kanban/KanbanBoard';
 import FileUpload from '../../components/FileUpload';
@@ -751,9 +753,22 @@ function SummaryBar({ tasks }: { tasks: Task[] }) {
 
 type ViewMode = 'list' | 'kanban';
 
+const DEPT_LABELS: Record<string, string> = {
+  juridico: 'Jurídico',
+  tecnologia: 'Tecnologia',
+  santa_catarina: 'Santa Catarina',
+  pedagogico: 'Pedagógico',
+  operacoes_locais: 'Operações Locais',
+  relacoes_publicas: 'Relações Públicas',
+  administrativo_financeiro: 'Adm. Financeiro',
+};
+
 function WorkstreamsContent() {
   const { tasks, addTask, updateTask } = useProject();
+  const { data: session } = useSession();
   const searchParams = useSearchParams();
+  const userRole = session?.user?.role;
+  const userDeptId = session?.user?.departmentId;
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [openDepts, setOpenDepts] = useState<Set<string>>(new Set());
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('todas');
@@ -785,14 +800,28 @@ function WorkstreamsContent() {
     });
   }, []);
 
+  // Filter tasks by department for non-admin users
+  const visibleTasks = useMemo(() => {
+    if (isAdmin(userRole)) return tasks;
+    if (!userDeptId) return tasks;
+    return tasks.filter((t) => t.departmentId === userDeptId);
+  }, [tasks, userRole, userDeptId]);
+
+  // Filter visible departments
+  const visibleDepartments = useMemo(() => {
+    if (isAdmin(userRole)) return departments;
+    if (!userDeptId) return departments;
+    return departments.filter((d) => d.id === userDeptId);
+  }, [userRole, userDeptId]);
+
   // Build tasks per department
   const deptTasksMap = useMemo(() => {
     const map: Record<string, Task[]> = {};
-    departments.forEach((d) => {
-      map[d.id] = tasks.filter((t) => t.departmentId === d.id);
+    visibleDepartments.forEach((d) => {
+      map[d.id] = visibleTasks.filter((t) => t.departmentId === d.id);
     });
     return map;
-  }, [tasks]);
+  }, [visibleTasks, visibleDepartments]);
 
   const statusFilters: { key: StatusFilter; label: string }[] = [
     { key: 'todas', label: 'Todas' },
@@ -823,8 +852,22 @@ function WorkstreamsContent() {
         </p>
       </motion.div>
 
+      {/* Department filter banner for non-admin */}
+      {!isAdmin(userRole) && userDeptId && (
+        <motion.div
+          initial={{ opacity: 0, y: -5 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="rounded-xl px-4 py-3 bg-[#00B4D8]/10 border border-[#00B4D8]/20 flex items-center gap-2"
+        >
+          <Filter size={14} className="text-[#00B4D8] shrink-0" />
+          <p className="text-sm text-[#00B4D8]">
+            Mostrando tarefas do departamento: <span className="font-semibold">{DEPT_LABELS[userDeptId] ?? userDeptId}</span>
+          </p>
+        </motion.div>
+      )}
+
       {/* Summary Bar */}
-      <SummaryBar tasks={tasks} />
+      <SummaryBar tasks={visibleTasks} />
 
       {/* View Toggle + Filters and Sort */}
       <motion.div
@@ -906,7 +949,7 @@ function WorkstreamsContent() {
           animate={{ opacity: 1, y: 0 }}
         >
           <KanbanBoard
-            tasks={tasks}
+            tasks={visibleTasks}
             onEditTask={(id) => setEditingTaskId(id)}
             onStatusChange={(id, status) => updateTask(id, { status: status as Task['status'] })}
             onAddTask={(status: TaskStatus) => {
@@ -924,7 +967,7 @@ function WorkstreamsContent() {
 
       {/* Workstream Accordion List */}
       {viewMode === 'list' && <div className="space-y-3">
-        {departments.map((dept, i) => (
+        {visibleDepartments.map((dept, i) => (
           <motion.div
             key={dept.id}
             initial={{ opacity: 0, y: 15 }}
@@ -934,7 +977,7 @@ function WorkstreamsContent() {
             <WorkstreamItem
               dept={dept}
               deptTasks={deptTasksMap[dept.id] || []}
-              allTasks={tasks}
+              allTasks={visibleTasks}
               isOpen={openDepts.has(dept.id)}
               onToggle={() => toggleDept(dept.id)}
               statusFilter={statusFilter}

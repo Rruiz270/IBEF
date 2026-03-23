@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { useSession, signOut } from 'next-auth/react';
 import { useProject } from '@/contexts/ProjectContext';
+import { isAdmin } from '@/lib/roles';
 import NotificationBell from './NotificationBell';
 import SyncIndicator from './SyncIndicator';
 
@@ -212,7 +213,12 @@ export default function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 px-2 py-2 space-y-1 overflow-y-auto">
-        {navItems.map((item) => {
+        {navItems.filter((item) => {
+          const role = session?.user?.role;
+          if (item.href === '/juridico') return isAdmin(role) || role === 'juridico';
+          if (item.href === '/santa-catarina') return isAdmin(role) || role === 'santa_catarina';
+          return true;
+        }).map((item) => {
           const active = isActive(item.href);
           const Icon = item.icon;
 
@@ -303,7 +309,7 @@ export default function Sidebar() {
                   className="flex-1 overflow-hidden min-w-0"
                 >
                   <p className="text-xs font-medium text-white truncate">{session.user.name}</p>
-                  <p className="text-[10px] text-white/40 truncate">
+                  <p className={`text-[10px] truncate ${isAdmin(session.user.role) ? 'text-amber-400 font-semibold' : 'text-white/40'}`}>
                     {ROLE_LABELS[session.user.role ?? ''] ?? session.user.role}
                   </p>
                 </motion.div>
