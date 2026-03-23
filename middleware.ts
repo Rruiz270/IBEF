@@ -1,20 +1,22 @@
+import { NextRequest, NextResponse } from "next/server";
 import { auth } from "./auth";
-import { NextResponse } from "next/server";
 
 const API_SECRET = process.env.API_SECRET;
 
-const PUBLIC_PATHS = ["/", "/login", "/api/auth"];
+const PUBLIC_PATHS = ["/", "/login"];
 
-export default auth((req) => {
+export default async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // API routes: check API key (except /api/auth which is NextAuth)
-  if (pathname.startsWith("/api/") && !pathname.startsWith("/api/auth")) {
+  // Always allow NextAuth internal routes
+  if (pathname.startsWith("/api/auth")) {
+    return NextResponse.next();
+  }
+
+  // API routes: check API key
+  if (pathname.startsWith("/api/")) {
     if (!API_SECRET) {
-      return NextResponse.json(
-        { error: "Server misconfigured" },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: "Server misconfigured" }, { status: 500 });
     }
     const token =
       req.headers.get("x-api-key") ??
@@ -26,26 +28,23 @@ export default auth((req) => {
   }
 
   // Public paths: allow through
-  if (
-    PUBLIC_PATHS.some(
-      (p) => pathname === p || pathname.startsWith("/api/auth")
-    )
-  ) {
+  if (PUBLIC_PATHS.includes(pathname)) {
     return NextResponse.next();
   }
 
-  // Protected paths: require auth
-  if (!req.auth) {
+  // Protected paths: check session
+  const session = await auth();
+  if (!session) {
     const loginUrl = new URL("/login", req.url);
     loginUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
   return NextResponse.next();
-});
+}
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|icons|manifest.json|sw.js|.*\\.svg$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|icons|manifest.json|sw.js|.*\\.svg$|.*\\.png$|.*\\.jpg$|.*\\.ico$).*)",
   ],
 };
