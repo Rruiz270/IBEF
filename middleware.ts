@@ -2,9 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 const API_SECRET = process.env.API_SECRET;
 
-// Routes that don't need protection
-const PUBLIC_PATHS = ["/", "/login", "/api/auth"];
-
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
@@ -27,12 +24,12 @@ export function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // Public paths — allow through
+  // Public paths
   if (pathname === "/" || pathname.startsWith("/login")) {
     return NextResponse.next();
   }
 
-  // For protected routes: check for session token cookie
+  // Protected routes: check session cookie
   const sessionToken =
     req.cookies.get("next-auth.session-token") ??
     req.cookies.get("__Secure-next-auth.session-token");
