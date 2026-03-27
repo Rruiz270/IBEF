@@ -1,570 +1,322 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Download, Upload, ZoomIn, ZoomOut, Plus, X, Printer } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Network, Users, Plus } from 'lucide-react';
+import OrgChart from '../../components/OrgChart';
+import PersonCard from '../../components/PersonCard';
+import { people, departments } from '../../data/projectData';
 
-interface NodeData {
-  id: string;
-  title: string;
-  name: string;
-  style: 'assembly' | 'council' | 'executive' | 'legal' | 'dept' | 'sub';
-  comment?: string;
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: 'easeOut' as const },
+  },
+};
+
+// Cores por departamento
+const deptColors: Record<string, { bg: string; border: string; icon: string; text: string }> = {
+  juridico: {
+    bg: 'from-violet-900/40 to-violet-800/30',
+    border: 'border-violet-500/30',
+    icon: '⚖️',
+    text: 'text-violet-300',
+  },
+  tecnologia: {
+    bg: 'from-emerald-900/40 to-emerald-800/30',
+    border: 'border-emerald-500/30',
+    icon: '💻',
+    text: 'text-emerald-300',
+  },
+  relacoes_publicas: {
+    bg: 'from-amber-900/40 to-amber-800/30',
+    border: 'border-amber-500/30',
+    icon: '🤝',
+    text: 'text-amber-300',
+  },
+  operacoes_locais: {
+    bg: 'from-rose-900/40 to-rose-800/30',
+    border: 'border-rose-500/30',
+    icon: '📍',
+    text: 'text-rose-300',
+  },
+  administrativo_financeiro: {
+    bg: 'from-cyan-900/40 to-cyan-800/30',
+    border: 'border-cyan-500/30',
+    icon: '💰',
+    text: 'text-cyan-300',
+  },
+  pedagogico: {
+    bg: 'from-pink-900/40 to-pink-800/30',
+    border: 'border-pink-500/30',
+    icon: '🎓',
+    text: 'text-pink-300',
+  },
+  santa_catarina: {
+    bg: 'from-indigo-900/40 to-indigo-800/30',
+    border: 'border-indigo-500/30',
+    icon: '🏛️',
+    text: 'text-indigo-300',
+  },
+};
+
+function getRoleColor(role: string): string {
+  switch (role) {
+    case 'lider':
+      return 'bg-amber-500/20 border-amber-500/50 text-amber-300';
+    case 'fundador':
+      return 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300';
+    case 'convidado':
+      return 'bg-purple-500/20 border-purple-500/50 text-purple-300';
+    case 'contratacao':
+      return 'bg-cyan-500/20 border-cyan-500/50 text-cyan-300';
+    default:
+      return 'bg-slate-500/20 border-slate-500/50 text-slate-300';
+  }
+}
+
+function getLeaderCard(person: any) {
+  const initials = person.name
+    .split(' ')
+    .map((n: string) => n.charAt(0))
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="col-span-full mx-auto mb-12"
+    >
+      <div className="bg-gradient-to-r from-blue-600/20 via-blue-500/10 to-blue-600/20 border border-blue-500/30 rounded-2xl p-8 max-w-lg w-full backdrop-blur-sm">
+        <div className="flex items-start gap-4">
+          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center text-2xl font-bold text-white ring-2 ring-amber-400">
+            {initials}
+          </div>
+          <div className="flex-1">
+            <div className="text-xs font-bold text-amber-400 uppercase tracking-wider mb-1">
+              👑 Líder do Projeto
+            </div>
+            <h2 className="text-xl font-bold text-white mb-1">{person.name}</h2>
+            <p className="text-sm text-blue-200">{person.title}</p>
+            <div className="flex gap-2 mt-3">
+              <span className="px-3 py-1 rounded-full bg-amber-500/20 border border-amber-500/50 text-amber-300 text-xs font-semibold">
+                Líder
+              </span>
+              {person.assembleiaConfirmed && (
+                <span className="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 text-xs font-semibold">
+                  Assembleia OK
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
 }
 
 export default function OrganogramaVisualPage() {
-  const [zoom, setZoom] = useState(1);
-  const [nodes, setNodes] = useState<Record<string, NodeData>>({});
-  const [selectedNode, setSelectedNode] = useState<string | null>(null);
-  const [comment, setComment] = useState('');
-  const [editingNodeId, setEditingNodeId] = useState<string | null>(null);
-
-  // Load from localStorage on mount
-  useEffect(() => {
-    const saved = localStorage.getItem('organograma-i10-visual');
-    if (saved) {
-      try {
-        setNodes(JSON.parse(saved));
-      } catch (e) {}
-    }
-  }, []);
-
-  // Save to localStorage
-  const saveNodes = (newNodes: Record<string, NodeData>) => {
-    setNodes(newNodes);
-    localStorage.setItem('organograma-i10-visual', JSON.stringify(newNodes));
-  };
-
-  const updateNodeComment = (nodeId: string, newComment: string) => {
-    const updated = { ...nodes };
-    if (updated[nodeId]) {
-      updated[nodeId].comment = newComment;
-    }
-    saveNodes(updated);
-  };
-
-  const handleExport = () => {
-    const json = JSON.stringify(nodes, null, 2);
-    const blob = new Blob([json], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `organograma-i10-${new Date().toISOString().split('T')[0]}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const handleImport = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.json';
-    input.onchange = (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        try {
-          const data = JSON.parse(ev.target?.result as string);
-          saveNodes(data);
-          alert('Dados importados com sucesso!');
-        } catch (err) {
-          alert('Erro ao importar arquivo');
-        }
-      };
-      reader.readAsText(file);
-    };
-    input.click();
-  };
-
-  const handlePrint = () => {
-    window.print();
-  };
+  const leader = people.find((p) => p.role === 'lider');
+  const allDepts = departments.filter((d) =>
+    d.id !== 'santa_catarina' && d.id !== 'pedagogico' && d.id !== 'administrativo_financeiro'
+  );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 overflow-hidden">
+    <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-8 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 min-h-screen">
       {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-r from-[#1a5276] to-[#2980b9] text-white p-6 sm:p-8 shadow-lg"
-      >
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-3xl sm:text-4xl font-bold mb-2">Organograma - Instituto i10</h1>
-          <p className="text-blue-100">Estrutura Organizacional ICT | Edifício Corporativo Softplan, Sapiens Park</p>
-        </div>
-      </motion.div>
-
-      {/* Toolbar */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="bg-white border-b border-slate-200 p-4 sm:p-6 shadow-sm sticky top-0 z-40"
+        transition={{ duration: 0.5 }}
       >
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center gap-3">
-          <button
-            onClick={() => setZoom(Math.min(zoom + 0.2, 1.5))}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#2980b9] text-white hover:bg-[#1a6da0] transition-colors font-medium text-sm"
-          >
-            <ZoomIn size={18} /> Zoom +
-          </button>
-          <button
-            onClick={() => setZoom(Math.max(zoom - 0.2, 0.5))}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#2980b9] text-white hover:bg-[#1a6da0] transition-colors font-medium text-sm"
-          >
-            <ZoomOut size={18} /> Zoom -
-          </button>
-          <button
-            onClick={() => setZoom(1)}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-300 text-slate-700 hover:bg-slate-400 transition-colors font-medium text-sm"
-          >
-            Reset
-          </button>
-
-          <div className="w-full sm:w-auto flex-1 sm:flex-initial" />
-
-          <button
-            onClick={handleExport}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#27ae60] text-white hover:bg-[#1e8449] transition-colors font-medium text-sm"
-          >
-            <Download size={18} /> Exportar
-          </button>
-          <button
-            onClick={handleImport}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#27ae60] text-white hover:bg-[#1e8449] transition-colors font-medium text-sm"
-          >
-            <Upload size={18} /> Importar
-          </button>
-          <button
-            onClick={handlePrint}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#e67e22] text-white hover:bg-[#d35400] transition-colors font-medium text-sm"
-          >
-            <Printer size={18} /> Imprimir
-          </button>
+        <div className="flex items-center gap-3 mb-1">
+          <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
+            <Network size={20} className="text-blue-400" />
+          </div>
+          <div>
+            <h1 className="text-3xl sm:text-4xl font-bold text-white">Organograma i10</h1>
+            <p className="text-sm text-slate-400">Estrutura organizacional do Instituto i10</p>
+          </div>
         </div>
       </motion.div>
 
-      {/* Main Chart Area */}
-      <div className="overflow-x-auto overflow-y-auto h-[calc(100vh-200px)] flex items-start justify-center p-8">
-        <motion.div
-          style={{ transform: `scale(${zoom})`, transformOrigin: 'top center' }}
-          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-          className="min-w-max"
-        >
-          <div className="space-y-12">
-            {/* ====== LEVEL 1: ASSEMBLEIA ====== */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="flex flex-col items-center gap-6"
-            >
-              <OrganogNode
-                title="Assembleia Geral"
-                name="Órgão Máximo de Deliberação"
-                style="assembly"
-                nodeId="assembleia"
-                selectedNode={selectedNode}
-                onSelect={setSelectedNode}
-                onCommentChange={updateNodeComment}
-                nodes={nodes}
-              />
+      {/* Líder do Projeto */}
+      {leader && (
+        <div className="grid grid-cols-1">
+          {getLeaderCard(leader)}
+        </div>
+      )}
 
-              <div className="flex gap-8 text-sm">
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 min-w-[180px]">
-                  <strong className="text-blue-900 block mb-2">Mesa da Assembleia</strong>
-                  <div className="text-blue-700 space-y-1 text-xs">
-                    <div>Pres.: <span className="font-semibold">Enio</span> <span className="text-red-500">*</span></div>
-                    <div>Vice: <span className="font-semibold">B.Q.</span> <span className="text-red-500">?</span></div>
-                    <div>Sec.: <span className="font-semibold">Gustavo</span></div>
+      {/* Departamentos Grid */}
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+      >
+        {allDepts.map((dept) => {
+          const deptPeople = people.filter((p) => p.departmentIds.includes(dept.id));
+          const colors = deptColors[dept.id] || deptColors.juridico;
+
+          return (
+            <motion.div key={dept.id} variants={itemVariants}>
+              <div
+                className={`bg-gradient-to-br ${colors.bg} border ${colors.border} rounded-xl overflow-hidden backdrop-blur-sm transition-all hover:shadow-lg hover:shadow-slate-900/50`}
+              >
+                {/* Dept Header */}
+                <div className="p-4 border-b border-white/5">
+                  <div className="flex items-start gap-3">
+                    <div className="text-2xl">{colors.icon}</div>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-bold text-white">{dept.name}</h3>
+                      <p className="text-xs text-slate-400">{deptPeople.length} membro(s)</p>
+                    </div>
                   </div>
                 </div>
-                <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 min-w-[220px]">
-                  <strong className="text-slate-900 block mb-2">Associados (Fundadores)</strong>
-                  <div className="text-slate-600 text-xs space-y-1">
-                    <div>BQ • Mercia • Gustavo</div>
-                    <div>B.Almeida • Emerson • Enio</div>
-                  </div>
+
+                {/* Dept Members */}
+                <div className="p-4 space-y-3">
+                  {deptPeople.length > 0 ? (
+                    deptPeople.map((person) => {
+                      const initials = person.name
+                        .split(' ')
+                        .map((n) => n.charAt(0))
+                        .join('')
+                        .toUpperCase()
+                        .slice(0, 2);
+
+                      return (
+                        <motion.div
+                          key={person.id}
+                          whileHover={{ x: 4 }}
+                          className={`p-3 rounded-lg border ${getRoleColor(
+                            person.role
+                          )} transition-all hover:shadow-md`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-xs font-bold text-slate-300 flex-shrink-0">
+                              {initials}
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="text-sm font-semibold text-white truncate">
+                                {person.name}
+                              </p>
+                              <p className="text-xs text-slate-400 truncate">{person.title}</p>
+                            </div>
+                            {person.assembleiaConfirmed && (
+                              <span className="text-xs px-2 py-0.5 bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 rounded whitespace-nowrap">
+                                ✓
+                              </span>
+                            )}
+                          </div>
+                        </motion.div>
+                      );
+                    })
+                  ) : (
+                    <div className="p-3 rounded-lg border border-dashed border-slate-500/30 bg-slate-900/20 text-center">
+                      <p className="text-xs text-slate-500">A contratar</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.div>
+          );
+        })}
+      </motion.div>
 
-            {/* Vertical line */}
-            <div className="flex justify-center">
-              <div className="w-1 h-12 bg-gradient-to-b from-slate-400 to-slate-300 rounded-full" />
-            </div>
-
-            {/* ====== LEVEL 2: COUNCILS ====== */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="flex justify-center gap-24"
-            >
-              <OrganogNode
-                title="Conselho Fiscal"
-                name="Emerson / Gustavo"
-                style="council"
-                nodeId="conselho-fiscal"
-                selectedNode={selectedNode}
-                onSelect={setSelectedNode}
-                onCommentChange={updateNodeComment}
-                nodes={nodes}
-              />
-              <div className="w-1 h-24 bg-slate-300" />
-              <OrganogNode
-                title="Conselho de Notáveis"
-                name="A definir"
-                style="advisory"
-                nodeId="conselho-notaveis"
-                selectedNode={selectedNode}
-                onSelect={setSelectedNode}
-                onCommentChange={updateNodeComment}
-                nodes={nodes}
-              />
-            </motion.div>
-
-            {/* Vertical line */}
-            <div className="flex justify-center">
-              <div className="w-1 h-12 bg-gradient-to-b from-slate-400 to-slate-300 rounded-full" />
-            </div>
-
-            {/* ====== LEVEL 3: DIRETORIA EXECUTIVA ====== */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="flex justify-center gap-8"
-            >
-              <OrganogNode
-                title="Diretoria Executiva"
-                name="Enio (Raphael)"
-                style="executive"
-                nodeId="diretoria"
-                subtitle="*Regimento Interno"
-                selectedNode={selectedNode}
-                onSelect={setSelectedNode}
-                onCommentChange={updateNodeComment}
-                nodes={nodes}
-              />
-              <div className="w-16 h-1 bg-slate-400" />
-              <OrganogNode
-                title="Jurídico"
-                name="Mercia"
-                style="legal"
-                nodeId="juridico"
-                selectedNode={selectedNode}
-                onSelect={setSelectedNode}
-                onCommentChange={updateNodeComment}
-                nodes={nodes}
-              />
-            </motion.div>
-
-            {/* Vertical line */}
-            <div className="flex justify-center">
-              <div className="w-1 h-12 bg-gradient-to-b from-slate-400 to-slate-300 rounded-full" />
-            </div>
-
-            {/* Horizontal connector line for departments */}
-            <div className="flex justify-center px-8">
-              <div className="w-96 h-1 bg-gradient-to-r from-transparent via-slate-400 to-transparent" />
-            </div>
-
-            {/* ====== LEVEL 4: DEPARTMENTS ====== */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="grid grid-cols-3 gap-16 justify-center"
-            >
-              {/* TECNOLOGIA */}
-              <DepartmentColumn
-                deptTitle="Tecnologia"
-                deptLead="B. Almeida"
-                deptId="tecnologia"
-                subItems={[
-                  { id: 'tec-sc', title: 'SC', name: '1-2' },
-                  { id: 'tec-sp', title: 'SP', name: '2' },
-                ]}
-                selectedNode={selectedNode}
-                onSelect={setSelectedNode}
-                onCommentChange={updateNodeComment}
-                nodes={nodes}
-              />
-
-              {/* OPERACOES */}
-              <DepartmentColumn
-                deptTitle="Operações"
-                deptLead="Gustavo"
-                deptId="operacoes"
-                subItems={[
-                  { id: 'ops-sc', title: 'SC - Campo/Logística', name: 'Agente Local' },
-                  { id: 'ops-sp', title: 'SP', name: '1' },
-                ]}
-                selectedNode={selectedNode}
-                onSelect={setSelectedNode}
-                onCommentChange={updateNodeComment}
-                nodes={nodes}
-              />
-
-              {/* PEDAGOGICO */}
-              <DepartmentColumn
-                deptTitle="Pedagógico"
-                deptLead="A definir"
-                deptId="pedagogico"
-                isUndefined
-                subItems={[
-                  { id: 'ped-sc', title: 'SC', name: '1' },
-                  { id: 'ped-sp', title: 'SP', name: '1' },
-                ]}
-                selectedNode={selectedNode}
-                onSelect={setSelectedNode}
-                onCommentChange={updateNodeComment}
-                nodes={nodes}
-              />
-            </motion.div>
-
-            {/* Notes Section */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className="bg-white border-l-4 border-red-500 rounded-lg p-6 max-w-2xl mx-auto shadow-sm"
-            >
-              <h3 className="text-red-700 font-bold mb-4">Observações</h3>
-              <ul className="text-sm text-slate-600 space-y-3">
-                <li>
-                  <span className="text-red-500 font-bold">*</span> Regimento Interno necessário para evitar conflito de interesses (Presidente + Diretor Executivo)
-                </li>
-                <li>
-                  <span className="text-red-500 font-bold">?</span> Posições a confirmar na próxima assembleia
-                </li>
-                <li>
-                  <strong>SC</strong> = Santa Catarina | <strong>SP</strong> = São Paulo
-                </li>
-                <li>
-                  <strong>Tipos de Associados:</strong> Fundadores, Contribuintes, Benfeitor, Honorário
-                </li>
-                <li>
-                  <strong>Escritório:</strong> Edifício Corporativo Softplan, Sapiens Park, Av. Luiz Boiteux Piazza, 1302, Canasvieiras, Florianópolis/SC
-                </li>
-              </ul>
-            </motion.div>
+      {/* Conselho Fiscal & Consultivo */}
+      <motion.section
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="mt-12"
+      >
+        <motion.div variants={itemVariants} className="flex items-center gap-3 mb-6">
+          <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center">
+            <Users size={16} className="text-purple-300" />
           </div>
+          <h2 className="text-xl font-bold text-white">Órgãos Colegiados</h2>
         </motion.div>
-      </div>
 
-      {/* Node Details Panel */}
-      <AnimatePresence>
-        {selectedNode && nodes[selectedNode] && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {/* Conselho Fiscal */}
           <motion.div
-            initial={{ opacity: 0, x: 400 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 400 }}
-            className="fixed right-0 top-0 h-screen w-96 bg-white shadow-2xl border-l border-slate-200 p-6 overflow-y-auto z-50"
+            variants={itemVariants}
+            className="bg-gradient-to-br from-orange-900/40 to-orange-800/30 border border-orange-500/30 rounded-xl p-6 backdrop-blur-sm"
           >
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-bold text-slate-900">Detalhes</h3>
-              <button
-                onClick={() => setSelectedNode(null)}
-                className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            <div className="space-y-6">
-              {selectedNode && nodes[selectedNode] && (
-                <>
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-500 uppercase mb-2">Cargo</label>
-                    <p className="text-slate-900 font-semibold">{nodes[selectedNode].title}</p>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-500 uppercase mb-2">Responsável</label>
-                    <p className="text-slate-900 font-semibold">{nodes[selectedNode].name}</p>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-500 uppercase mb-2">Tipo</label>
-                    {(() => {
-                      const style = nodes[selectedNode].style as string;
-                      const styleMap: Record<string, string> = {
-                        assembly: 'bg-blue-100 text-blue-700',
-                        executive: 'bg-red-100 text-red-700',
-                        council: 'bg-yellow-100 text-yellow-700',
-                        advisory: 'bg-purple-100 text-purple-700',
-                        legal: 'bg-green-100 text-green-700',
-                        dept: 'bg-blue-100 text-blue-700',
-                        sub: 'bg-slate-100 text-slate-700',
-                      };
-                      const bgClass = styleMap[style] || 'bg-slate-100 text-slate-700';
-                      
-                      return (
-                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${bgClass}`}>
-                          {style.toUpperCase()}
-                        </span>
-                      );
-                    })()}
-                  </div>
-                </>
-              )}
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-500 uppercase mb-2">Comentários</label>
-                <textarea
-                  value={nodes[selectedNode]?.comment || ''}
-                  onChange={(e) => updateNodeComment(selectedNode, e.target.value)}
-                  placeholder="Adicione observações..."
-                  className="w-full h-32 p-3 border border-slate-200 rounded-lg text-sm font-mono focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 resize-none"
-                />
+            <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+              <span className="text-xl">⚠️</span> Conselho Fiscal
+            </h3>
+            <div className="space-y-3">
+              <div className="p-3 bg-slate-900/40 rounded-lg border border-orange-500/20">
+                <p className="text-sm font-semibold text-white">Emerson</p>
+                <p className="text-xs text-slate-400">Conselho Fiscal</p>
+              </div>
+              <div className="p-3 bg-slate-900/40 rounded-lg border border-orange-500/20">
+                <p className="text-sm font-semibold text-white">Gustavo</p>
+                <p className="text-xs text-slate-400">Conselho Fiscal (2º)</p>
               </div>
             </div>
           </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
 
-// Component: Organization Node
-interface OrganogNodeProps {
-  title: string;
-  name: string;
-  style: string;
-  nodeId: string;
-  subtitle?: string;
-  selectedNode: string | null;
-  onSelect: (id: string) => void;
-  onCommentChange: (id: string, comment: string) => void;
-  nodes: Record<string, NodeData>;
-}
-
-function OrganogNode({
-  title,
-  name,
-  style,
-  nodeId,
-  subtitle,
-  selectedNode,
-  onSelect,
-  onCommentChange,
-  nodes,
-}: OrganogNodeProps) {
-  const getStyleClass = (s: string): string => {
-    const styles: Record<string, string> = {
-      assembly: 'bg-gradient-to-br from-[#1a5276] to-[#2471a3] border-[#1a5276] text-white',
-      executive: 'bg-gradient-to-br from-[#c0392b] to-[#e74c3c] border-[#c0392b] text-white',
-      council: 'bg-gradient-to-br from-[#d4ac0d] to-[#f1c40f] border-[#d4ac0d] text-gray-800',
-      advisory: 'bg-gradient-to-br from-[#8e44ad] to-[#a569bd] border-[#8e44ad] text-white',
-      legal: 'bg-gradient-to-br from-[#117a65] to-[#1abc9c] border-[#117a65] text-white',
-      dept: 'bg-white border-[#2e86c1] text-slate-900 shadow-md',
-      sub: 'bg-slate-50 border-slate-300 text-slate-800',
-    };
-    return styles[s] || 'bg-white border-slate-300 text-slate-900';
-  };
-
-  const isSelected = selectedNode === nodeId;
-
-  return (
-    <motion.button
-      whileHover={{ scale: 1.05, y: -4 }}
-      whileTap={{ scale: 0.98 }}
-      onClick={() => onSelect(nodeId)}
-      className={`
-        relative p-5 rounded-xl border-2 min-w-[180px] transition-all
-        ${getStyleClass(style)}
-        ${isSelected ? 'ring-4 ring-amber-400 shadow-2xl' : 'shadow-lg'}
-        hover:shadow-xl
-      `}
-    >
-      <div className="text-left">
-        <div className={`text-xs font-bold uppercase tracking-wider mb-2 ${
-          style === 'dept' || style === 'sub' ? 'text-slate-500' : 'opacity-75'
-        }`}>
-          {title}
+          {/* Conselho Consultivo */}
+          <motion.div
+            variants={itemVariants}
+            className="bg-gradient-to-br from-purple-900/40 to-purple-800/30 border border-purple-500/30 rounded-xl p-6 backdrop-blur-sm"
+          >
+            <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+              <span className="text-xl">🎯</span> Conselho Consultivo
+            </h3>
+            <div className="space-y-3">
+              {people
+                .filter((p) => p.role === 'convidado')
+                .map((person) => (
+                  <div key={person.id} className="p-3 bg-slate-900/40 rounded-lg border border-purple-500/20">
+                    <p className="text-sm font-semibold text-white">{person.name}</p>
+                    <p className="text-xs text-slate-400">{person.title}</p>
+                  </div>
+                ))}
+            </div>
+          </motion.div>
         </div>
-        <div className={`text-sm font-bold ${
-          style === 'dept' || style === 'sub' ? 'text-blue-600' : 'text-current'
-        }`}>
-          {name}
-        </div>
-        {subtitle && (
-          <div className={`text-xs mt-1 ${
-            style === 'executive' ? 'text-red-100' : 'text-current opacity-70'
-          }`}>
-            {subtitle}
-          </div>
-        )}
-      </div>
+      </motion.section>
 
-      {nodes[nodeId]?.comment && (
-        <div className="absolute -top-2 -right-2 w-5 h-5 bg-amber-400 rounded-full flex items-center justify-center text-xs font-bold text-amber-900">
-          💬
-        </div>
-      )}
-    </motion.button>
-  );
-}
-
-// Component: Department Column
-interface DepartmentColumnProps {
-  deptTitle: string;
-  deptLead: string;
-  deptId: string;
-  isUndefined?: boolean;
-  subItems: Array<{ id: string; title: string; name: string }>;
-  selectedNode: string | null;
-  onSelect: (id: string) => void;
-  onCommentChange: (id: string, comment: string) => void;
-  nodes: Record<string, NodeData>;
-}
-
-function DepartmentColumn({
-  deptTitle,
-  deptLead,
-  deptId,
-  isUndefined,
-  subItems,
-  selectedNode,
-  onSelect,
-  onCommentChange,
-  nodes,
-}: DepartmentColumnProps) {
-  return (
-    <div className="flex flex-col items-center gap-4">
-      <OrganogNode
-        title={deptTitle}
-        name={deptLead}
-        style="dept"
-        nodeId={deptId}
-        selectedNode={selectedNode}
-        onSelect={onSelect}
-        onCommentChange={onCommentChange}
-        nodes={nodes}
-      />
-
-      {/* Vertical connector */}
-      <div className="w-1 h-6 bg-slate-400 rounded-full" />
-
-      {/* Sub items */}
-      <div className="space-y-4">
-        {subItems.map((item) => (
-          <div key={item.id} className="flex flex-col items-center gap-2">
-            <OrganogNode
-              title={item.title}
-              name={item.name}
-              style="sub"
-              nodeId={item.id}
-              selectedNode={selectedNode}
-              onSelect={onSelect}
-              onCommentChange={onCommentChange}
-              nodes={nodes}
-            />
-          </div>
-        ))}
-      </div>
+      {/* Notes */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.6 }}
+        className="bg-amber-900/20 border border-amber-500/30 rounded-xl p-6 backdrop-blur-sm mt-12"
+      >
+        <h3 className="text-amber-400 font-bold mb-3">📌 Observações</h3>
+        <ul className="text-sm text-slate-300 space-y-2">
+          <li>
+            <strong>Regimento Interno:</strong> Necessário para evitar conflito de interesses
+            (Presidente + Diretor Executivo)
+          </li>
+          <li>
+            <strong>Escritório:</strong> Edifício Corporativo Softplan, Sapiens Park, Av. Luiz
+            Boiteux Piazza 1302, Canasvieiras, Florianópolis/SC
+          </li>
+          <li>
+            <strong>Fundadores confirmados na assembleia:</strong> 7 membros com status "Assembleia OK"
+          </li>
+        </ul>
+      </motion.div>
     </div>
   );
 }
