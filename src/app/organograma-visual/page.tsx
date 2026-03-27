@@ -392,9 +392,10 @@ export default function OrganogramaVisualPage() {
                   nodes[selectedNode]?.style === 'council' ? 'bg-yellow-100 text-yellow-700' :
                   nodes[selectedNode]?.style === 'advisory' ? 'bg-purple-100 text-purple-700' :
                   nodes[selectedNode]?.style === 'legal' ? 'bg-green-100 text-green-700' :
+                  nodes[selectedNode]?.style === 'dept' ? 'bg-blue-100 text-blue-700' :
                   'bg-slate-100 text-slate-700'
                 }`}>
-                  {nodes[selectedNode]?.style.toUpperCase()}
+                  {(nodes[selectedNode]?.style ?? 'unknown').toUpperCase()}
                 </span>
               </div>
 
@@ -439,14 +440,17 @@ function OrganogNode({
   onCommentChange,
   nodes,
 }: OrganogNodeProps) {
-  const styleClasses = {
-    assembly: 'bg-gradient-to-br from-[#1a5276] to-[#2471a3] border-[#1a5276] text-white',
-    executive: 'bg-gradient-to-br from-[#c0392b] to-[#e74c3c] border-[#c0392b] text-white',
-    council: 'bg-gradient-to-br from-[#d4ac0d] to-[#f1c40f] border-[#d4ac0d] text-gray-800',
-    advisory: 'bg-gradient-to-br from-[#8e44ad] to-[#a569bd] border-[#8e44ad] text-white',
-    legal: 'bg-gradient-to-br from-[#117a65] to-[#1abc9c] border-[#117a65] text-white',
-    dept: 'bg-white border-[#2e86c1] text-slate-900 shadow-md',
-    sub: 'bg-slate-50 border-slate-300 text-slate-800',
+  const getStyleClass = (s: string): string => {
+    const styles: Record<string, string> = {
+      assembly: 'bg-gradient-to-br from-[#1a5276] to-[#2471a3] border-[#1a5276] text-white',
+      executive: 'bg-gradient-to-br from-[#c0392b] to-[#e74c3c] border-[#c0392b] text-white',
+      council: 'bg-gradient-to-br from-[#d4ac0d] to-[#f1c40f] border-[#d4ac0d] text-gray-800',
+      advisory: 'bg-gradient-to-br from-[#8e44ad] to-[#a569bd] border-[#8e44ad] text-white',
+      legal: 'bg-gradient-to-br from-[#117a65] to-[#1abc9c] border-[#117a65] text-white',
+      dept: 'bg-white border-[#2e86c1] text-slate-900 shadow-md',
+      sub: 'bg-slate-50 border-slate-300 text-slate-800',
+    };
+    return styles[s] || 'bg-white border-slate-300 text-slate-900';
   };
 
   const isSelected = selectedNode === nodeId;
@@ -458,7 +462,7 @@ function OrganogNode({
       onClick={() => onSelect(nodeId)}
       className={`
         relative p-5 rounded-xl border-2 min-w-[180px] transition-all
-        ${styleClasses[style as keyof typeof styleClasses]}
+        ${getStyleClass(style)}
         ${isSelected ? 'ring-4 ring-amber-400 shadow-2xl' : 'shadow-lg'}
         hover:shadow-xl
       `}
