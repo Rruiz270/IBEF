@@ -110,88 +110,158 @@ export const phases: Phase[] = [
 // ---------------------------------------------------------------------------
 
 export const people: Person[] = [
-  // --- Fundadores (primeira assembleia) ---
+  // ====== NÍVEL 1: ASSEMBLEIA GERAL ======
   {
     id: 'pessoa-raphael',
     name: 'Raphael Ruiz',
     role: 'lider',
-    title: 'Líder do Projeto',
+    title: 'Presidente do Instituto i10',
     departmentIds: ['tecnologia', 'administrativo_financeiro'],
     email: null,
     notes:
-      'Líder geral do projeto ETEC. Responsável pela visão estratégica, relação com SED/SC e coordenação entre todas as áreas.',
+      'Líder geral do projeto ETEC. Responsável pela visão estratégica, relação com SED/SC e coordenação entre todas as áreas. Presidente do Instituto i10.',
+    avatarUrl: null,
+    assembleiaConfirmed: true,
+  },
+
+  // ====== NÍVEL 2: CONSELHO ADMINISTRATIVO ======
+  {
+    id: 'pessoa-cuio',
+    name: 'Cuio',
+    role: 'fundador',
+    title: 'Conselheiro / Vice-Presidente',
+    departmentIds: ['juridico'],
+    email: null,
+    notes:
+      'Vice-Presidente do Instituto i10. Responsável pelo conselho administrativo e supervisão estratégica.',
     avatarUrl: null,
     assembleiaConfirmed: true,
   },
   {
     id: 'pessoa-bruno-almeida',
+    name: 'Bruno Almeida (B.A.)',
+    role: 'fundador',
+    title: 'Conselheiro / Vice-Presidente',
+    departmentIds: ['tecnologia'],
+    email: null,
+    notes:
+      'Vice-Presidente (segunda cadeira). Líder técnico responsável pela arquitetura da plataforma, integrações e equipe de desenvolvimento.',
+    avatarUrl: null,
+    assembleiaConfirmed: true,
+  },
+  {
+    id: 'pessoa-gustavo-conselho',
+    name: 'Gustavo',
+    role: 'fundador',
+    title: 'Conselheiro / Secretário',
+    departmentIds: ['operacoes_locais'],
+    email: null,
+    notes:
+      'Secretário do Instituto i10. Responsável pela operação em Santa Catarina, rede de provedores locais e logística de campo.',
+    avatarUrl: null,
+    assembleiaConfirmed: true,
+  },
+
+  // ====== NÍVEL 3: CONSELHO FISCAL ======
+  {
+    id: 'pessoa-emerson-fiscal',
+    name: 'Emerson',
+    role: 'fundador',
+    title: 'Conselho Fiscal',
+    departmentIds: ['juridico'],
+    email: null,
+    notes:
+      'Membro do Conselho Fiscal. Responsável pela conformidade legal e auditoria interna.',
+    avatarUrl: null,
+    assembleiaConfirmed: true,
+  },
+  {
+    id: 'pessoa-gustavo-fiscal',
+    name: 'Gustavo (2º Fiscal)',
+    role: 'fundador',
+    title: 'Conselho Fiscal',
+    departmentIds: ['administrativo_financeiro'],
+    email: null,
+    notes:
+      'Segundo membro do Conselho Fiscal. Responsável pela auditoria financeira e conformidade.',
+    avatarUrl: null,
+    assembleiaConfirmed: true,
+  },
+
+  // ====== NÍVEL 3: DIRETORIA EXECUTIVA ======
+  {
+    id: 'pessoa-raphael-diretor',
+    name: 'Raphael Ruiz',
+    role: 'lider',
+    title: 'Diretor Executivo',
+    departmentIds: ['tecnologia', 'administrativo_financeiro'],
+    email: null,
+    notes:
+      'Diretor Executivo do Instituto i10. Execução operacional direta do projeto ETEC. Nota: Regimento Interno necessário para evitar conflito de interesses com a presidência.',
+    avatarUrl: null,
+    assembleiaConfirmed: true,
+  },
+
+  // ====== NÍVEL 4: DIRETORIAS SETORIAIS ======
+  {
+    id: 'pessoa-mercia-juridica',
+    name: 'Mercia',
+    role: 'fundador',
+    title: 'Diretora Jurídica / Mercado',
+    departmentIds: ['juridico'],
+    email: null,
+    notes:
+      'Diretora de Jurídico e Mercado. Responsável pelo registro do estatuto, conformidade legal, contratos de parceria e estratégia de mercado.',
+    avatarUrl: null,
+    assembleiaConfirmed: true,
+  },
+  {
+    id: 'pessoa-bruno-almeida-tec',
     name: 'Bruno Almeida',
     role: 'fundador',
     title: 'Diretor de Tecnologia',
     departmentIds: ['tecnologia'],
     email: null,
     notes:
-      'Líder técnico responsável pela arquitetura da plataforma, integrações e equipe de desenvolvimento.',
+      'Diretor de Tecnologia. Responsável pela arquitetura da plataforma, integrações com sistemas legados SC e equipe de desenvolvimento.',
     avatarUrl: null,
     assembleiaConfirmed: true,
   },
   {
-    id: 'pessoa-bruno-quick',
-    name: 'Bruno Quick',
-    role: 'fundador',
-    title: 'Relações Públicas e Parcerias Governamentais',
-    departmentIds: ['relacoes_publicas'],
-    email: null,
-    notes:
-      'Responsável pelas relações com governo de SC, articulação política e comunicação institucional.',
-    avatarUrl: null,
-    assembleiaConfirmed: true,
-  },
-  {
-    id: 'pessoa-mercia',
-    name: 'Mercia',
-    role: 'fundador',
-    title: 'Assessoria Jurídica (co-líder)',
-    departmentIds: ['juridico'],
-    email: null,
-    notes:
-      'Co-líder jurídica. Responsável pelo registro do estatuto, conformidade legal e contratos de parceria.',
-    avatarUrl: null,
-    assembleiaConfirmed: true,
-  },
-  {
-    id: 'pessoa-emerson',
-    name: 'Emerson',
-    role: 'fundador',
-    title: 'Assessoria Jurídica (co-líder)',
-    departmentIds: ['juridico'],
-    email: null,
-    notes:
-      'Co-líder jurídico. Atua junto com Mercia na estruturação jurídica do Instituto i10 e conformidade regulatória.',
-    avatarUrl: null,
-    assembleiaConfirmed: true,
-  },
-  {
-    id: 'pessoa-gustavo',
+    id: 'pessoa-gustavo-oper',
     name: 'Gustavo',
     role: 'fundador',
-    title: 'Operações e Provedores Locais',
+    title: 'Diretor de Operações',
     departmentIds: ['operacoes_locais'],
     email: null,
     notes:
-      'Responsável pela operação em Santa Catarina, rede de provedores locais e logística de campo.',
+      'Diretor de Operações. Responsável pela operação em Santa Catarina, rede de provedores locais, escritório de campo e logística.',
     avatarUrl: null,
     assembleiaConfirmed: true,
   },
   {
-    id: 'pessoa-enio',
+    id: 'pessoa-enio-administrativo',
     name: 'Enio',
     role: 'fundador',
-    title: 'Administrativo / Financeiro',
+    title: 'Diretor Administrativo e Financeiro',
     departmentIds: ['administrativo_financeiro'],
     email: null,
     notes:
-      'Co-líder da área administrativa e financeira. Planejamento orçamentário e compliance.',
+      'Diretor Administrativo e Financeiro. Responsável pelo planejamento orçamentário, compliance, gestão financeira e recursos humanos.',
+    avatarUrl: null,
+    assembleiaConfirmed: true,
+  },
+
+  // ====== NÍVEL 4: AGENTES REGIONAIS ======
+  {
+    id: 'pessoa-bruno-quick-rp',
+    name: 'Bruno Quick',
+    role: 'fundador',
+    title: 'Agente de Relações Governamentais - SC',
+    departmentIds: ['relacoes_publicas'],
+    email: null,
+    notes:
+      'Agente de Relações Públicas e Parcerias Governamentais. Responsável pelas relações com governo de SC, SED/SC e articulação política.',
     avatarUrl: null,
     assembleiaConfirmed: true,
   },
@@ -201,11 +271,11 @@ export const people: Person[] = [
     id: 'pessoa-daniel-aguado',
     name: 'Daniel Aguado',
     role: 'convidado',
-    title: 'Marketing Director - FDC (Fundação Dom Cabral)',
+    title: 'Conselheiro Consultivo - Marketing Director - FDC',
     departmentIds: [],
     email: null,
     notes:
-      'Diretor de Marketing na FDC. Potencial membro do conselho consultivo para estratégia de posicionamento e relacionamento institucional.',
+      'Diretor de Marketing na FDC. Membro do conselho consultivo para estratégia de posicionamento e relacionamento institucional.',
     avatarUrl: null,
     assembleiaConfirmed: false,
   },
@@ -213,11 +283,11 @@ export const people: Person[] = [
     id: 'pessoa-franco',
     name: 'Franco',
     role: 'convidado',
-    title: 'Diretor Geral - FAAP',
+    title: 'Conselheiro Consultivo - Diretor Geral FAAP',
     departmentIds: [],
     email: null,
     notes:
-      'Diretor Geral da FAAP. Potencial conselheiro com experiência em gestão de instituições de ensino superior.',
+      'Diretor Geral da FAAP. Conselheiro consultivo com experiência em gestão de instituições de ensino superior.',
     avatarUrl: null,
     assembleiaConfirmed: false,
   },
@@ -225,11 +295,11 @@ export const people: Person[] = [
     id: 'pessoa-daniel-mendes',
     name: 'Daniel Mendes',
     role: 'convidado',
-    title: 'Empreendedor K12',
+    title: 'Conselheiro Consultivo - Empreendedor K12',
     departmentIds: [],
     email: null,
     notes:
-      'Empreendedor no segmento de educação básica (K12). Experiência prática com escolas e mercado educacional.',
+      'Empreendedor no segmento de educação básica (K12). Conselheiro com experiência prática com escolas e mercado educacional.',
     avatarUrl: null,
     assembleiaConfirmed: false,
   },
@@ -237,11 +307,11 @@ export const people: Person[] = [
     id: 'pessoa-mariza',
     name: 'Mariza',
     role: 'convidado',
-    title: 'Ex-MEC e FUNDEB',
+    title: 'Conselheira Consultiva - Ex-MEC / FUNDEB',
     departmentIds: [],
     email: null,
     notes:
-      'Experiência no Ministério da Educação e no FUNDEB. Conhecimento profundo de políticas públicas educacionais e financiamento.',
+      'Conselheira com experiência no Ministério da Educação e FUNDEB. Conhecimento de políticas públicas educacionais e financiamento.',
     avatarUrl: null,
     assembleiaConfirmed: false,
   },
