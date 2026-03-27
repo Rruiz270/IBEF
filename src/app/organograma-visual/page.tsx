@@ -374,30 +374,42 @@ export default function OrganogramaVisualPage() {
             </div>
 
             <div className="space-y-6">
-              <div>
-                <label className="block text-xs font-semibold text-slate-500 uppercase mb-2">Cargo</label>
-                <p className="text-slate-900 font-semibold">{nodes[selectedNode]?.title}</p>
-              </div>
+              {selectedNode && nodes[selectedNode] && (
+                <>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-500 uppercase mb-2">Cargo</label>
+                    <p className="text-slate-900 font-semibold">{nodes[selectedNode].title}</p>
+                  </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-500 uppercase mb-2">Responsável</label>
-                <p className="text-slate-900 font-semibold">{nodes[selectedNode]?.name}</p>
-              </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-500 uppercase mb-2">Responsável</label>
+                    <p className="text-slate-900 font-semibold">{nodes[selectedNode].name}</p>
+                  </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-500 uppercase mb-2">Tipo</label>
-                <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-                  nodes[selectedNode]?.style === 'assembly' ? 'bg-blue-100 text-blue-700' :
-                  nodes[selectedNode]?.style === 'executive' ? 'bg-red-100 text-red-700' :
-                  nodes[selectedNode]?.style === 'council' ? 'bg-yellow-100 text-yellow-700' :
-                  nodes[selectedNode]?.style === 'advisory' ? 'bg-purple-100 text-purple-700' :
-                  nodes[selectedNode]?.style === 'legal' ? 'bg-green-100 text-green-700' :
-                  nodes[selectedNode]?.style === 'dept' ? 'bg-blue-100 text-blue-700' :
-                  'bg-slate-100 text-slate-700'
-                }`}>
-                  {(nodes[selectedNode]?.style ?? 'unknown').toUpperCase()}
-                </span>
-              </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-500 uppercase mb-2">Tipo</label>
+                    {(() => {
+                      const style = nodes[selectedNode].style as string;
+                      const styleMap: Record<string, string> = {
+                        assembly: 'bg-blue-100 text-blue-700',
+                        executive: 'bg-red-100 text-red-700',
+                        council: 'bg-yellow-100 text-yellow-700',
+                        advisory: 'bg-purple-100 text-purple-700',
+                        legal: 'bg-green-100 text-green-700',
+                        dept: 'bg-blue-100 text-blue-700',
+                        sub: 'bg-slate-100 text-slate-700',
+                      };
+                      const bgClass = styleMap[style] || 'bg-slate-100 text-slate-700';
+                      
+                      return (
+                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${bgClass}`}>
+                          {style.toUpperCase()}
+                        </span>
+                      );
+                    })()}
+                  </div>
+                </>
+              )}
 
               <div>
                 <label className="block text-xs font-semibold text-slate-500 uppercase mb-2">Comentários</label>
